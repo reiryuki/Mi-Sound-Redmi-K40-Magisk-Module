@@ -19,6 +19,7 @@
 - Android 9 and up
 - Architecture 64 bit
 - Magisk installed
+- Miui Core Magisk Module v4.0 or above installed
 
 ## Installation Guide
 - Don't use ACDB module!
