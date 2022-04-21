@@ -14,6 +14,7 @@
 
 ## Bug
 - misoundfx doesn't work
+- Voice preset doesn't work
 
 ## Requirements
 - Android 9 and up
