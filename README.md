@@ -12,6 +12,9 @@
 ## Tested on
 - Android 12 AncientOS ROM
 
+## Bug
+- misoundfx doesn't work
+
 ## Requirements
 - Android 9 and up
 - Architecture 64 bit
