@@ -7,7 +7,7 @@
 - Doesn't support ACDB module
 
 ## Screenshots
-- 
+- https://t.me/androidryukimods/488
 
 ## Tested on
 - Android 12 AncientOS ROM
