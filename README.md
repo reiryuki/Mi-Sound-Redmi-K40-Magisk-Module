@@ -21,7 +21,7 @@
 - Don't use ACDB module!
 - Remove any other Dolby module with different name (if it's the same name then no need)
 - Reboot
-- Install [Miui Core Magisk Module](https://github.com/reiryuki/Miui-Core-Magisk-Module) first. Tap here: https://github.com/reiryuki/Miui-Core-Magisk-Module
+- Install [Miui Core Magisk Module](https://github.com/reiryuki/Miui-Core-Magisk-Module) v4.0 or above first first. Tap here: https://github.com/reiryuki/Miui-Core-Magisk-Module
 - If your ROM has Dolby in-built, then you need to enable Dolby data clean-up for the first time (READ Optionals!)
 - Install this Mi Sound Magisk Module via Magisk app or Recovery (download bellow)
 - Install AML Magisk module only if using any other audio mod
