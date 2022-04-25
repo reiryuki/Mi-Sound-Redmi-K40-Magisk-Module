@@ -22,7 +22,6 @@ if [ ! -d /data/adb/modules_update/MiuiCore ] && [ ! -d /data/adb/modules/MiuiCo
   ui_print "! Miui Core Magisk Module is not installed."
   ui_print "  Mi Sound app will not be working without"
   ui_print "  Miui Core Magisk Module except you are in Miui ROM!"
-  abort
 else
   rm -f /data/adb/modules/MiuiCore/remove
   rm -f /data/adb/modules/MiuiCore/disable
@@ -92,30 +91,6 @@ fi
 # .aml.sh
 mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
 
-# function
-conflict() {
-for NAMES in $NAME; do
-  DIR=/data/adb/modules_update/$NAMES
-  if [ -f $DIR/uninstall.sh ]; then
-    sh $DIR/uninstall.sh
-  fi
-  rm -rf $DIR
-  DIR=/data/adb/modules/$NAMES
-  rm -f $DIR/update
-  touch $DIR/remove
-  FILE=/data/adb/modules/$NAMES/uninstall.sh
-  if [ -f $FILE ]; then
-    sh $FILE
-    rm -f $FILE
-  fi
-  rm -rf /metadata/magisk/$NAMES
-  rm -rf /mnt/vendor/persist/magisk/$NAMES
-  rm -rf /persist/magisk/$NAMES
-  rm -rf /data/unencrypted/magisk/$NAMES
-  rm -rf /cache/magisk/$NAMES
-done
-}
-
 # mod ui
 if getprop | grep -Eq "mod.ui\]: \[1"; then
   APP=MiSound
@@ -170,6 +145,46 @@ rm -rf /persist/magisk/$MODID
 rm -rf /data/unencrypted/magisk/$MODID
 rm -rf /cache/magisk/$MODID
 ui_print " "
+
+# function
+conflict() {
+for NAMES in $NAME; do
+  DIR=/data/adb/modules_update/$NAMES
+  if [ -f $DIR/uninstall.sh ]; then
+    sh $DIR/uninstall.sh
+  fi
+  rm -rf $DIR
+  DIR=/data/adb/modules/$NAMES
+  rm -f $DIR/update
+  touch $DIR/remove
+  FILE=/data/adb/modules/$NAMES/uninstall.sh
+  if [ -f $FILE ]; then
+    sh $FILE
+    rm -f $FILE
+  fi
+  rm -rf /metadata/magisk/$NAMES
+  rm -rf /mnt/vendor/persist/magisk/$NAMES
+  rm -rf /persist/magisk/$NAMES
+  rm -rf /data/unencrypted/magisk/$NAMES
+  rm -rf /cache/magisk/$NAMES
+done
+}
+
+# conflict
+if [ $DOLBY == true ]; then
+  NAME="dolbyatmos
+        DolbyAudio
+        DolbyAtmos
+        MotoDolby
+        dsplus
+        Dolby"
+  conflict
+  NAME=SoundEnhancement
+  FILE=/data/adb/modules/$NAME/module.prop
+  if grep -Eq 'Dolby Atmos Xperia' $FILE; then
+    conflict
+  fi
+fi
 
 # function
 cleanup() {
@@ -483,18 +498,6 @@ if [ $DOLBY == true ]; then
     done
   fi
   rm -f /data/vendor/dolby/dax_sqlite3.db
-  NAME="dolbyatmos
-        DolbyAudio
-        DolbyAtmos
-        MotoDolby
-        dsplus
-        Dolby"
-  conflict
-  NAME=SoundEnhancement
-  FILE=/data/adb/modules/$NAME/module.prop
-  if grep -Eq 'Dolby Atmos Xperia' $FILE; then
-    conflict
-  fi
 else
   MODNAME2='Mi Sound'
   sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
@@ -677,7 +680,7 @@ if [ $DOLBY == true ]; then
   done
 fi
 
-# conflict
+# dirac & misoundfx
 FILE=$MODPATH/.aml.sh
 APP="XiaomiParts
      ZenfoneParts

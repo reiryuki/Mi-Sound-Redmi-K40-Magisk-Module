@@ -70,30 +70,26 @@ if getprop | grep "init.svc.$NAME\]: \[running"; then
 fi
 }
 run_service() {
-if getprop | grep "init.svc.$NAME\]: \[stopped"; then
-  start $NAME
-fi
+killall $FILE
 $FILE &
-PID=`pidof $SERV`
-resetprop init.svc.$NAME running
-resetprop init.svc_debug_pid.$NAME "$PID"
+PID=`pidof $FILE`
 }
 
 # stop
 NAME=dms-hal-1-0
 #dstop_service
+NAME=dms-hal-2-0
+#dstop_service
 NAME=dms-v36-hal-2-0
+#dstop_service
+NAME=vendor-ozoaudio-media-c2-hal-1-0
 #dstop_service
 
 # run
-NAME=vendor-ozoaudio-media-c2-hal-1-0
-SERV=vendor.ozoaudio.media.c2@1.0-service
-FILE=/vendor/bin/hw/$SERV
-run_service
-NAME=dms-hal-2-0
-SERV=vendor.dolby.hardware.dms@2.0-service
-FILE=/vendor/bin/hw/$SERV
+FILE=/vendor/bin/hw/vendor.dolby.hardware.dms@2.0-service
 #drun_service
+FILE=/vendor/bin/hw/vendor.ozoaudio.media.c2@1.0-service
+run_service
 
 # wait
 sleep 20
@@ -105,39 +101,39 @@ if [ ! -d $AML ] || [ -f $AML/disable ]; then
 else
   DIR=$AML/system/vendor
 fi
-FILE=`find $DIR/odm/etc -maxdepth 1 -type f -name $NAME`
-if [ "`realpath /odm/etc`" != /vendor/odm/etc ] && [ "$FILE" ]; then
-  for i in $FILE; do
-    j="$(echo $i | sed "s|$DIR||")"
-    umount $j
-    mount -o bind $i $j
-  done
-  killall audioserver
-fi
-if [ ! -d $AML ] || [ -f $AML/disable ]; then
-  DIR=$MODPATH/system
-else
-  DIR=$AML/system
-fi
 FILE=`find $DIR/etc -maxdepth 1 -type f -name $NAME`
+if [ `realpath /odm/etc` == /odm/etc ] && [ "$FILE" ]; then
+  for i in $FILE; do
+    j="/odm$(echo $i | sed "s|$DIR||")"
+    if [ -f $j ]; then
+      umount $j
+      mount -o bind $i $j
+    fi
+  done
+fi
 if [ -d /my_product/etc ] && [ "$FILE" ]; then
   for i in $FILE; do
-    j="$(echo $i | sed "s|$DIR||")"
-    umount /my_product$j
-    mount -o bind $i /my_product$j
+    j="/my_product$(echo $i | sed "s|$DIR||")"
+    if [ -f $j ]; then
+      umount $j
+      mount -o bind $i $j
+    fi
   done
+fi
+if ( [ `realpath /odm/etc` == /odm/etc ] && [ "$FILE" ] )\
+|| ( [ -d /my_product/etc ] && [ "$FILE" ] ); then
   killall audioserver
+  FILE=/vendor/bin/hw/vendor.dolby.hardware.dms@2.0-service
+  #drun_service
+  FILE=/vendor/bin/hw/vendor.ozoaudio.media.c2@1.0-service
+  run_service
 fi
 
-# run
-NAME=vendor-ozoaudio-media-c2-hal-1-0
-SERV=vendor.ozoaudio.media.c2@1.0-service
-FILE=/vendor/bin/hw/$SERV
-run_service
-NAME=dms-hal-2-0
-SERV=vendor.dolby.hardware.dms@2.0-service
-FILE=/vendor/bin/hw/$SERV
-#drun_service
+# aml fix
+DIR=$AML/system/vendor/odm/etc
+if [ -d $DIR ] && [ ! -f $AML/disable ]; then
+  chcon -R u:object_r:vendor_configs_file:s0 $DIR
+fi
 
 # wait
 sleep 40
@@ -153,10 +149,6 @@ sleep 40
 #fi
 #chmod 0666 $FILE
 #chown 1000.1000 $FILE
-#magiskpolicy --live "dontaudit audio_socket labeledfs filesystem associate"
-#magiskpolicy --live "allow     audio_socket labeledfs filesystem associate"
-#magiskpolicy --live "dontaudit init audio_socket sock_file relabelfrom"
-#magiskpolicy --live "allow     init audio_socket sock_file relabelfrom"
 #chcon u:object_r:audio_socket:s0 $FILE
 
 # grant

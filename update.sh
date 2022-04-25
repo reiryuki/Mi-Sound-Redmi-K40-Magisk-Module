@@ -31,7 +31,7 @@ fi
 PROP=`getprop ro.product.cpu.abi`
 
 PKG=com.miui.misound
-NAME=libmiuinative.so
+NAME="libmiuinative.so libmiuiblur.so libmiuixlog.so libxlog.so"
 copy_library
 
 

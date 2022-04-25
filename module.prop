@@ -1,6 +1,6 @@
 id=MiSound
 name=Mi Sound
-version=v0.1-alpha.1
+version=v0.1-beta.1
 versionCode=0
 author=Rei Ryuki the Fixer
 description=An equalizer soundfx by Xiaomi Inc. ported for any Android 9 and up.

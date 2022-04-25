@@ -8,6 +8,35 @@ magiskpolicy --live "type same_process_hal_file"
 magiskpolicy --live "type hal_dms_default_exec"
 magiskpolicy --live "type audio_socket"
 magiskpolicy --live "type property_socket"
+magiskpolicy --live "type mediacodec_exec"
+
+# debug
+magiskpolicy --live "dontaudit system_server system_file file write"
+magiskpolicy --live "allow     system_server system_file file write"
+
+# chcon
+magiskpolicy --live "dontaudit audio_socket labeledfs filesystem associate"
+magiskpolicy --live "allow     audio_socket labeledfs filesystem associate"
+magiskpolicy --live "dontaudit init audio_socket sock_file relabelfrom"
+magiskpolicy --live "allow     init audio_socket sock_file relabelfrom"
+magiskpolicy --live "dontaudit vendor_data_file labeledfs filesystem associate"
+magiskpolicy --live "allow     vendor_data_file labeledfs filesystem associate"
+magiskpolicy --live "dontaudit init vendor_data_file dir relabelfrom"
+magiskpolicy --live "allow     init vendor_data_file dir relabelfrom"
+magiskpolicy --live "dontaudit init vendor_data_file file relabelfrom"
+magiskpolicy --live "allow     init vendor_data_file file relabelfrom"
+magiskpolicy --live "dontaudit vendor_media_data_file labeledfs filesystem associate"
+magiskpolicy --live "allow     vendor_media_data_file labeledfs filesystem associate"
+magiskpolicy --live "dontaudit init vendor_media_data_file dir relabelfrom"
+magiskpolicy --live "allow     init vendor_media_data_file dir relabelfrom"
+magiskpolicy --live "dontaudit init vendor_media_data_file file relabelfrom"
+magiskpolicy --live "allow     init vendor_media_data_file file relabelfrom"
+magiskpolicy --live "dontaudit vendor_configs_file labeledfs filesystem associate"
+magiskpolicy --live "allow     vendor_configs_file labeledfs filesystem associate"
+magiskpolicy --live "dontaudit init vendor_configs_file dir relabelfrom"
+magiskpolicy --live "allow     init vendor_configs_file dir relabelfrom"
+magiskpolicy --live "dontaudit init vendor_configs_file file relabelfrom"
+magiskpolicy --live "allow     init vendor_configs_file file relabelfrom"
 
 
 ## MiSound

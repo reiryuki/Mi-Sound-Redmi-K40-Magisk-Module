@@ -256,12 +256,12 @@ fi
 misoundfx
 
 ## function
-dirac_mod() {
+drmod() {
 
 # store
 LIB=libdrmod.so
-LIBNAME=dirac_mod
-NAME=dirac_mod
+LIBNAME=drmod
+NAME=drmod
 #UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
 UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
 RMV="$LIB $LIBNAME $NAME $UUID libmisoundfx.so misoundfx"
@@ -277,7 +277,7 @@ global_processing {\
 }\' $MODAEC
   fi
   sed -i '/^global_processing {/a\
-  dirac_mod {\
+  drmod {\
     bl@lakala {\
       param {\
         int 6\
