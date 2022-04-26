@@ -14,6 +14,7 @@
 
 ## Bug
 - misoundfx doesn't work
+- Dolby from Miui is unsupported for any other devices or it just a placebo effect because they doesn't have any dolby service nor the other matched one for processing the dap effects, so the dap effects here are taken from OnePlus.
 - Voice preset doesn't work
 
 ## Requirements
