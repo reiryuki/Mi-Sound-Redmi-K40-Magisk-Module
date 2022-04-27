@@ -42,12 +42,12 @@ magiskpolicy --live "allow     init vendor_configs_file file relabelfrom"
 ## MiSound
 
 # dir
-magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app } migt_file dir search"
-magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app } migt_file dir search"
+magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } migt_file dir search"
+magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } migt_file dir search"
 
 # file
-magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app } { vendor_audio_prop vendor_display_prop } file { read open getattr }"
-magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app } { vendor_audio_prop vendor_display_prop } file { read open getattr }"
+magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { vendor_audio_prop vendor_display_prop } file { read open getattr map }"
+magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { vendor_audio_prop vendor_display_prop } file { read open getattr map }"
 
 # sock_file
 magiskpolicy --live "dontaudit { hal_audio_default audioserver mtk_hal_audio hal_sensors_default } { audio_socket property_socket } sock_file write"
@@ -64,8 +64,8 @@ magiskpolicy --live "dontaudit crash_dump { hal_audio_default audioserver mtk_ha
 magiskpolicy --live "allow     crash_dump { hal_audio_default audioserver mtk_hal_audio } unix_stream_socket { read write }"
 
 # property_service
-magiskpolicy --live "dontaudit { hal_audio_default audioserver mtk_hal_audio } vendor_audio_prop property_service set"
-magiskpolicy --live "allow     { hal_audio_default audioserver mtk_hal_audio } vendor_audio_prop property_service set"
+magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app hal_audio_default audioserver mtk_hal_audio } vendor_audio_prop property_service set"
+magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app hal_audio_default audioserver mtk_hal_audio } vendor_audio_prop property_service set"
 
 
 ## Dolby

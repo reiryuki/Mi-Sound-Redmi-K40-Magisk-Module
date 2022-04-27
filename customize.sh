@@ -22,6 +22,7 @@ if [ ! -d /data/adb/modules_update/MiuiCore ] && [ ! -d /data/adb/modules/MiuiCo
   ui_print "! Miui Core Magisk Module is not installed."
   ui_print "  Mi Sound app will not be working without"
   ui_print "  Miui Core Magisk Module except you are in Miui ROM!"
+  ui_print " "
 else
   rm -f /data/adb/modules/MiuiCore/remove
   rm -f /data/adb/modules/MiuiCore/disable
@@ -34,7 +35,7 @@ if [ "$IS64BIT" == true ]; then
   if ! getprop | grep -Eq "misound.dolby\]: \[0"; then
     ui_print "- Activating Dolby Atmos..."
     DOLBY=true
-    MODNAME2='Mi Sound and Dolby Atmos'
+    MODNAME2='Mi Sound and Dolby Atmos Redmi M2012K11AC'
     sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
     MODNAME=$MODNAME2
     ui_print " "
@@ -60,20 +61,19 @@ if [ "$API" -lt $NUM ]; then
   abort
 else
   ui_print "- SDK $API"
-#  if [ $DOLBY == true ] && [ "$API" -lt 30 ]; then
-#    ui_print "  ! Unsupported Dolby Atmos."
-#    DOLBY=false
-#  fi
+  if [ $DOLBY == true ] && [ "$API" -lt 28 ]; then
+    ui_print "  ! Unsupported Dolby Atmos."
+    DOLBY=false
+  fi
   ui_print " "
 fi
 
 # socket
-#if [ ! -e /dev/socket/audio_hw_socket ]; then
-#  ui_print "! Unsupported audio_hw_socket"
-#  ui_print "  Device is not supported for misoundfx"
-#  ui_print "  Will try to make a fake socket but may doesn't work"
-#  ui_print " "
-#fi
+if [ ! -e /dev/socket/audio_hw_socket ]; then
+  ui_print "! Unsupported audio_hw_socket."
+  ui_print "  misoundfx will not be working with this device."
+  ui_print " "
+fi
 
 # sepolicy.rule
 if [ "$BOOTMODE" != true ]; then
@@ -211,7 +211,50 @@ elif [ -d $DIR ] && ! grep -Eq "$MODNAME" $FILE; then
   ui_print " "
 fi
 
-# store
+# check
+NAME=_ZN7android23sp_report_stack_pointerEv
+ui_print "- Checking"
+ui_print "$NAME"
+ui_print "  function"
+ui_print "  Please wait..."
+if [ "$BOOTMODE" == true ]; then
+  DIR=`realpath $MAGISKTMP/mirror/vendor`
+else
+  DIR=`realpath /vendor`
+fi
+if ! grep -Eq $NAME `find $DIR/lib*/hw -type f -name *audio*.so`\
+|| getprop | grep -Eq "dolby.10\]: \[1"; then
+  ui_print "  Using legacy libraries"
+  cp -rf $MODPATH/system_10/* $MODPATH/system
+  if [ $DOLBY == true ]; then
+    cp -rf $MODPATH/system_dolby_10/* $MODPATH/system
+    sed -i 's/#10//g' $MODPATH/service.sh
+  fi
+else
+  if [ $DOLBY == true ]; then
+    sed -i 's/#11//g' $MODPATH/service.sh
+  fi
+fi
+rm -rf $MODPATH/system_10
+rm -rf $MODPATH/system_dolby_10
+ui_print " "
+#NAME=_ZN7android4base15WriteStringToFdERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS0_11borrowed_fdE
+#NAME=_ZN7android22GraphicBufferAllocator17allocateRawHandleEjjijyPPK13native_handlePjNSt3__112basic_stringIcNS6_11char_traitsIcEENS6_9allocatorIcEEEE
+NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
+if [ $DOLBY == true ]; then
+  ui_print "- Checking"
+  ui_print "$NAME"
+  ui_print "  function"
+  ui_print "  Please wait..."
+  if ! grep -Eq $NAME `find $DIR/lib64 -type f -name *audio*.so`; then
+    ui_print "  ! Function not found."
+    ui_print "  Unsupported Dolby Atmos 2.0."
+    DOLBY=false
+  fi
+fi
+ui_print " "
+
+# function
 permissive() {
 SELINUX=`getenforce`
 if [ "$SELINUX" == Enforcing ]; then
@@ -529,34 +572,6 @@ if [ "$PROP" == 1 ]; then
   ui_print " "
 fi
 
-# check
-NAME=_ZN7android23sp_report_stack_pointerEv
-ui_print "- Checking"
-ui_print "$NAME"
-ui_print "  function"
-ui_print "  Please wait..."
-if [ "$BOOTMODE" == true ]; then
-  DIR=`realpath $MAGISKTMP/mirror/vendor`
-else
-  DIR=`realpath /vendor`
-fi
-if ! grep -Eq $NAME `find $DIR/lib*/hw -type f -name *audio*.so`\
-|| getprop | grep -Eq "dolby.10\]: \[1"; then
-  ui_print "  Using legacy libraries"
-  cp -rf $MODPATH/system_10/* $MODPATH/system
-  sed -i 's/#10//g' $MODPATH/service.sh
-  if [ $DOLBY == true ]; then
-    cp -rf $MODPATH/system_dolby_10/* $MODPATH/system
-  fi
-else
-  sed -i 's/#11//g' $MODPATH/service.sh
-fi
-rm -rf $MODPATH/system_10
-rm -rf $MODPATH/system_dolby_10
-ui_print " "
-#NAME=_ZN7android4base15WriteStringToFdERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS0_11borrowed_fdE
-#NAME=_ZN7android22GraphicBufferAllocator17allocateRawHandleEjjijyPPK13native_handlePjNSt3__112basic_stringIcNS6_11char_traitsIcEENS6_9allocatorIcEEEE
-
 # function
 hide_oat() {
 for APPS in $APP; do
@@ -686,16 +701,17 @@ APP="XiaomiParts
      ZenfoneParts
      ZenParts
      GalaxyParts
-     KharaMeParts"
+     KharaMeParts
+     DeviceParts"
 NAME=misoundfx
 UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
-ui_print "- Detecting $NAME"
+ui_print "- Checking $NAME..."
 check_app
 ui_print " "
 FILE=$MODPATH/.aml.sh
 NAME='dirac soundfx'
 UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
-ui_print "- Detecting $NAME"
+ui_print "- Checking $NAME..."
 check_app
 ui_print " "
 
@@ -730,6 +746,12 @@ fi
 if echo "$PROP" | grep -Eq n; then
   ui_print "- Activating notification stream..."
   sed -i 's/#n//g' $FILE
+  ui_print " "
+fi
+if ! getprop | grep -Eq "ozo.audio\]: \[0"; then
+  ui_print "- Activating Nokia OZO Audio Capture for camcorder, mic,"
+  ui_print "  and voice recognition stream..."
+  sed -i 's/#c//g' $FILE
   ui_print " "
 fi
 
@@ -824,7 +846,7 @@ done
 }
 
 # check
-NAME="libstagefrightdolby.so
+NAME="libqtigef.so libstagefrightdolby.so
       libstagefright_soft_ddpdec.so
       libstagefright_soft_ac4dec.so"
 if [ $DOLBY == true ]; then

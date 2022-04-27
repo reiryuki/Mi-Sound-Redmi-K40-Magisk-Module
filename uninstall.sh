@@ -22,7 +22,12 @@ rm -rf /persist/magisk/"$MODID"
 rm -rf /data/unencrypted/magisk/"$MODID"
 rm -rf /cache/magisk/"$MODID"
 #drm -rf /data/vendor/dolby
+resetprop -p --delete persist.sys.button_jack_profile
+resetprop -p --delete persist.sys.button_jack_switch
 resetprop -p --delete persist.audio.button_jack.profile
+resetprop -p --delete persist.audio.button_jack.switch
+resetprop -p --delete persist.vendor.audio.button_jack.profile
+resetprop -p --delete persist.vendor.audio.button_jack.switch
 resetprop -p --delete persist.vendor.audio.misound.disable
 resetprop -p --delete persist.vendor.audio.sfx.hd.music.state
 resetprop -p --delete persist.vendor.audio.sfx.hd.type

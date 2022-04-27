@@ -1,9 +1,20 @@
 id=MiSound
-name=Mi Sound
-version=v0.1-beta.1
-versionCode=0
+name=Mi Sound Redmi M2012K11AC
+version=v0.1
+versionCode=1
 author=Rei Ryuki the Fixer
 description=An equalizer soundfx by Xiaomi Inc. ported for any Android 9 and up.
+# Source: https://dumps.tadiphone.dev/dumps/redmi/alioth qssi-user-12-SKQ1.211006.001-V13.0.3.0.SKHEUXM-release-keys
+# vendor.dolby.hardware.dms@2.0-impl.so source: https://dumps.tadiphone.dev/dumps/redmi/alioth qssi-user-11-RKQ1.200826.002-V12.5.2.0.RKHMIXM-release-keys
 # MiSound.apk source: apkmirror.com
+# Android 10 source: https://dumps.tadiphone.dev/dumps/xiaomi/ginkgo ginkgo-user-10-QKQ1.200114.002-V12.0.6.0.QCOEUXM-release-keys
+# daxService.apk source: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
+# libswdap.so source: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
+# libhwdap.so source: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
+# libdapparamstorage.so source: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
+# libdlbdsservice.so source: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
+# dax-default.xml source: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
+# Dolby Android 10 source: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible OnePlus8Visible-user-10-QKQ1.191222.002-2007221621-release-keys
+# libswvqe.so source: LENOVO TB-J606F
 
 

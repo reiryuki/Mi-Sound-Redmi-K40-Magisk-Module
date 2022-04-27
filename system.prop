@@ -21,9 +21,11 @@ ro.control_privapp_permissions=log
 #persist.vendor.audio.sfx.stereomode.state
 #persist.vendor.audio.surround.level
 #persist.vendor.audio.vocal.level
+#persist.vendor.audio.spatial.enable
+#persist.vendor.audio.3dsurround.enable
+#persist.vendor.audio.scenario.switch
 
 # ancient notes
-#ro.hwversion
 #persist.audio.dirac.speaker
 #persist.audio.dirac.music.state
 #audio.dirac.mode
