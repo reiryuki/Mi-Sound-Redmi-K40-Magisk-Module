@@ -213,15 +213,15 @@ fi
 
 # check
 NAME=_ZN7android23sp_report_stack_pointerEv
-ui_print "- Checking"
-ui_print "$NAME"
-ui_print "  function"
-ui_print "  Please wait..."
 if [ "$BOOTMODE" == true ]; then
   DIR=`realpath $MAGISKTMP/mirror/vendor`
 else
   DIR=`realpath /vendor`
 fi
+ui_print "- Checking"
+ui_print "$NAME"
+ui_print "  function"
+ui_print "  Please wait..."
 if ! grep -Eq $NAME `find $DIR/lib*/hw -type f -name *audio*.so`\
 || getprop | grep -Eq "dolby.10\]: \[1"; then
   ui_print "  Using legacy libraries"
@@ -238,9 +238,12 @@ fi
 rm -rf $MODPATH/system_10
 rm -rf $MODPATH/system_dolby_10
 ui_print " "
-#NAME=_ZN7android4base15WriteStringToFdERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS0_11borrowed_fdE
-#NAME=_ZN7android22GraphicBufferAllocator17allocateRawHandleEjjijyPPK13native_handlePjNSt3__112basic_stringIcNS6_11char_traitsIcEENS6_9allocatorIcEEEE
 NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
+if [ "$BOOTMODE" == true ]; then
+  DIR=`realpath $MAGISKTMP/mirror/system`
+else
+  DIR=`realpath /system`
+fi
 if [ $DOLBY == true ]; then
   ui_print "- Checking"
   ui_print "$NAME"
@@ -251,8 +254,8 @@ if [ $DOLBY == true ]; then
     ui_print "  Unsupported Dolby Atmos 2.0."
     DOLBY=false
   fi
+  ui_print " "
 fi
-ui_print " "
 
 # function
 permissive() {
