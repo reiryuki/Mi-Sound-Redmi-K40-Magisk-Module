@@ -227,7 +227,7 @@ if ! grep -Eq $NAME `find $DIR/lib*/hw -type f -name *audio*.so`\
   ui_print "  Using legacy libraries"
   cp -rf $MODPATH/system_10/* $MODPATH/system
   if [ $DOLBY == true ]; then
-    cp -rf $MODPATH/system_dolby_10/* $MODPATH/system
+    cp -rf $MODPATH/system_dolby_10/* $MODPATH/system_dolby
     sed -i 's/#10//g' $MODPATH/service.sh
   fi
 else
@@ -253,6 +253,49 @@ if [ $DOLBY == true ]; then
     ui_print "  ! Function not found."
     ui_print "  Unsupported Dolby Atmos 2.0."
     DOLBY=false
+  fi
+  ui_print " "
+fi
+
+# dolby
+if [ $DOLBY == true ]; then
+  sed -i 's/#d//g' $MODPATH/.aml.sh
+  sed -i 's/#d//g' $MODPATH/*.sh
+  cp -rf $MODPATH/system_dolby/* $MODPATH/system
+  PKG=com.dolby.daxservice
+  if [ "$BOOTMODE" == true ]; then
+    for PKGS in $PKG; do
+      RES=`pm uninstall $PKGS`
+    done
+  fi
+  rm -f /data/vendor/dolby/dax_sqlite3.db
+else
+  MODNAME2='Mi Sound'
+  sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
+fi
+rm -rf $MODPATH/system_dolby
+
+# cleaning
+APP="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
+for APPS in $APP; do
+  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APPS*.apk`
+done
+
+# power save
+PROP=`getprop power.save`
+FILE=$MODPATH/system/etc/sysconfig/*
+if [ "$PROP" == 1 ]; then
+  ui_print "- $MODNAME will not be allowed in power save."
+  ui_print "  It may save your battery but decreasing $MODNAME performance."
+  for PKGS in $PKG; do
+    sed -i "s/<allow-in-power-save package=\"$PKGS\"\/>//g" $FILE
+    sed -i "s/<allow-in-power-save package=\"$PKGS\" \/>//g" $FILE
+  done
+  if [ $DOLBY == true ]; then
+    for PKGS2 in $PKG2; do
+      sed -i "s/<allow-in-power-save package=\"$PKGS2\"\/>//g" $FILE
+      sed -i "s/<allow-in-power-save package=\"$PKGS2\" \/>//g" $FILE
+    done
   fi
   ui_print " "
 fi
@@ -530,49 +573,6 @@ if [ "$BOOTMODE" == true ] && [ $DOLBY == true ]; then
   mount -o ro,remount /system_root
   mount -o ro,remount /system_ext
   mount -o ro,remount /vendor
-fi
-
-# dolby
-if [ $DOLBY == true ]; then
-  sed -i 's/#d//g' $MODPATH/.aml.sh
-  sed -i 's/#d//g' $MODPATH/*.sh
-  cp -rf $MODPATH/system_dolby/* $MODPATH/system
-  PKG=com.dolby.daxservice
-  if [ "$BOOTMODE" == true ]; then
-    for PKGS in $PKG; do
-      RES=`pm uninstall $PKGS`
-    done
-  fi
-  rm -f /data/vendor/dolby/dax_sqlite3.db
-else
-  MODNAME2='Mi Sound'
-  sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
-fi
-rm -rf $MODPATH/system_dolby
-
-# cleaning
-APP="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
-for APPS in $APP; do
-  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APPS*.apk`
-done
-
-# power save
-PROP=`getprop power.save`
-FILE=$MODPATH/system/etc/sysconfig/*
-if [ "$PROP" == 1 ]; then
-  ui_print "- $MODNAME will not be allowed in power save."
-  ui_print "  It may save your battery but decreasing $MODNAME performance."
-  for PKGS in $PKG; do
-    sed -i "s/<allow-in-power-save package=\"$PKGS\"\/>//g" $FILE
-    sed -i "s/<allow-in-power-save package=\"$PKGS\" \/>//g" $FILE
-  done
-  if [ $DOLBY == true ]; then
-    for PKGS2 in $PKG2; do
-      sed -i "s/<allow-in-power-save package=\"$PKGS2\"\/>//g" $FILE
-      sed -i "s/<allow-in-power-save package=\"$PKGS2\" \/>//g" $FILE
-    done
-  fi
-  ui_print " "
 fi
 
 # function
