@@ -18,8 +18,9 @@
 - Voice preset doesn't work
 
 ## Requirements
-- Android 9 and up
-- Architecture 64 bit
+- Android 8 and up + Miui ROM for the MiSound EQ
+- Android 9 and up for the Dolby Atmos
+- Architecture 64 bit for the Dolby Atmos
 - Magisk installed
 - Miui Core Magisk Module v4.0 or above installed (except you are in Miui ROM)
 
