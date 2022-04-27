@@ -1,4 +1,4 @@
-# Mi-Sound-Magisk-Module
+# Mi Sound Redmi M2012K11AC Magisk Module
 
 ## Descriptions
 - Dolby Atmos soundfx EQ with MiSound app by Xiaomi Inc.
