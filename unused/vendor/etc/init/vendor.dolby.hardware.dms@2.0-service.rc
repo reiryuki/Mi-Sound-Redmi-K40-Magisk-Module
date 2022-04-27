@@ -1,0 +1,6 @@
+service dms-hal-2-0 /vendor/bin/hw/vendor.dolby.hardware.dms@2.0-service
+    class hal
+    user media
+    group audio media
+on post-fs-data
+    mkdir /data/vendor/dolby 0770 media media
