@@ -697,12 +697,6 @@ if [ $DOLBY == true ]; then
     hide_app
   done
 fi
-if ! getprop | grep -Eq "disable.dirac\]: \[0"; then
-  APP=DiracAudioControlService
-  for APPS in $APP; do
-    hide_app
-  done
-fi
 
 # dirac & misoundfx
 APP="XiaomiParts
