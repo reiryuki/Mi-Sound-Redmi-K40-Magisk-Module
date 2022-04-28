@@ -262,9 +262,8 @@ drmod() {
 LIB=libdrmod.so
 LIBNAME=drmod
 NAME=drmod
-#UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
-UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
-RMV="$LIB $LIBNAME $NAME $UUID libmisoundfx.so misoundfx"
+UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
+RMV="$LIB $LIBNAME $NAME $UUID"
 
 # patch audio effects conf
 if [ "$MODAEC" ]; then

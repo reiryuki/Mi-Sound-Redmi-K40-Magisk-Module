@@ -52,7 +52,7 @@ NAME="*audio*effects*.conf -o -name *audio*effects*.xml -o -name *policy*.conf -
 rm -f `find $MODPATH/system -type f -name $NAME`
 A=`find $ETC -maxdepth 1 -type f -name $NAME`
 VA=`find $VETC -maxdepth 1 -type f -name $NAME`
-VOA=`find $OETC -maxdepth 1 -type f -name $NAME`
+VOA=`find $VOETC -maxdepth 1 -type f -name $NAME`
 VAA=`find $VETC/audio -maxdepth 1 -type f -name $NAME`
 VBA=`find $VETC/audio/"$PROP" -maxdepth 1 -type f -name $NAME`
 if [ "$A" ]; then
@@ -62,10 +62,10 @@ if [ "$VA" ]; then
   cp -f $VA $MODVETC
 fi
 if [ "$VOA" ]; then
-  cp -f $VOA $MODOETC
+  cp -f $VOA $MODVOETC
 fi
 if [ "$VAA" ]; then
-  cp -f $VAA $MODOETC/audio
+  cp -f $VAA $MODVOETC/audio
 fi
 if [ "$VBA" ]; then
   cp -f $VBA $MODVETC/audio/"$PROP"
@@ -113,9 +113,6 @@ chcon u:object_r:vendor_data_file:s0 $DIR
 
 # directory
 #ddolby_data
-
-# run
-sh $MODPATH/.aml.sh
 
 # cleaning
 FILE=$MODPATH/cleaner.sh

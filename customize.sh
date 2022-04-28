@@ -697,15 +697,21 @@ if [ $DOLBY == true ]; then
     hide_app
   done
 fi
+if ! getprop | grep -Eq "disable.dirac\]: \[0"; then
+  APP=DiracAudioControlService
+  for APPS in $APP; do
+    hide_app
+  done
+fi
 
 # dirac & misoundfx
-FILE=$MODPATH/.aml.sh
 APP="XiaomiParts
      ZenfoneParts
      ZenParts
      GalaxyParts
      KharaMeParts
      DeviceParts"
+FILE=$MODPATH/.aml.sh
 NAME=misoundfx
 UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
 ui_print "- Checking $NAME..."
