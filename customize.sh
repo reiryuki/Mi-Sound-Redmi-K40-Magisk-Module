@@ -440,6 +440,16 @@ vendor.dolby.hardware.dms::IDms u:object_r:hal_dms_hwservice:s0' $FILE
   fi
 fi
 }
+restore() {
+for FILES in $FILE; do
+  if [ -f $FILES.orig ]; then
+    mv -f $FILES.orig $FILES
+  fi
+  if [ -f $FILES.bak ]; then
+    mv -f $FILES.bak $FILES
+  fi
+done
+}
 
 # permissive
 if getprop | grep -Eq "permissive.mode\]: \[1"; then
@@ -517,6 +527,19 @@ if [ $DOLBY == true ]; then
     patch_manifest
   fi
   if ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -Eq 2.0; then
+    FILE=`find $MAGISKTMP/mirror/system\
+               $MAGISKTMP/mirror/system_ext\
+               $MAGISKTMP/mirror/vendor\
+               $MAGISKTMP/mirror/system_root/system\
+               $MAGISKTMP/mirror/system_root/system_ext\
+               $MAGISKTMP/mirror/system_root/vendor\
+               /system\
+               /system_ext\
+               /vendor\
+               /system_root/system\
+               /system_root/system_ext\
+               /system_root/vendor -type f -name manifest.xml`
+    restore
     ui_print "- Using systemless manifest.xml patch."
     ui_print "  On some ROMs, it's buggy or even makes bootloop"
     ui_print "  because not allowed to restart hwservicemanager."
