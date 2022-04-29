@@ -36,6 +36,7 @@
 - Reboot
 
 ## Optionals
+- https://t.me/androidryukimodsdiscussions/75400
 - https://t.me/androidryukimodsdiscussions/60861
 - https://t.me/androidryukimodsdiscussions/2616
 - https://t.me/androidryukimodsdiscussions/26764
