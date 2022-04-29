@@ -28,6 +28,7 @@
 ## Installation Guide
 - Don't use ACDB module!
 - Remove any other Dolby module with different name (if it's the same name then no need)
+- Install BusyBox Magisk Module here: https://github.com/Magisk-Modules-Repo/busybox-ndk/blob/master/update.json (open the "ZipUrl" link there) to prevent unsupported commands.
 - Reboot
 - Install [Miui Core Magisk Module](https://github.com/reiryuki/Miui-Core-Magisk-Module) v4.0 or above first (except you are in Miui ROM). Tap here: https://github.com/reiryuki/Miui-Core-Magisk-Module
 - If your ROM has Dolby in-built, then you need to enable Dolby data clean-up for the first time (READ Optionals!)
