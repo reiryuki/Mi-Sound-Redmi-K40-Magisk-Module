@@ -12,10 +12,11 @@
 ## Tested on
 - Android 12 AncientOS ROM
 
-## Bug
+## Bugs
 - misoundfx doesn't work except in Miui ROM
 - Dolby from Miui is unsupported for any other devices or it just a placebo effect because they doesn't have any dolby service nor the other matched one for processing the dap effects, so the dap here is taken from OnePlus.
 - Voice preset doesn't work
+- Not all ROM is supported for the Mi Sound app
 
 ## Requirements
 - Android 8 and up + Miui ROM for the MiSound EQ
