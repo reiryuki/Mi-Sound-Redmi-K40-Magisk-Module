@@ -35,15 +35,11 @@
 - Install AML Magisk module only if using any other audio mod
 - Reboot
 
-## Optionals
+## Optionals & Troubleshootings
 - https://t.me/androidryukimodsdiscussions/75400
 - https://t.me/androidryukimodsdiscussions/60861
-- https://t.me/androidryukimodsdiscussions/2616
 - https://t.me/androidryukimodsdiscussions/26764
-
-## Troubleshootings
 - https://t.me/androidryukimodsdiscussions/29836
-- https://t.me/androidryukimodsdiscussions/2617
 
 ## Bug Report
 - https://t.me/androidryukimodsdiscussions/2618
