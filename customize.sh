@@ -226,6 +226,7 @@ if ! grep -Eq $NAME `find $DIR/lib*/hw -type f -name *audio*.so`\
 || getprop | grep -Eq "dolby.10\]: \[1"; then
   ui_print "  Using legacy libraries"
   cp -rf $MODPATH/system_10/* $MODPATH/system
+  rm -f $MODPATH/system/vendor/lib64/soundfx/libmisoundfx.so
   if [ $DOLBY == true ]; then
     cp -rf $MODPATH/system_dolby_10/* $MODPATH/system_dolby
     sed -i 's/#10//g' $MODPATH/service.sh

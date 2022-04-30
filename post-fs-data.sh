@@ -1,5 +1,3 @@
-(
-
 mount /data
 mount -o rw,remount /data
 MODPATH=${0%/*}
@@ -152,8 +150,6 @@ FILE=`find $MAGISKTMP/mirror/*/etc/vintf\
            $MAGISKTMP/mirror/*/*/etc/vintf\
            /*/etc/vintf /*/*/etc/vintf -type f -name *.xml`
 #ddolby_manifest
-
-) 2>/dev/null
 
 
 
