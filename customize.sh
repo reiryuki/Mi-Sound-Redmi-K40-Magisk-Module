@@ -781,7 +781,7 @@ if echo "$PROP" | grep -Eq n; then
   ui_print " "
 fi
 if ! getprop | grep -Eq "ozo.audio\]: \[0"; then
-  ui_print "  Activating Nokia OZO Audio Capture for camcorder, mic,"
+  ui_print "- Activating Nokia OZO Audio Capture for camcorder, mic,"
   ui_print "  and voice recognition stream..."
   sed -i 's/#c//g' $FILE
   ui_print " "
