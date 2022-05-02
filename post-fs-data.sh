@@ -1,4 +1,3 @@
-mount /data
 mount -o rw,remount /data
 MODPATH=${0%/*}
 AML=/data/adb/modules/aml
@@ -151,8 +150,15 @@ FILE=`find $MAGISKTMP/mirror/*/etc/vintf\
            /*/etc/vintf /*/*/etc/vintf -type f -name *.xml`
 #ddolby_manifest
 
-
-
+# AudioEffectCenter
+if [ -f /my_product/app/AudioEffectCenter/AudioEffectCenter.apk ]; then
+  mkdir $MODPATH/AudioEffectCenter
+  mount -o bind $MODPATH/AudioEffectCenter /my_product/app/AudioEffectCenter
+fi
+if [ -f /my_product/priv-app/AudioEffectCenter/AudioEffectCenter.apk ]; then
+  mkdir $MODPATH/AudioEffectCenter
+  mount -o bind $MODPATH/AudioEffectCenter /my_product/priv-app/AudioEffectCenter
+fi
 
 
 

@@ -252,7 +252,7 @@ if [ $DOLBY == true ]; then
   ui_print "  Please wait..."
   if ! grep -Eq $NAME `find $DIR/lib64 -type f -name *audio*.so`; then
     ui_print "  ! Function not found."
-    ui_print "  Unsupported Dolby Atmos 2.0."
+    ui_print "  Unsupported ROM."
     DOLBY=false
   fi
   ui_print " "
@@ -271,7 +271,7 @@ if [ $DOLBY == true ]; then
   fi
   rm -f /data/vendor/dolby/dax_sqlite3.db
 else
-  MODNAME2='Mi Sound'
+  MODNAME2='Mi Sound Redmi M2012K11AC'
   sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
 fi
 rm -rf $MODPATH/system_dolby
@@ -699,13 +699,17 @@ if [ "$BOOTMODE" == true ]; then
 fi
 }
 detect_soundfx() {
-if [ "$BOOTMODE" == true ]; then
-  if dumpsys media.audio_flinger | grep -Eq $UUID; then
-    ui_print "- $NAME is detected"
-    ui_print "  It may conflicting with this module"
-    ui_print "  Read Github Troubleshootings to disable it"
-    ui_print " "
-  fi
+if [ "$BOOTMODE" == true ]\
+&& dumpsys media.audio_flinger | grep -Eq $UUID; then
+  ui_print "- $NAME is detected."
+  ui_print "  It may be conflicting with this module."
+  ui_print "  You can run terminal:"
+  ui_print " "
+  ui_print "  su"
+  ui_print "  setprop disable.dirac 1"
+  ui_print " "
+  ui_print "  and reinstall this module if you want to disable it."
+  ui_print " "
 fi
 }
 
@@ -716,7 +720,8 @@ for APPS in $APP; do
   hide_app
 done
 if [ $DOLBY == true ]; then
-  APP="DaxUI MotoDolbyDax3 MotoDolbyV3 OPSoundTuner DolbyAtmos"
+  APP="DaxUI MotoDolbyDax3 MotoDolbyV3 OPSoundTuner
+       DolbyAtmos AudioEffectCenter"
   for APPS in $APP; do
     hide_app
   done
@@ -776,7 +781,7 @@ if echo "$PROP" | grep -Eq n; then
   ui_print " "
 fi
 if ! getprop | grep -Eq "ozo.audio\]: \[0"; then
-  ui_print "- Activating Nokia OZO Audio Capture for camcorder, mic,"
+  ui_print "  Activating Nokia OZO Audio Capture for camcorder, mic,"
   ui_print "  and voice recognition stream..."
   sed -i 's/#c//g' $FILE
   ui_print " "
@@ -878,6 +883,18 @@ NAME="libqtigef.so libstagefrightdolby.so
       libstagefright_soft_ac4dec.so"
 if [ $DOLBY == true ]; then
   file_check_vendor
+fi
+
+# check
+if [ "$BOOTMODE" == true ]; then
+  FILE=$MAGISKTMP/mirror/vendor/lib/soundfx/libmisoundfx.so
+else
+  FILE=/vendor/lib/soundfx/libmisoundfx.so
+fi
+if [ -f $FILE ]; then
+  ui_print "- Built-in misoundfx is detected."
+  rm -f `find $MODPATH/system/vendor -type f -name *misound*`
+  ui_print " "
 fi
 
 # permission

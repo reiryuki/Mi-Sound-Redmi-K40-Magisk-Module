@@ -1,6 +1,3 @@
-(
-
-mount /data
 mount -o rw,remount /data
 MODPATH=${0%/*}
 MODID=`echo "$MODPATH" | sed -n -e 's/\/data\/adb\/modules\///p'`
@@ -143,7 +140,5 @@ fi
 
 # remount
 #dremount_ro
-
-) 2>/dev/null
 
 
