@@ -791,7 +791,12 @@ fi
 if [ $DOLBY == true ]; then
   FILE=$MODPATH/system/vendor/etc/dolby/dax-default.xml
   PROP=`getprop dolby.bass`
-  if [ "$PROP" ] && [ "$PROP" -gt 0 ]; then
+  if [ "$PROP" == default ]; then
+    ui_print "- Using default settings for bass enhancer"
+  elif [ "$PROP" == true ]; then
+    ui_print "- Enable bass enhancer for all profiles..."
+    sed -i 's/bass-enhancer-enable value="false"/bass-enhancer-enable value="true"/g' $FILE
+  elif [ "$PROP" != false ] && [ "$PROP" -gt 0 ]; then
     ui_print "- Enable bass enhancer for all profiles..."
     sed -i 's/bass-enhancer-enable value="false"/bass-enhancer-enable value="true"/g' $FILE
     ui_print "- Changing bass enhancer boost values to $PROP for all profiles..."
@@ -804,11 +809,6 @@ if [ $DOLBY == true ]; then
     for ROWS in $ROW; do
       sed -i "s/bass-enhancer-boost value=\"$ROWS\"/bass-enhancer-boost value=\"$PROP\"/g" $FILE
     done
-  elif [ "$PROP" == true ]; then
-    ui_print "- Enable bass enhancer for all profiles..."
-    sed -i 's/bass-enhancer-enable value="false"/bass-enhancer-enable value="true"/g' $FILE
-  elif [ "$PROP" == default ]; then
-    ui_print "- Using default settings for bass enhancer"
   else
     ui_print "- Disable bass enhancer for all profiles..."
     sed -i 's/bass-enhancer-enable value="true"/bass-enhancer-enable value="false"/g' $FILE
@@ -829,6 +829,27 @@ if [ $DOLBY == true ]; then
     ui_print "- Disable volume leveler for all profiles..."
     sed -i 's/volume-leveler-enable value="true"/volume-leveler-enable value="false"/g' $FILE
   fi
+  ui_print "- Using deeper bass GEQ frequency"
+  sed -i 's/frequency="47"/frequency="0"/g' $FILE
+  sed -i 's/frequency="141"/frequency="47"/g' $FILE
+  sed -i 's/frequency="234"/frequency="141"/g' $FILE
+  sed -i 's/frequency="328"/frequency="234"/g' $FILE
+  sed -i 's/frequency="469"/frequency="328"/g' $FILE
+  sed -i 's/frequency="656"/frequency="469"/g' $FILE
+  sed -i 's/frequency="844"/frequency="656"/g' $FILE
+  sed -i 's/frequency="1031"/frequency="844"/g' $FILE
+  sed -i 's/frequency="1313"/frequency="1031"/g' $FILE
+  sed -i 's/frequency="1688"/frequency="1313"/g' $FILE
+  sed -i 's/frequency="2250"/frequency="1688"/g' $FILE
+  sed -i 's/frequency="3000"/frequency="2250"/g' $FILE
+  sed -i 's/frequency="3750"/frequency="3000"/g' $FILE
+  sed -i 's/frequency="4688"/frequency="3750"/g' $FILE
+  sed -i 's/frequency="5813"/frequency="4688"/g' $FILE
+  sed -i 's/frequency="7125"/frequency="5813"/g' $FILE
+  sed -i 's/frequency="9000"/frequency="7125"/g' $FILE
+  sed -i 's/frequency="11250"/frequency="9000"/g' $FILE
+  sed -i 's/frequency="13875"/frequency="11250"/g' $FILE
+  sed -i 's/frequency="19688"/frequency="13875"/g' $FILE
   ui_print " "
 fi
 

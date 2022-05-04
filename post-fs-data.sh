@@ -150,7 +150,8 @@ FILE=`find $MAGISKTMP/mirror/*/etc/vintf\
            /*/etc/vintf /*/*/etc/vintf -type f -name *.xml`
 #ddolby_manifest
 
-# AudioEffectCenter
+# function
+hide_app() {
 if [ -f /my_product/app/AudioEffectCenter/AudioEffectCenter.apk ]; then
   mkdir $MODPATH/AudioEffectCenter
   mount -o bind $MODPATH/AudioEffectCenter /my_product/app/AudioEffectCenter
@@ -159,13 +160,9 @@ if [ -f /my_product/priv-app/AudioEffectCenter/AudioEffectCenter.apk ]; then
   mkdir $MODPATH/AudioEffectCenter
   mount -o bind $MODPATH/AudioEffectCenter /my_product/priv-app/AudioEffectCenter
 fi
+}
 
-
-
-
-
-
-
-
+# hide
+#dhide_app
 
 
