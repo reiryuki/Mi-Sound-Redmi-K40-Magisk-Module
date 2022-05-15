@@ -69,9 +69,11 @@ else
 fi
 
 # socket
+FILE=$MODPATH/service.sh
 if [ ! -e /dev/socket/audio_hw_socket ]; then
   ui_print "! Unsupported audio_hw_socket."
-  ui_print "  misoundfx will not be working with this device."
+  ui_print "  misoundfx will not be working with this device"
+  ui_print "  but you can still use the Dolby Atmos."
   ui_print " "
 fi
 
@@ -281,25 +283,6 @@ APP="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
 for APPS in $APP; do
   rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APPS*.apk`
 done
-
-# power save
-PROP=`getprop power.save`
-FILE=$MODPATH/system/etc/sysconfig/*
-if [ "$PROP" == 1 ]; then
-  ui_print "- $MODNAME will not be allowed in power save."
-  ui_print "  It may save your battery but decreasing $MODNAME performance."
-  for PKGS in $PKG; do
-    sed -i "s/<allow-in-power-save package=\"$PKGS\"\/>//g" $FILE
-    sed -i "s/<allow-in-power-save package=\"$PKGS\" \/>//g" $FILE
-  done
-  if [ $DOLBY == true ]; then
-    for PKGS2 in $PKG2; do
-      sed -i "s/<allow-in-power-save package=\"$PKGS2\"\/>//g" $FILE
-      sed -i "s/<allow-in-power-save package=\"$PKGS2\" \/>//g" $FILE
-    done
-  fi
-  ui_print " "
-fi
 
 # function
 permissive() {
@@ -844,9 +827,8 @@ if [ $DOLBY == true ]; then
 fi
 
 # audio rotation
-PROP=`getprop audio.rotation`
 FILE=$MODPATH/service.sh
-if [ "$PROP" == 1 ]; then
+if getprop | grep -Eq "audio.rotation\]: \[1"; then
   ui_print "- Activating ro.audio.monitorRotation=true"
   sed -i '1i\
 resetprop ro.audio.monitorRotation true' $FILE
@@ -854,13 +836,20 @@ resetprop ro.audio.monitorRotation true' $FILE
 fi
 
 # raw
-PROP=`getprop disable.raw`
 FILE=$MODPATH/.aml.sh
-if [ "$PROP" == 0 ]; then
+if getprop | grep -Eq "disable.raw\]: \[0"; then
   ui_print "- Not disabling Ultra Low Latency playback (RAW)"
   ui_print " "
 else
   sed -i 's/#u//g' $FILE
+fi
+
+# other
+FILE=$MODPATH/service.sh
+if getprop | grep -Eq "other.etc\]: \[1"; then
+  ui_print "- Activating other etc files bind mount..."
+  sed -i 's/#p//g' $FILE
+  ui_print " "
 fi
 
 # function
@@ -924,18 +913,16 @@ done
 magiskpolicy --live "type system_lib_file"
 magiskpolicy --live "type vendor_file"
 magiskpolicy --live "type vendor_configs_file"
-magiskpolicy --live "type hal_dms_default_exec"
-magiskpolicy --live "dontaudit { hal_dms_default_exec system_lib_file vendor_file vendor_configs_file } labeledfs filesystem associate"
-magiskpolicy --live "allow     { hal_dms_default_exec system_lib_file vendor_file vendor_configs_file } labeledfs filesystem associate"
+magiskpolicy --live "dontaudit { system_lib_file vendor_file vendor_configs_file } labeledfs filesystem associate"
+magiskpolicy --live "allow     { system_lib_file vendor_file vendor_configs_file } labeledfs filesystem associate"
 magiskpolicy --live "dontaudit init { system_lib_file vendor_file vendor_configs_file } dir relabelfrom"
 magiskpolicy --live "allow     init { system_lib_file vendor_file vendor_configs_file } dir relabelfrom"
-magiskpolicy --live "dontaudit init { hal_dms_default_exec system_lib_file vendor_file vendor_configs_file } file relabelfrom"
-magiskpolicy --live "allow     init { hal_dms_default_exec system_lib_file vendor_file vendor_configs_file } file relabelfrom"
+magiskpolicy --live "dontaudit init { system_lib_file vendor_file vendor_configs_file } file relabelfrom"
+magiskpolicy --live "allow     init { system_lib_file vendor_file vendor_configs_file } file relabelfrom"
 chcon -R u:object_r:system_lib_file:s0 $MODPATH/system/lib*
 chcon -R u:object_r:vendor_file:s0 $MODPATH/system/vendor
 chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/etc
 chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/odm/etc
-chcon u:object_r:hal_dms_default_exec:s0 $MODPATH/system/vendor/bin/hw/vendor.dolby.hardware.dms@*-service
 ui_print " "
 
 # vendor_overlay

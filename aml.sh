@@ -131,6 +131,22 @@ if [ "$MODAEX" ]; then
   sed -i 's/<apply effect="lmfv"\/>//g' $MODAEX
   sed -i 's/<apply effect="dirac"\/>//g' $MODAEX
   sed -i 's/<apply effect="dtsaudio"\/>//g' $MODAEX
+  sed -i 's/<apply effect="ring_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="alarm_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="music_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="voice_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="notification_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="ma_ring_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="ma_alarm_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="ma_music_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="ma_voice_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="ma_system_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="ma_notification_helper" \/>//g' $MODAEX
+  sed -i 's/<apply effect="sa3d" \/>//g' $MODAEX
+  sed -i 's/<apply effect="fens" \/>//g' $MODAEX
+  sed -i 's/<apply effect="lmfv" \/>//g' $MODAEX
+  sed -i 's/<apply effect="dirac" \/>//g' $MODAEX
+  sed -i 's/<apply effect="dtsaudio" \/>//g' $MODAEX
   if ! grep -Eq '<postprocess>' $MODAEX || grep -Eq '<!-- Audio post processor' $MODAEX; then
     sed -i '/<\/effects>/a\
     <postprocess>\
@@ -261,12 +277,12 @@ fi
 misoundfx
 
 ## function
-drmod() {
+dirac() {
 
 # store
-LIB=libdrmod.so
-LIBNAME=drmod
-NAME=drmod
+LIB=libdirac.so
+LIBNAME=dirac
+NAME=dirac
 UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
 RMV="$LIB $LIBNAME $NAME $UUID"
 
@@ -281,7 +297,7 @@ global_processing {\
 }\' $MODAEC
   fi
   sed -i '/^global_processing {/a\
-  drmod {\
+  dirac {\
     bl@lakala {\
       param {\
         int 6\
