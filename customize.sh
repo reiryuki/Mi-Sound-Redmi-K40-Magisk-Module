@@ -114,7 +114,7 @@ fi
 # function
 extract_lib() {
 for APPS in $APP; do
-  ui_print "- Extracting $APPS.apk libs..."
+  ui_print "- Extracting..."
   FILE=`find $MODPATH/system -type f -name $APPS.apk`
   DIR=`find $MODPATH/system -type d -name $APPS`/lib/$ARCH
   mkdir -p $DIR
@@ -139,7 +139,6 @@ if [ "$BOOTMODE" == true ]; then
     RES=`pm uninstall $PKGS`
   done
 fi
-rm -f $MODPATH/LICENSE
 rm -rf $MODPATH/unused
 rm -rf /metadata/magisk/$MODID
 rm -rf /mnt/vendor/persist/magisk/$MODID

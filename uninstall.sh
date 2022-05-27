@@ -7,11 +7,10 @@ PKG=com.miui.misound
 
 # cleaning
 for PKGS in $PKG; do
-  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$PKGS*`
   rm -rf /data/user/*/$PKGS
 done
 for APPS in $APP; do
-  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APPS*`
+  rm -f `find /data/system/package_cache /data/dalvik-cache /data/resource-cache -type f -name *$APPS*`
 done
 rm -rf /metadata/magisk/"$MODID"
 rm -rf /mnt/vendor/persist/magisk/"$MODID"
