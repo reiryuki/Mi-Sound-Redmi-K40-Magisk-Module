@@ -4,6 +4,7 @@
 - Dolby Atmos soundfx EQ with MiSound app by Xiaomi Inc.
 - Global type soundfx
 - Nokia OZO Audio Capture, improves audio quality on video/audio recordings
+- Sources: https://github.com/reiryuki/Mi-Sound-Redmi-M2012K11AC-Magisk-Module/blob/main/module.prop
 - Doesn't support ACDB module
 
 ## Screenshots
