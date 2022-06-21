@@ -25,6 +25,9 @@
 - Magisk installed
 - Miui Core Magisk Module v4.0 or above installed (except you are in Miui ROM)
 
+## WARNING!!!
+- Possibility of bootloop or even softbrick or a service failure on Read-Only ROM with the Dolby Atmos.
+
 ## Installation Guide
 - Don't use ACDB module!
 - Remove any other Dolby module with different name (if it's the same name then no need)
