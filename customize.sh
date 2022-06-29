@@ -847,14 +847,12 @@ for NAMES in $NAME; do
     FILE_2=/system/system_ext/lib/$NAMES
   fi
   if [ -f $FILE64 ] || [ -f $FILE64_2 ]; then
-    ui_print "- Detected"
-    ui_print "$FILE64"
+    ui_print "- Detected $NAMES"
     rm -f $MODPATH/system/lib64/$NAMES
     ui_print " "
   fi
   if [ -f $FILE ] || [ -f $FILE_2 ]; then
-    ui_print "- Detected"
-    ui_print "$FILE"
+    ui_print "- Detected $NAMES"
     rm -f $MODPATH/system/lib/$NAMES
     ui_print " "
   fi
@@ -872,13 +870,12 @@ for NAMES in $NAME; do
   FILE64_2=/odm/lib64/$NAMES
   FILE_2=/odm/lib/$NAMES
   if [ -f $FILE64 ] || [ -f $FILE64_2 ]; then
-    ui_print "- Detected"
-    ui_print "$FILE64"
+    ui_print "- Detected $NAMES"
     rm -f $MODPATH/system/vendor/lib64/$NAMES
     ui_print " "
   fi
   if [ -f $FILE ] || [ -f $FILE_2 ]; then
-    ui_print "- Detected"
+    ui_print "- Detected $NAMES"
     ui_print "$FILE"
     rm -f $MODPATH/system/vendor/lib/$NAMES
     ui_print " "
@@ -888,9 +885,7 @@ done
 
 # check
 NAME=libmigui.so
-if [ $DOLBY == true ]; then
-  file_check_system
-fi
+file_check_system
 NAME="libqtigef.so libstagefrightdolby.so
       libstagefright_soft_ddpdec.so
       libstagefright_soft_ac4dec.so"
