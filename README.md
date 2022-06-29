@@ -12,6 +12,7 @@
 
 ## Tested on
 - Android 12 AncientOS ROM
+- Android 12.1 Nusantara ROM
 
 ## Bugs
 - misoundfx doesn't work except in Miui ROM
@@ -56,6 +57,7 @@
 ## Thanks for Donations
 - https://t.me/androidryukimodsdiscussions/2619
 - https://www.paypal.me/reiryuki
+- https://ko-fi.com/reiryuki
 
 ## Download
 - https://www.pling.com/p/1769560/
