@@ -93,6 +93,8 @@ magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_
 # file
 magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { vendor_audio_prop vendor_display_prop } file { read open getattr map }"
 magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { vendor_audio_prop vendor_display_prop } file { read open getattr map }"
+magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { migt_file mcd_data_file } file { read open getattr }
+magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { migt_file mcd_data_file } file { read open getattr }
 
 # sock_file
 magiskpolicy --live "dontaudit { hal_audio_default audioserver mtk_hal_audio hal_sensors_default } { audio_socket property_socket socket_device } sock_file write"

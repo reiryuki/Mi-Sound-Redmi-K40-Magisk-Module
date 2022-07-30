@@ -1,7 +1,7 @@
 id=MiSound
 name=Mi Sound Redmi M2012K11AC
-version=v0.8
-versionCode=8
+version=v0.9-beta.4
+versionCode=9
 author=Rei Ryuki the Fixer
 description=An equalizer global type soundfx by Xiaomi Inc. ported from Redmi M2012K11AC for any Android 9 and up.
 # Source: https://dumps.tadiphone.dev/dumps/redmi/alioth qssi-user-12-SKQ1.211006.001-V13.0.3.0.SKHEUXM-release-keys
