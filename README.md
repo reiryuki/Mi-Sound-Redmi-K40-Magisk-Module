@@ -36,7 +36,7 @@
 - Install [Miui Core Magisk Module](https://github.com/reiryuki/Miui-Core-Magisk-Module) v4.0 or above first (except you are in Miui ROM). Tap here: https://github.com/reiryuki/Miui-Core-Magisk-Module
 - If your ROM has Dolby in-built, then you need to enable Dolby data clean-up for the first time (READ Optionals!)
 - Install this Mi Sound Magisk Module via Magisk app or Recovery (download bellow)
-- Install AML Magisk module only if using any other audio mod
+- Install AML Magisk Module only if using any other audio mod module https://zackptg5.com/android.php#aml
 - Reboot
 
 ## Optionals & Troubleshootings
