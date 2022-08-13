@@ -25,11 +25,13 @@
 - Architecture 64 bit for the Dolby Atmos
 - Magisk installed
 - Miui Core Magisk Module v4.0 or above installed (except you are in Miui ROM)
+- Magisk Delta for the systemless early init mount manifest.xml https://t.me/androidryukimodsdiscussions/100091
 
 ## WARNING!!!
 - Possibility of bootloop or even softbrick or a service failure on Read-Only ROM with the Dolby Atmos.
 
 ## Installation Guide
+- Recommended to use Magisk Delta https://t.me/androidryukimodsdiscussions/100091
 - Don't use ACDB module!
 - Remove any other Dolby module with different name (if it's the same name then no need)
 - Reboot
