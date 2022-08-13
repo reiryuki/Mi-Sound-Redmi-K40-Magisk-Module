@@ -44,6 +44,8 @@ magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } s
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } system_file file { read open getattr execute }"
 magiskpolicy --live "dontaudit zygote { device unlabeled } file write"
 magiskpolicy --live "allow     zygote { device unlabeled } file write"
+magiskpolicy --live "dontaudit init system_file file mounton
+magiskpolicy --live "allow     init system_file file mounton
 
 # chr_file
 magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } device chr_file { read write open getattr ioctl }"
@@ -59,8 +61,8 @@ magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } {
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } { default_prop boottime_prop } file { read open getattr map }"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } { mnt_vendor_file system_prop } file { read open getattr }"
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } { mnt_vendor_file system_prop } file { read open getattr }"
-magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } audio_prop file read"
-magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } audio_prop file read"
+magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } audio_prop file { read open getattr }"
+magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } audio_prop file { read open getattr }"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } sysfs_wake_lock file { write open }"
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } sysfs_wake_lock file { write open }"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } vendor_default_prop file open"
@@ -97,6 +99,8 @@ magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_
 magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { migt_file mcd_data_file } file { read open getattr }
 
 # sock_file
+magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } property_socket sock_file write"
+magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } property_socket sock_file write"
 magiskpolicy --live "dontaudit { hal_audio_default audioserver mtk_hal_audio hal_sensors_default } { audio_socket property_socket socket_device } sock_file write"
 magiskpolicy --live "allow     { hal_audio_default audioserver mtk_hal_audio hal_sensors_default } { audio_socket property_socket socket_device } sock_file write"
 magiskpolicy --live "dontaudit init { audio_socket property_socket socket_device } sock_file { unlink create setattr }"
@@ -105,8 +109,8 @@ magiskpolicy --live "allow     init { audio_socket property_socket socket_device
 # unix_stream_socket
 magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } zygote unix_stream_socket getopt"
 magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } zygote unix_stream_socket getopt"
-magiskpolicy --live "dontaudit { hal_audio_default audioserver mtk_hal_audio } init unix_stream_socket connectto"
-magiskpolicy --live "allow     { hal_audio_default audioserver mtk_hal_audio } init unix_stream_socket connectto"
+magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app hal_audio_default audioserver mtk_hal_audio } init unix_stream_socket connectto"
+magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app hal_audio_default audioserver mtk_hal_audio } init unix_stream_socket connectto"
 magiskpolicy --live "dontaudit hal_sensors_default hal_audio_default unix_stream_socket connectto"
 magiskpolicy --live "allow     hal_sensors_default hal_audio_default unix_stream_socket connectto"
 magiskpolicy --live "dontaudit crash_dump { hal_audio_default audioserver mtk_hal_audio } unix_stream_socket { read write }"
