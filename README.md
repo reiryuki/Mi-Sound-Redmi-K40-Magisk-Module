@@ -1,5 +1,9 @@
 # Mi Sound Redmi M2012K11AC Magisk Module
 
+## DISCLAIMER
+- Dolby apps and blobs are owned by Dolby™.
+- The MIT license specified here is for the Magisk Module, not for Dolby apps and blobs.
+
 ## Descriptions
 - Dolby Atmos soundfx EQ with MiSound app by Xiaomi Inc.
 - Global type soundfx
