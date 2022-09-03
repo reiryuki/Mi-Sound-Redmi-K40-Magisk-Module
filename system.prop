@@ -25,14 +25,6 @@ ro.control_privapp_permissions=log
 #persist.vendor.audio.3dsurround.enable
 #persist.vendor.audio.scenario.switch
 
-# dirac
-persist.audio.dirac.speaker=true
-#persist.audio.dirac.music.state
-#audio.dirac.mode
-#persist.audio.dirac.headset
-#persist.audio.dirac.eq
-#audio.dirac.logging
-
 # auto
 #persist.vendor.audio.misound.disable=true
 #persist.vendor.audio.sfx.hd.music.state
