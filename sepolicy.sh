@@ -67,8 +67,12 @@ magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } s
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } sysfs_wake_lock file { write open }"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } vendor_default_prop file open"
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } vendor_default_prop file open"
-magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } sysfs_net dir read"
-magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } sysfs_net dir read"
+magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } { sysfs_net sysfs } dir read"
+magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } { sysfs_net sysfs } dir read"
+magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } logd_socket sock_file write"
+magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } logd_socket sock_file write"
+magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } logd unix_stream_socket connectto"
+magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } logd unix_stream_socket connectto"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } { diag_device vendor_diag_device } chr_file { read write open ioctl getattr }"
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } { diag_device vendor_diag_device } chr_file { read write open ioctl getattr }"
 magiskpolicy --live "dontaudit hal_audio_default hal_audio_default capability2 block_suspend"
@@ -91,6 +95,8 @@ magiskpolicy --live "allow     init audio_socket sock_file relabelfrom"
 # dir
 magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } mcd_data_file dir search"
 magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } mcd_data_file dir search"
+magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } mqsas_data_file dir { search getattr }"
+magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } mqsas_data_file dir { search getattr }"
 
 # file
 magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { vendor_audio_prop vendor_display_prop } file { read open getattr map }"
