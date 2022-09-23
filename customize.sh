@@ -38,7 +38,7 @@ if [ "$IS64BIT" == true ]; then
   if [ "`grep_prop misound.dolby $OPTIONALS`" != 0 ]; then
     ui_print "- Activating Dolby Atmos..."
     DOLBY=true
-    MODNAME2='Mi Sound and Dolby Atmos Redmi M2012K11AC'
+    MODNAME2='Mi Sound and Dolby Atmos Redmi K40'
     sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
     MODNAME=$MODNAME2
     ui_print " "
@@ -74,7 +74,8 @@ fi
 # socket
 if [ ! -e /dev/socket/audio_hw_socket ]; then
   ui_print "! Unsupported audio_hw_socket."
-  ui_print "  misoundfx will not be working with this device."
+  ui_print "  misoundfx will not be working with this device"
+  ui_print "  but you can still use the Dolby Atmos."
   ui_print " "
 fi
 
@@ -268,7 +269,7 @@ if [ $DOLBY == true ]; then
   fi
   rm -f /data/vendor/dolby/dax_sqlite3.db
 else
-  MODNAME2='Mi Sound Redmi M2012K11AC'
+  MODNAME2='Mi Sound Redmi K40'
   sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
 fi
 rm -rf $MODPATH/system_dolby
@@ -806,8 +807,8 @@ for APPS in $APP; do
   hide_app
 done
 if [ $DOLBY == true ]; then
-  APP="daxService DaxUI MotoDolbyDax3 MotoDolbyV3
-       OPSoundTuner DolbyAtmos AudioEffectCenter"
+  APP="DaxUI MotoDolbyDax3 MotoDolbyV3 OPSoundTuner
+       DolbyAtmos AudioEffectCenter"
   for APPS in $APP; do
     hide_app
   done
@@ -969,6 +970,31 @@ if [ "`grep_prop other.etc $OPTIONALS`" == 1 ]; then
 fi
 
 # function
+file_check_system() {
+for NAMES in $NAME; do
+  if [ "$BOOTMODE" == true ]; then
+    FILE64=$MAGISKTMP/mirror/system/lib64/$NAMES
+    FILE=$MAGISKTMP/mirror/system/lib/$NAMES
+    FILE64_2=$MAGISKTMP/mirror/system_ext/lib64/$NAMES
+    FILE_2=$MAGISKTMP/mirror/system_ext/lib/$NAMES
+  else
+    FILE64=/system/lib64/$NAMES
+    FILE=/system/lib/$NAMES
+    FILE64_2=/system/system_ext/lib64/$NAMES
+    FILE_2=/system/system_ext/lib/$NAMES
+  fi
+  if [ -f $FILE64 ] || [ -f $FILE64_2 ]; then
+    ui_print "- Detected $NAMES 64 bit"
+    rm -f $MODPATH/system/lib64/$NAMES
+    ui_print " "
+  fi
+  if [ -f $FILE ] || [ -f $FILE_2 ]; then
+    ui_print "- Detected $NAMES"
+    rm -f $MODPATH/system/lib/$NAMES
+    ui_print " "
+  fi
+done
+}
 file_check_vendor() {
 for NAMES in $NAME; do
   if [ "$BOOTMODE" == true ]; then
@@ -994,6 +1020,8 @@ done
 }
 
 # check
+NAME=libmigui.so
+file_check_system
 NAME="libqtigef.so libstagefrightdolby.so libdeccfg.so
       libstagefright_soft_ddpdec.so
       libstagefright_soft_ac4dec.so"
