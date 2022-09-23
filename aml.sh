@@ -123,7 +123,8 @@ if [ "$MODAEX" ]; then
     sed -i "s/<apply effect=\"$RMVS\"\/>//g" $MODAEX
     sed -i "s/<apply effect=\"$RMVS\" \/>//g" $MODAEX
   done
-  if ! grep -Eq '<postprocess>' $MODAEX || grep -Eq '<!-- Audio post processor' $MODAEX; then
+  if ! grep -Eq '<postprocess>' $MODAEX\
+  || grep -Eq '<!-- Audio post processor' $MODAEX; then
     sed -i '/<\/effects>/a\
     <postprocess>\
         <stream type="music">\
@@ -140,7 +141,9 @@ if [ "$MODAEX" ]; then
         <\/stream>\
     <\/postprocess>' $MODAEX
   else
-    if ! grep -Eq '<stream type="notification">' $MODAEX || grep -Eq '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX; then
+    if ! grep -Eq '<stream type="notification">' $MODAEX\
+    || grep -Eq '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
+    || grep -Eq '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"notification\">\n        <\/stream>" $MODAEX
     fi
     if ! grep -Eq '<stream type="voice_call">' $MODAEX; then
@@ -149,13 +152,19 @@ if [ "$MODAEX" ]; then
     if ! grep -Eq '<stream type="system">' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"system\">\n        <\/stream>" $MODAEX
     fi
-    if ! grep -Eq '<stream type="alarm">' $MODAEX || grep -Eq '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX; then
+    if ! grep -Eq '<stream type="alarm">' $MODAEX\
+    || grep -Eq '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
+    || grep -Eq '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"alarm\">\n        <\/stream>" $MODAEX
     fi
-    if ! grep -Eq '<stream type="ring">' $MODAEX || grep -Eq '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX; then
+    if ! grep -Eq '<stream type="ring">' $MODAEX\
+    || grep -Eq '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
+    || grep -Eq '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"ring\">\n        <\/stream>" $MODAEX
     fi
-    if ! grep -Eq '<stream type="music">' $MODAEX || grep -Eq '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX; then
+    if ! grep -Eq '<stream type="music">' $MODAEX\
+    || grep -Eq '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
+    || grep -Eq '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"music\">\n        <\/stream>" $MODAEX
     fi
   fi
@@ -187,16 +196,14 @@ if [ "$MODAEX" ]; then
   fi
 fi
 
-## function
+# function
 misoundfx() {
-
 # store
 LIB=libmisoundfx.so
 LIBNAME=misoundfx
 NAME=misoundfx
 UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
 RMV="$LIB $LIBNAME $NAME $UUID"
-
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -209,7 +216,6 @@ if [ "$MODAEC" ]; then
 #v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
 #n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
 fi
-
 # patch effects xml
 if [ "$MODAEX" ]; then
   remove_xml
@@ -222,22 +228,14 @@ if [ "$MODAEX" ]; then
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
-
 }
-
-# misoundfx
-misoundfx
-
-## function
 dirac() {
-
 # store
 LIB=libdirac.so
 LIBNAME=dirac
 NAME=dirac
 UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
 RMV="$LIB $LIBNAME $NAME $UUID"
-
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -282,7 +280,6 @@ global_processing {\
 #v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
 #n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
 fi
-
 # patch effects xml
 if [ "$MODAEX" ]; then
   remove_xml
@@ -295,16 +292,14 @@ if [ "$MODAEX" ]; then
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
-
 }
-
+ozo() {
 # store
 LIB=libozoprocessing.so
 LIBNAME=ozo_processing
 NAME=ozo
 UUID=7e384a3b-7850-4a64-a097-884250d8a737
 RMV="$LIB $LIBNAME $NAME $UUID"
-
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -314,7 +309,6 @@ if [ "$MODAEC" ]; then
 #c  sed -i "/^  mic {/a\    $NAME {\n    }" $MODAEC
 #c  sed -i "/^  voice_recognition {/a\    $NAME {\n    }" $MODAEC
 fi
-
 # patch audio effects xml
 if [ "$MODAEX" ]; then
   remove_xml
@@ -324,10 +318,8 @@ if [ "$MODAEX" ]; then
 #c  sed -i "/<stream type=\"mic\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #c  sed -i "/<stream type=\"voice_recognition\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
-
-## function
-dap() {
-
+}
+dap_proxy() {
 # store
 LIB=libswdap.so
 LIBHW=libhwdap.so
@@ -338,7 +330,6 @@ UUID=6ab06da4-c516-4611-8166-452799218539
 UUIDHW=a0c30891-8246-4aef-b8ad-d53e26da0253
 UUIDPROXY=9d4921da-8225-4f29-aefa-39537a04bcaa
 RMV="$LIB $LIBHW $LIBNAME $LIBNAMEHW $NAME $UUID $UUIDHW $UUIDPROXY"
-
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -355,7 +346,6 @@ if [ "$MODAEC" ]; then
 #v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
 #n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
 fi
-
 # patch audio effects xml
 if [ "$MODAEX" ]; then
   remove_xml
@@ -373,51 +363,14 @@ if [ "$MODAEX" ]; then
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
-
 }
-
-# dap
-#ddap
-
-## function
-vqe() {
-
+dap() {
 # store
-LIB=libswvqe.so
-LIBNAME=vqe
-NAME=vqe
-UUID=64a0f614-7fa4-48b8-b081-d59dc954616f
+LIB=libswdap.so
+LIBNAME=dap
+NAME=dap
+UUID=9d4921da-8225-4f29-aefa-39537a04bcaa
 RMV="$LIB $LIBNAME $NAME $UUID"
-
-# patch audio effects conf
-if [ "$MODAEC" ]; then
-  remove_conf
-  sed -i "/^libraries {/a\  $LIBNAME {\n    path $LIBPATH\/$LIB\n  }" $MODAEC
-  sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
-fi
-
-# patch audio effects xml
-if [ "$MODAEX" ]; then
-  remove_xml
-  sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
-  sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
-fi
-
-}
-
-# vqe
-#dvqe
-
-# function
-gamedap() {
-
-# store
-LIB=libswgamedap.so
-LIBNAME=gamedap
-NAME=gamedap
-UUID=3783c334-d3a0-4d13-874f-0032e5fb80e2
-RMV="$LIB $LIBNAME $NAME $UUID"
-
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -430,7 +383,58 @@ if [ "$MODAEC" ]; then
 #v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
 #n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
 fi
-
+# patch effects xml
+if [ "$MODAEX" ]; then
+  remove_xml
+  sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
+  sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
+#m  sed -i "/<stream type=\"music\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#r  sed -i "/<stream type=\"ring\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#a  sed -i "/<stream type=\"alarm\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+fi
+}
+vqe() {
+# store
+LIB=libswvqe.so
+LIBNAME=vqe
+NAME=vqe
+UUID=64a0f614-7fa4-48b8-b081-d59dc954616f
+RMV="$LIB $LIBNAME $NAME $UUID"
+# patch audio effects conf
+if [ "$MODAEC" ]; then
+  remove_conf
+  sed -i "/^libraries {/a\  $LIBNAME {\n    path $LIBPATH\/$LIB\n  }" $MODAEC
+  sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
+fi
+# patch audio effects xml
+if [ "$MODAEX" ]; then
+  remove_xml
+  sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
+  sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
+fi
+}
+gamedap() {
+# store
+LIB=libswgamedap.so
+LIBNAME=gamedap
+NAME=gamedap
+UUID=3783c334-d3a0-4d13-874f-0032e5fb80e2
+RMV="$LIB $LIBNAME $NAME $UUID"
+# patch audio effects conf
+if [ "$MODAEC" ]; then
+  remove_conf
+  sed -i "/^libraries {/a\  $LIBNAME {\n    path $LIBPATH\/$LIB\n  }" $MODAEC
+  sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
+#m  sed -i "/^    music {/a\        $NAME {\n        }" $MODAEC
+#r  sed -i "/^    ring {/a\        $NAME {\n        }" $MODAEC
+#a  sed -i "/^    alarm {/a\        $NAME {\n        }" $MODAEC
+#s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
+#v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
+#n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+fi
 # patch audio effects xml
 if [ "$MODAEX" ]; then
   remove_xml
@@ -443,8 +447,14 @@ if [ "$MODAEX" ]; then
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
-
 }
+
+# effect
+misoundfx
+ozo
+#ddap_proxy
+#dvqe
+#dgamedap
 
 # patch media codecs
 #dif [ -f $MODMC ]; then

@@ -72,11 +72,9 @@ else
 fi
 
 # socket
-FILE=$MODPATH/service.sh
 if [ ! -e /dev/socket/audio_hw_socket ]; then
   ui_print "! Unsupported audio_hw_socket."
-  ui_print "  misoundfx will not be working with this device"
-  ui_print "  but you can still use the Dolby Atmos."
+  ui_print "  misoundfx will not be working with this device."
   ui_print " "
 fi
 
@@ -226,23 +224,18 @@ ui_print "- Checking"
 ui_print "$NAME"
 ui_print "  function"
 ui_print "  Please wait..."
-if ! grep -Eq $NAME `find $DIR/lib*/hw -type f -name *audio*.so`\
-|| [ "`grep_prop dolby.10 $OPTIONALS`" == 1 ]; then
-  ui_print "  Using legacy libraries"
+if ! grep -Eq $NAME `find $DIR/lib*/hw -type f -name *audio*.so`; then
+  ui_print "  ! Function not found."
   cp -rf $MODPATH/system_10/* $MODPATH/system
-  rm -f $MODPATH/system/vendor/lib64/soundfx/libmisoundfx.so
   if [ $DOLBY == true ]; then
-    cp -rf $MODPATH/system_dolby_10/* $MODPATH/system_dolby
-    sed -i 's/#10//g' $MODPATH/service.sh
-  fi
-else
-  if [ $DOLBY == true ]; then
-    sed -i 's/#11//g' $MODPATH/service.sh
+    ui_print "  Unsupported Dolby Atmos."
+    DOLBY=false
   fi
 fi
 rm -rf $MODPATH/system_10
-rm -rf $MODPATH/system_dolby_10
 ui_print " "
+#NAME=_ZN7android4base15WriteStringToFdERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS0_11borrowed_fdE
+#NAME=_ZN7android22GraphicBufferAllocator17allocateRawHandleEjjijyPPK13native_handlePjNSt3__112basic_stringIcNS6_11char_traitsIcEENS6_9allocatorIcEEEE
 NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
 if [ "$BOOTMODE" == true ]; then
   DIR=`realpath $MAGISKTMP/mirror/system`
@@ -256,7 +249,7 @@ if [ $DOLBY == true ]; then
   ui_print "  Please wait..."
   if ! grep -Eq $NAME `find $DIR/lib64 -type f -name *audio*.so`; then
     ui_print "  ! Function not found."
-    ui_print "  Unsupported ROM."
+    ui_print "  Unsupported Dolby Atmos."
     DOLBY=false
   fi
   ui_print " "
@@ -455,41 +448,21 @@ for NAMES in $NAME; do
       && [ ! -f $DES ]; then
         ui_print "  ! $DES"
         ui_print "    installation failed."
-        if echo $MAGISK_VER | grep -Eq delta; then
-          ui_print "    Installing $NAMES systemlessly using early init mount..."
-          mkdir -p $EIMDIR/system/lib
-          cp $MODPATH/system_support/lib/$NAMES $EIMDIR/system/lib
-        fi
       fi
       if [ -f $MODPATH/system_support/lib64/$NAMES ]\
       && [ ! -f $DES2 ]; then
         ui_print "  ! $DES2"
         ui_print "    installation failed."
-        if echo $MAGISK_VER | grep -Eq delta; then
-          ui_print "    Installing $NAMES systemlessly using early init mount..."
-          mkdir -p $EIMDIR/system/lib64
-          cp $MODPATH/system_support/lib64/$NAMES $EIMDIR/system/lib64
-        fi
       fi
       if [ -f $MODPATH/system_support/vendor/lib/$NAMES ]\
       && [ ! -f $DES3 ]; then
         ui_print "  ! $DES3"
         ui_print "    installation failed."
-        if echo $MAGISK_VER | grep -Eq delta; then
-          ui_print "    Installing $NAMES systemlessly using early init mount..."
-          mkdir -p $EIMDIR/system/vendor/lib
-          cp $MODPATH/system_support/vendor/lib/$NAMES $EIMDIR/system/vendor/lib
-        fi
       fi
       if [ -f $MODPATH/system_support/vendor/lib64/$NAMES ]\
       && [ ! -f $DES4 ]; then
         ui_print "  ! $DES4"
         ui_print "    installation failed."
-        if echo $MAGISK_VER | grep -Eq delta; then
-          ui_print "    Installing $NAMES systemlessly using early init mount..."
-          mkdir -p $EIMDIR/system/vendor/lib64
-          cp $MODPATH/system_support/vendor/lib64/$NAMES $EIMDIR/system/vendor/lib64
-        fi
       fi
       ui_print " "
     else
@@ -601,7 +574,7 @@ early_init_mount_dir
 
 # find
 chcon -R u:object_r:system_lib_file:s0 $MODPATH/system_support/lib*
-chcon -R u:object_r:same_process_hal_file:s0 $MODPATH/system/vendor/lib*
+chcon -R u:object_r:same_process_hal_file:s0 $MODPATH/system_support/vendor/lib*
 NAME=`ls $MODPATH/system_support/vendor/lib`
 if [ $DOLBY == true ]; then
   find_file
@@ -833,8 +806,8 @@ for APPS in $APP; do
   hide_app
 done
 if [ $DOLBY == true ]; then
-  APP="DaxUI MotoDolbyDax3 MotoDolbyV3 OPSoundTuner
-       DolbyAtmos AudioEffectCenter"
+  APP="daxService DaxUI MotoDolbyDax3 MotoDolbyV3
+       OPSoundTuner DolbyAtmos AudioEffectCenter"
   for APPS in $APP; do
     hide_app
   done
@@ -965,8 +938,8 @@ if [ $DOLBY == true ]; then
     sed -i 's/frequency="11250"/frequency="9000"/g' $FILE
     sed -i 's/frequency="13875"/frequency="11250"/g' $FILE
     sed -i 's/frequency="19688"/frequency="13875"/g' $FILE
-    ui_print " "
   fi
+  ui_print " "
 fi
 
 # audio rotation
@@ -996,31 +969,6 @@ if [ "`grep_prop other.etc $OPTIONALS`" == 1 ]; then
 fi
 
 # function
-file_check_system() {
-for NAMES in $NAME; do
-  if [ "$BOOTMODE" == true ]; then
-    FILE64=$MAGISKTMP/mirror/system/lib64/$NAMES
-    FILE=$MAGISKTMP/mirror/system/lib/$NAMES
-    FILE64_2=$MAGISKTMP/mirror/system_ext/lib64/$NAMES
-    FILE_2=$MAGISKTMP/mirror/system_ext/lib/$NAMES
-  else
-    FILE64=/system/lib64/$NAMES
-    FILE=/system/lib/$NAMES
-    FILE64_2=/system/system_ext/lib64/$NAMES
-    FILE_2=/system/system_ext/lib/$NAMES
-  fi
-  if [ -f $FILE64 ] || [ -f $FILE64_2 ]; then
-    ui_print "- Detected $NAMES 64 bit"
-    rm -f $MODPATH/system/lib64/$NAMES
-    ui_print " "
-  fi
-  if [ -f $FILE ] || [ -f $FILE_2 ]; then
-    ui_print "- Detected $NAMES"
-    rm -f $MODPATH/system/lib/$NAMES
-    ui_print " "
-  fi
-done
-}
 file_check_vendor() {
 for NAMES in $NAME; do
   if [ "$BOOTMODE" == true ]; then
@@ -1046,9 +994,7 @@ done
 }
 
 # check
-NAME=libmigui.so
-file_check_system
-NAME="libqtigef.so libstagefrightdolby.so
+NAME="libqtigef.so libstagefrightdolby.so libdeccfg.so
       libstagefright_soft_ddpdec.so
       libstagefright_soft_ac4dec.so"
 if [ $DOLBY == true ]; then
@@ -1069,13 +1015,15 @@ fi
 
 # permission
 ui_print "- Setting permission..."
-FILE=`find $MODPATH/system/vendor/bin -type f`
+FILE=`find $MODPATH/system/vendor/bin $MODPATH/system/vendor/odm/bin -type f`
 for FILES in $FILE; do
   chmod 0755 $FILES
   chown 0.2000 $FILES
 done
 chmod 0751 $MODPATH/system/vendor/bin
 chmod 0751 $MODPATH/system/vendor/bin/hw
+chmod 0755 $MODPATH/system/vendor/odm/bin
+chmod 0755 $MODPATH/system/vendor/odm/bin/hw
 DIR=`find $MODPATH/system/vendor -type d`
 for DIRS in $DIR; do
   chown 0.2000 $DIRS
@@ -1094,11 +1042,13 @@ fi
 
 # uninstaller
 NAME=DolbyUninstaller.zip
-cp -f $MODPATH/$NAME /sdcard
+if [ $DOLBY == true ]; then
+  cp -f $MODPATH/$NAME /sdcard
+  ui_print "- Flash /sdcard/$NAME"
+  ui_print "  via recovery if you got bootloop"
+  ui_print " "
+fi
 rm -f $MODPATH/$NAME
-ui_print "- Flash /sdcard/$NAME"
-ui_print "  via recovery if you got bootloop"
-ui_print " "
 
 
 

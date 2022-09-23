@@ -1,8 +1,8 @@
 id=MiSound
-name=Mi Sound Redmi M2012K11AC
-version=v1.0
-versionCode=10
+name=Mi Sound Redmi K40
+version=v1.1
+versionCode=11
 author=Rei Ryuki the Fixer
-description=An equalizer global type soundfx by Xiaomi Inc. ported from Redmi M2012K11AC for any Android 9 and up.
+description=Equalizers global type soundfx by Xiaomi Inc. ported from Redmi K40 (alioth). Dolby Atmos for any Android 11 and up and Mi Sound for Miui ROM Android 8 and up.
 
 

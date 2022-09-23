@@ -1,36 +1,29 @@
-# Mi Sound Redmi M2012K11AC Magisk Module
+# Mi Sound Redmi K40 Magisk Module
 
 ## DISCLAIMER
 - Dolby apps and blobs are owned by Dolby™.
 - The MIT license specified here is for the Magisk Module, not for Dolby apps and blobs.
 
 ## Descriptions
-- Dolby Atmos soundfx equalizer with MiSound app ported from Xiaomi Redmi M2012K11AC (alioth) and integrated as a Magisk Module for all supported and rooted devices with Magisk
+- Dolby Atmos soundfx equalizer with MiSound app ported from Xiaomi Redmi K40 (alioth) and integrated as a Magisk Module for all supported and rooted devices with Magisk
 - Global type soundfx
 - Nokia OZO Audio Capture, improves audio quality on video/audio recordings
 - Doesn't support ACDB module
 
 ## Sources
 - https://dumps.tadiphone.dev/dumps/redmi/alioth qssi-user-12-SKQ1.211006.001-V13.0.3.0.SKHEUXM-release-keys
-- vendor.dolby.hardware.dms@2.0-impl.so: https://dumps.tadiphone.dev/dumps/redmi/alioth qssi-user-11-RKQ1.200826.002-V12.5.7.0.RKHINXM-release-keys
 - MiSound.apk: apkmirror.com
 - system_10: https://dumps.tadiphone.dev/dumps/xiaomi/ginkgo ginkgo-user-10-QKQ1.200114.002-V12.0.6.0.QCOEUXM-release-keys
-- daxService.apk: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
-- libswdap.so: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
-- libhwdap.so: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
-- libdapparamstorage.so: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
-- libdlbdsservice.so: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
-- dax-default.xml: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible qssi-user-11-RP1A.201005.001-2103312144-release-keys
-- system_dolby_10: https://dumps.tadiphone.dev/dumps/oneplus/oneplus8visible OnePlus8Visible-user-10-QKQ1.191222.002-2007221621-release-keys
-- libswvqe.so: LENOVO TB-J606F
+- daxService.apk: https://dumps.tadiphone.dev/dumps/motorola/rhode user-12-S1SR32.38-124-3-a8403-release-keys
+- libhwdap.so: Changed HEX fragment from da21499d2582294ffaae39537a04bcaa to 9108c3a04682ef4aadb8d53e26da0253
+- libswdap.so: https://dumps.tadiphone.dev/dumps/motorola/rhode user-12-S1SR32.38-124-3-a8403-release-keys changed HEX fragment from da21499d2582294ffaae39537a04bcaa to a46db06a16c511466681452799218539
 
 ## Screenshots
 - https://t.me/androidryukimods/488
 
 ## Requirements
-- Android 8 and up + Miui ROM for the MiSound EQ
-- Android 9 and up for the Dolby Atmos
-- Architecture 64 bit for the Dolby Atmos
+- Architecture 64 bit Android 11 and up for the Dolby Atmos
+- Miui ROM Android 8 and up for the MiSound EQ
 - Magisk installed
 - Miui Core Magisk Module v4.0 or above installed (except you are in Miui ROM)
 - Recommended to use Magisk Delta for the systemless early init mount manifest.xml https://t.me/androidryukimodsdiscussions/100091
@@ -65,7 +58,6 @@
 
 ## Bugs
 - misoundfx doesn't work except in Miui ROM
-- Dolby from Miui is unsupported for any other devices or it just a placebo effect because they doesn't have any dolby service nor the other matched one for processing the dap effects, so the dap here is taken from OnePlus. That's why voice preset doesn't work.
 - Not all ROM is supported for the Mi Sound app
 
 ## Credits and contributors
