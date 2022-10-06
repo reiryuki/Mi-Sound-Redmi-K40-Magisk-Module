@@ -129,6 +129,15 @@ fi
 
 # function
 dolby_manifest() {
+M=$ETC/vintf/manifest.xml
+MODM=$MODETC/vintf/manifest.xml
+rm -f $MODM
+FILE="$MAGISKTMP/mirror/*/etc/vintf/manifest.xml
+      $MAGISKTMP/mirror/*/*/etc/vintf/manifest.xml
+      /*/etc/vintf/manifest.xml /*/*/etc/vintf/manifest.xml
+      $MAGISKTMP/mirror/*/etc/vintf/manifest/*.xml
+      $MAGISKTMP/mirror/*/*/etc/vintf/manifest/*.xml
+      /*/etc/vintf/manifest/*.xml /*/*/etc/vintf/manifest/*.xml"
 if ! grep -A2 vendor.dolby.hardware.dms $FILE | grep 2.0; then
   cp -f $M $MODM
   if [ -f $MODM ]; then
@@ -150,44 +159,6 @@ fi
 }
 
 # manifest
-M=$ETC/vintf/manifest.xml
-MODM=$MODETC/vintf/manifest.xml
-rm -f $MODM
-FILE="$MAGISKTMP/mirror/*/etc/vintf/manifest.xml
-      $MAGISKTMP/mirror/*/*/etc/vintf/manifest.xml
-      /*/etc/vintf/manifest.xml /*/*/etc/vintf/manifest.xml
-      $MAGISKTMP/mirror/*/etc/vintf/manifest/*.xml
-      $MAGISKTMP/mirror/*/*/etc/vintf/manifest/*.xml
-      /*/etc/vintf/manifest/*.xml /*/*/etc/vintf/manifest/*.xml"
 #ddolby_manifest
-
-# function
-mount_file() {
-DIR=/odm/bin/hw
-FILE=$DIR/vendor.dolby_v3_6.hardware.dms360@2.0-service
-if [ "`realpath $DIR`" == $DIR ] && [ -f $FILE ]; then
-  mount -o bind $MODPATH/system/vendor/$FILE $FILE
-fi
-if [ -f /my_product/app/AudioEffectCenter/AudioEffectCenter.apk ]; then
-  mkdir $MODPATH/AudioEffectCenter
-  mount -o bind $MODPATH/AudioEffectCenter /my_product/app/AudioEffectCenter
-fi
-if [ -f /my_product/priv-app/AudioEffectCenter/AudioEffectCenter.apk ]; then
-  mkdir $MODPATH/AudioEffectCenter
-  mount -o bind $MODPATH/AudioEffectCenter /my_product/priv-app/AudioEffectCenter
-fi
-}
-
-# hide
-#dmount_file
-
-
-
-
-
-
-
-
-
 
 

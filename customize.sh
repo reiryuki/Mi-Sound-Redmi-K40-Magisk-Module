@@ -79,11 +79,15 @@ if [ ! -e /dev/socket/audio_hw_socket ]; then
   ui_print " "
 fi
 
-# sepolicy.rule
+# mount
 if [ "$BOOTMODE" != true ]; then
+  mount -o rw -t auto /dev/block/bootdevice/by-name/cust /vendor
+  mount -o rw -t auto /dev/block/bootdevice/by-name/vendor /vendor
   mount -o rw -t auto /dev/block/bootdevice/by-name/persist /persist
   mount -o rw -t auto /dev/block/bootdevice/by-name/metadata /metadata
 fi
+
+# sepolicy.rule
 FILE=$MODPATH/sepolicy.sh
 DES=$MODPATH/sepolicy.rule
 if [ -f $FILE ] && [ "`grep_prop sepolicy.sh $OPTIONALS`" != 1 ]; then
@@ -367,17 +371,23 @@ if echo $MAGISK_VER | grep -Eq delta; then
   if [ -L $ACTIVEEIMDIR ]; then
     EIMDIR=$(readlink $ACTIVEEIMDIR)
     [ "${EIMDIR:0:1}" != "/" ] && EIMDIR="$MAGISKTMP/mirror/$EIMDIR"
-  elif ! $ISENCRYPTED; then
+  elif ! $ISENCRYPTED\
+  && [ -d $NVBASE/modules/early-mount.d ]; then
     EIMDIR=$NVBASE/modules/early-mount.d
-  elif [ -d /data/unencrypted ] && ! grep ' /data ' /proc/mounts | grep -qE 'dm-|f2fs'; then
+  elif [ -d /data/unencrypted/early-mount.d ]\
+  && ! grep ' /data ' /proc/mounts | grep -qE 'dm-|f2fs'; then
     EIMDIR=/data/unencrypted/early-mount.d
-  elif grep ' /cache ' /proc/mounts | grep -q 'ext4' ; then
+  elif grep ' /cache ' /proc/mounts | grep -q 'ext4'\
+  && [ -d /cache/early-mount.d ]; then
     EIMDIR=/cache/early-mount.d
-  elif grep ' /metadata ' /proc/mounts | grep -q 'ext4' ; then
+  elif grep ' /metadata ' /proc/mounts | grep -q 'ext4'\
+  && [ -d /metadata/early-mount.d ]; then
     EIMDIR=/metadata/early-mount.d
-  elif grep ' /persist ' /proc/mounts | grep -q 'ext4' ; then
+  elif grep ' /persist ' /proc/mounts | grep -q 'ext4'\
+  && [ -d /persist/early-mount.d ]; then
     EIMDIR=/persist/early-mount.d
-  elif grep ' /mnt/vendor/persist ' /proc/mounts | grep -q 'ext4' ; then
+  elif grep ' /mnt/vendor/persist ' /proc/mounts | grep -q 'ext4'\
+  && [ -d /mnt/vendor/persist/early-mount.d ]; then
     EIMDIR=/mnt/vendor/persist/early-mount.d
   else
     EIM=false
@@ -482,7 +492,11 @@ done
 patch_manifest_overlay_d() {
 if [ "`grep_prop dolby.skip.early $OPTIONALS`" != 1 ]\
 && echo $MAGISK_VER | grep -Eq delta; then
-  SRC=$MAGISKTMP/mirror/system/etc/vintf/manifest.xml
+  if [ "$BOOTMODE" == true ]; then
+    SRC=$MAGISKTMP/mirror/system/etc/vintf/manifest.xml
+  else
+    SRC=/system/etc/vintf/manifest.xml
+  fi
   if [ -f $SRC ]; then
     DIR=$EIMDIR/system/etc/vintf
     DES=$DIR/manifest.xml
@@ -517,7 +531,11 @@ fi
 patch_hwservice_overlay_d() {
 if [ "`grep_prop dolby.skip.early $OPTIONALS`" != 1 ]\
 && echo $MAGISK_VER | grep -Eq delta; then
-  SRC=$MAGISKTMP/mirror/system/etc/selinux/plat_hwservice_contexts
+  if [ "$BOOTMODE" == true ]; then
+    SRC=$MAGISKTMP/mirror/system/etc/selinux/plat_hwservice_contexts
+  else
+    SRC=/system/etc/selinux/plat_hwservice_contexts
+  fi
   if [ -f $SRC ]; then
     DIR=$EIMDIR/system/etc/selinux
     DES=$DIR/plat_hwservice_contexts
@@ -737,6 +755,20 @@ if [ "$BOOTMODE" == true ]; then
   DIR=$MAGISKTMP/mirror/product/priv-app/$APPS
 else
   DIR=/product/priv-app/$APPS
+fi
+MODDIR=$MODPATH/system/product/priv-app/$APPS
+replace_dir
+if [ "$BOOTMODE" == true ]; then
+  DIR=/mnt/vendor/my_product/app/$APPS
+else
+  DIR=/my_product/app/$APPS
+fi
+MODDIR=$MODPATH/system/product/app/$APPS
+replace_dir
+if [ "$BOOTMODE" == true ]; then
+  DIR=/mnt/vendor/my_product/priv-app/$APPS
+else
+  DIR=/my_product/priv-app/$APPS
 fi
 MODDIR=$MODPATH/system/product/priv-app/$APPS
 replace_dir

@@ -56,7 +56,7 @@
 - Android 12 AncientOS ROM
 - Android 12.1 Nusantara ROM
 
-## Bugs
+## Known Issue
 - misoundfx doesn't work except in Miui ROM
 - Not all ROM is supported for the Mi Sound app
 

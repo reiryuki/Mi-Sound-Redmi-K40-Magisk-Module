@@ -6,14 +6,10 @@ ro.control_privapp_permissions=log
 #persist.audio.button_jack.switch=0
 #persist.vendor.audio.hifi=false
 
-# notes
+# note
 #persist.audio.soundfx.type
-#persist.radio.modem
-#persist.radio.multisim.config
-#persist.service.bdroid.bdaddr
 #persist.sys.button_jack_profile
 #persist.sys.button_jack_switch
-#persist.sys.modem
 #persist.vendor.audio.button_jack.profile
 #persist.vendor.audio.button_jack.switch
 #persist.vendor.audio.sfx.mode
