@@ -7,7 +7,7 @@
 - The MIT license specified here is for the Magisk Module, not for MiSound app and blobs.
 
 ## Descriptions
-- Equalizer soundfx ported from Xiaomi Redmi K40 (alioth) and integrated as a Magisk Module for all supported and rooted devices with Magisk
+- Equalizers soundfx ported from Xiaomi Redmi K40 (alioth) and integrated as a Magisk Module for all supported and rooted devices with Magisk
 - Global type soundfx
 - Doesn't support ACDB module
 
