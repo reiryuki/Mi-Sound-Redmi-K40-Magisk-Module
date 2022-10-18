@@ -91,32 +91,6 @@ output_session_processing {\
       sed -i "/^output_session_processing {/a\    music {\n    }" $MODAEC
     fi
   fi
-  if ! grep -Eq '^pre_processing {' $MODAEC; then
-    sed -i -e '$a\
-pre_processing {\
-  mic {\
-  }\
-  camcorder {\
-  }\
-  voice_recognition {\
-  }\
-  voice_communication {\
-  }\
-}\' $MODAEC
-  else
-    if ! grep -Eq '^  voice_communication {' $MODAEC; then
-      sed -i "/^pre_processing {/a\  voice_communication {\n  }" $MODAEC
-    fi
-    if ! grep -Eq '^  voice_recognition {' $MODAEC; then
-      sed -i "/^pre_processing {/a\  voice_recognition {\n  }" $MODAEC
-    fi
-    if ! grep -Eq '^  camcorder {' $MODAEC; then
-      sed -i "/^pre_processing {/a\  camcorder {\n  }" $MODAEC
-    fi
-    if ! grep -Eq '^  mic {' $MODAEC; then
-      sed -i "/^pre_processing {/a\  mic {\n  }" $MODAEC
-    fi
-  fi
 fi
 
 # setup audio effects xml
@@ -168,32 +142,6 @@ if [ "$MODAEX" ]; then
     || grep -Eq '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
     || grep -Eq '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"music\">\n        <\/stream>" $MODAEX
-    fi
-  fi
-  if ! grep -Eq '<preprocess>' $MODAEX; then
-    sed -i '/<\/effects>/a\
-    <preprocess>\
-        <stream type="mic">\
-        <\/stream>\
-        <stream type="camcorder">\
-        <\/stream>\
-        <stream type="voice_recognition">\
-        <\/stream>\
-        <stream type="voice_communication">\
-        <\/stream>\
-    <\/preprocess>' $MODAEX
-  else
-    if ! grep -Eq '<stream type="voice_communication">' $MODAEX; then
-      sed -i "/<preprocess>/a\        <stream type=\"voice_communication\">\n        <\/stream>" $MODAEX
-    fi
-    if ! grep -Eq '<stream type="voice_recognition">' $MODAEX; then
-      sed -i "/<preprocess>/a\        <stream type=\"voice_recognition\">\n        <\/stream>" $MODAEX
-    fi
-    if ! grep -Eq '<stream type="camcorder">' $MODAEX; then
-      sed -i "/<preprocess>/a\        <stream type=\"camcorder\">\n        <\/stream>" $MODAEX
-    fi
-    if ! grep -Eq '<stream type="mic">' $MODAEX; then
-      sed -i "/<preprocess>/a\        <stream type=\"mic\">\n        <\/stream>" $MODAEX
     fi
   fi
 fi
@@ -293,32 +241,6 @@ if [ "$MODAEX" ]; then
 #s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
-fi
-}
-ozo() {
-# store
-LIB=libozoprocessing.so
-LIBNAME=ozo_processing
-NAME=ozo
-UUID=7e384a3b-7850-4a64-a097-884250d8a737
-RMV="$LIB $LIBNAME $NAME $UUID"
-# patch audio effects conf
-if [ "$MODAEC" ]; then
-  remove_conf
-  sed -i "/^libraries {/a\  $LIBNAME {\n    path $LIBPATH\/$LIB\n  }" $MODAEC
-  sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
-#c  sed -i "/^  camcorder {/a\    $NAME {\n    }" $MODAEC
-#c  sed -i "/^  mic {/a\    $NAME {\n    }" $MODAEC
-#c  sed -i "/^  voice_recognition {/a\    $NAME {\n    }" $MODAEC
-fi
-# patch audio effects xml
-if [ "$MODAEX" ]; then
-  remove_xml
-  sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
-  sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
-#c  sed -i "/<stream type=\"camcorder\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
-#c  sed -i "/<stream type=\"mic\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
-#c  sed -i "/<stream type=\"voice_recognition\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
 }
 dap_proxy() {
@@ -454,7 +376,6 @@ fi
 
 # effect
 misoundfx
-ozo
 #ddap_proxy
 #dvqe
 #dgamedap
@@ -470,9 +391,5 @@ ozo
 #u  sed -i 's/RAW/NONE/g' $MODAP
 #u  sed -i 's/,raw//g' $MODAP
 #ufi
-
-
-
-
 
 

@@ -218,48 +218,6 @@ elif [ -d $DIR ] && ! grep -Eq "$MODNAME" $FILE; then
   ui_print " "
 fi
 
-# check
-NAME=_ZN7android23sp_report_stack_pointerEv
-if [ "$BOOTMODE" == true ]; then
-  DIR=`realpath $MAGISKTMP/mirror/vendor`
-else
-  DIR=`realpath /vendor`
-fi
-ui_print "- Checking"
-ui_print "$NAME"
-ui_print "  function"
-ui_print "  Please wait..."
-if ! grep -Eq $NAME `find $DIR/lib*/hw -type f -name *audio*.so`; then
-  ui_print "  ! Function not found."
-  cp -rf $MODPATH/system_10/* $MODPATH/system
-  if [ $DOLBY == true ]; then
-    ui_print "  Unsupported Dolby Atmos."
-    DOLBY=false
-  fi
-fi
-rm -rf $MODPATH/system_10
-ui_print " "
-#NAME=_ZN7android4base15WriteStringToFdERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS0_11borrowed_fdE
-#NAME=_ZN7android22GraphicBufferAllocator17allocateRawHandleEjjijyPPK13native_handlePjNSt3__112basic_stringIcNS6_11char_traitsIcEENS6_9allocatorIcEEEE
-NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
-if [ "$BOOTMODE" == true ]; then
-  DIR=`realpath $MAGISKTMP/mirror/system`
-else
-  DIR=`realpath /system`
-fi
-if [ $DOLBY == true ]; then
-  ui_print "- Checking"
-  ui_print "$NAME"
-  ui_print "  function"
-  ui_print "  Please wait..."
-  if ! grep -Eq $NAME `find $DIR/lib64 -type f -name *audio*.so`; then
-    ui_print "  ! Function not found."
-    ui_print "  Unsupported Dolby Atmos."
-    DOLBY=false
-  fi
-  ui_print " "
-fi
-
 # dolby
 if [ $DOLBY == true ]; then
   sed -i 's/#d//g' $MODPATH/.aml.sh
@@ -300,6 +258,38 @@ for NAMES in $NAME; do
   blockdev --setrw $DIR$NAMES
 done
 }
+remount_rw() {
+DIR=/dev/block/bootdevice/by-name
+NAME="/vendor$SLOT /cust$SLOT /system$SLOT /system_ext$SLOT"
+set_read_write
+DIR=/dev/block/mapper
+set_read_write
+DIR=$MAGISKTMP/block
+NAME="/vendor /system_root /system /system_ext"
+set_read_write
+mount -o rw,remount $MAGISKTMP/mirror/system
+mount -o rw,remount $MAGISKTMP/mirror/system_root
+mount -o rw,remount $MAGISKTMP/mirror/system_ext
+mount -o rw,remount $MAGISKTMP/mirror/vendor
+mount -o rw,remount /system
+mount -o rw,remount /
+mount -o rw,remount /system_root
+mount -o rw,remount /system_ext
+mount -o rw,remount /vendor
+}
+remount_ro() {
+if [ "$BOOTMODE" == true ]; then
+  mount -o ro,remount $MAGISKTMP/mirror/system
+  mount -o ro,remount $MAGISKTMP/mirror/system_root
+  mount -o ro,remount $MAGISKTMP/mirror/system_ext
+  mount -o ro,remount $MAGISKTMP/mirror/vendor
+  mount -o ro,remount /system
+  mount -o ro,remount /
+  mount -o ro,remount /system_root
+  mount -o ro,remount /system_ext
+  mount -o ro,remount /vendor
+fi
+}
 backup() {
 if [ ! -f $FILE.orig ] && [ ! -f $FILE.bak ]; then
   cp -f $FILE $FILE.orig
@@ -328,7 +318,7 @@ if [ -f $FILE ]; then
     </hal>' $FILE
     ui_print " "
   else
-    ui_print "! Failed to create"
+    ui_print "- Failed to create"
     ui_print "$FILE.orig"
     ui_print " "
   fi
@@ -348,7 +338,7 @@ if [ -f $FILE ]; then
 vendor.dolby.hardware.dms::IDms u:object_r:hal_dms_hwservice:s0' $FILE
     ui_print " "
   else
-    ui_print "! Failed to create"
+    ui_print "- Failed to create"
     ui_print "$FILE.orig"
     ui_print " "
   fi
@@ -365,7 +355,8 @@ for FILES in $FILE; do
 done
 }
 early_init_mount_dir() {
-if echo $MAGISK_VER | grep -Eq delta; then
+if echo $MAGISK_VER | grep -Eq delta\
+&& [ "`grep_prop dolby.skip.early $OPTIONALS`" != 1 ]; then
   EIM=true
   ACTIVEEIMDIR=$MAGISKTMP/mirror/early-mount
   if [ -L $ACTIVEEIMDIR ]; then
@@ -459,39 +450,50 @@ for NAMES in $NAME; do
       && [ ! -f $DES ]; then
         ui_print "  ! $DES"
         ui_print "    installation failed."
+        ui_print "  Using $NAMES systemlessly."
+        cp -f $MODPATH/system_support/lib/$NAMES $MODPATH/system/lib
       fi
       if [ -f $MODPATH/system_support/lib64/$NAMES ]\
       && [ ! -f $DES2 ]; then
         ui_print "  ! $DES2"
         ui_print "    installation failed."
+        ui_print "  Using $NAMES systemlessly."
+        cp -f $MODPATH/system_support/lib64/$NAMES $MODPATH/system/lib64
       fi
       if [ -f $MODPATH/system_support/vendor/lib/$NAMES ]\
       && [ ! -f $DES3 ]; then
         ui_print "  ! $DES3"
         ui_print "    installation failed."
+        ui_print "  Using $NAMES systemlessly."
+        cp -f $MODPATH/system_support/vendor/lib/$NAMES $MODPATH/system/vendor/lib
       fi
       if [ -f $MODPATH/system_support/vendor/lib64/$NAMES ]\
       && [ ! -f $DES4 ]; then
         ui_print "  ! $DES4"
         ui_print "    installation failed."
+        ui_print "  Using $NAMES systemlessly."
+        cp -f $MODPATH/system_support/vendor/lib64/$NAMES $MODPATH/system/vendor/lib64
       fi
-      ui_print " "
     else
       ui_print "! $NAMES not found."
-      ui_print "  This module will not be working without $NAMES."
-      ui_print "  You can type:"
+      ui_print "  Using $NAMES systemlessly."
+      cp -f $MODPATH/system_support/lib/$NAMES $MODPATH/system/lib
+      cp -f $MODPATH/system_support/lib64/$NAMES $MODPATH/system/lib64
+      cp -f $MODPATH/system_support/vendor/lib/$NAMES $MODPATH/system/vendor/lib
+      cp -f $MODPATH/system_support/vendor/lib64/$NAMES $MODPATH/system/vendor/lib64
+      ui_print "  If this module still doesn't work, type:"
       ui_print "  install.hwlib=1"
       ui_print "  inside $OPTIONALS"
-      ui_print "  and reinstalling this module"
+      ui_print "  and reinstall this module"
       ui_print "  to install $NAMES directly to this ROM."
-      ui_print " "
+      ui_print "  DwYOR!"
     fi
+    ui_print " "
   fi
 done
 }
 patch_manifest_overlay_d() {
-if [ "`grep_prop dolby.skip.early $OPTIONALS`" != 1 ]\
-&& echo $MAGISK_VER | grep -Eq delta; then
+if [ $EIM == true ]; then
   if [ "$BOOTMODE" == true ]; then
     SRC=$MAGISKTMP/mirror/system/etc/vintf/manifest.xml
   else
@@ -524,13 +526,10 @@ if [ "`grep_prop dolby.skip.early $OPTIONALS`" != 1 ]\
   else
     EIM=false
   fi
-else
-  EIM=false
 fi
 }
 patch_hwservice_overlay_d() {
-if [ "`grep_prop dolby.skip.early $OPTIONALS`" != 1 ]\
-&& echo $MAGISK_VER | grep -Eq delta; then
+if [ $EIM == true ]; then
   if [ "$BOOTMODE" == true ]; then
     SRC=$MAGISKTMP/mirror/system/etc/selinux/plat_hwservice_contexts
   else
@@ -554,8 +553,6 @@ vendor.dolby.hardware.dms::IDms u:object_r:hal_dms_hwservice:s0' $DES
   else
     EIM=false
   fi
-else
-  EIM=false
 fi
 }
 
@@ -569,23 +566,7 @@ fi
 
 # remount
 if [ $DOLBY == true ]; then
-  DIR=/dev/block/bootdevice/by-name
-  NAME="/vendor$SLOT /cust$SLOT /system$SLOT /system_ext$SLOT"
-  set_read_write
-  DIR=/dev/block/mapper
-  set_read_write
-  DIR=$MAGISKTMP/block
-  NAME="/vendor /system_root /system /system_ext"
-  set_read_write
-  mount -o rw,remount $MAGISKTMP/mirror/system
-  mount -o rw,remount $MAGISKTMP/mirror/system_root
-  mount -o rw,remount $MAGISKTMP/mirror/system_ext
-  mount -o rw,remount $MAGISKTMP/mirror/vendor
-  mount -o rw,remount /system
-  mount -o rw,remount /
-  mount -o rw,remount /system_root
-  mount -o rw,remount /system_ext
-  mount -o rw,remount /vendor
+  remount_rw
 fi
 
 # early init mount dir
@@ -594,9 +575,88 @@ early_init_mount_dir
 # find
 chcon -R u:object_r:system_lib_file:s0 $MODPATH/system_support/lib*
 chcon -R u:object_r:same_process_hal_file:s0 $MODPATH/system_support/vendor/lib*
-NAME=`ls $MODPATH/system_support/vendor/lib`
+NAME="libhidltransport.so libhwbinder.so"
 if [ $DOLBY == true ]; then
   find_file
+fi
+
+# function
+check_function() {
+ui_print "- Checking"
+ui_print "$NAME"
+ui_print "  function at"
+ui_print "$DIR$FILE"
+ui_print "  Please wait..."
+if ! grep -Eq $NAME $DIR$FILE; then
+  ui_print "  ! Function not found."
+  if [ "`grep_prop change.hidlbase $OPTIONALS`" == 1 ]\
+  && [ "$API" -ge 30 ]; then
+    sed -i 's/^change.hidlbase=1/change.hidlbase=0/' $OPTIONALS
+    ui_print "  Installing new libhidlbase.so..."
+    ui_print "  If your device reboot automatically, then install this"
+    ui_print "  module again after reboot."
+    sleep 10
+    cp -f $MODPATH/system_support/vendor$FILE $DIR2$FILE
+    if ! grep -Eq $NAME $DIR2$FILE; then
+      ui_print "  ! $DIR2$FILE"
+      ui_print "    installation failed."
+      ui_print "  Using new libhidlbase.so systemlessly."
+      cp -f $MODPATH/system_support/vendor$FILE $MODPATH/system/vendor$FILE
+    fi
+    cp -f $MODPATH/system_support$FILE $DIR$FILE
+    if ! grep -Eq $NAME $DIR$FILE; then
+      ui_print "  ! $DIR$FILE"
+      ui_print "    installation failed."
+      ui_print "  Using new libhidlbase.so systemlessly."
+      cp -f $MODPATH/system_support$FILE $MODPATH/system$FILE
+    fi
+  else
+    if [ "$API" -ge 30 ]; then
+      ui_print "  Using new libhidlbase.so systemlessly."
+      cp -f $MODPATH/system_support/vendor$FILE $MODPATH/system/vendor$FILE
+      cp -f $MODPATH/system_support$FILE $MODPATH/system$FILE
+      ui_print "  If Dolby Atmos still doesn't work, type:"
+      ui_print "  change.hidlbase=1"
+      ui_print "  inside $OPTIONALS"
+      ui_print "  and reinstall this module"
+      ui_print "  to install new libhidlbase.so directly to this ROM."
+      ui_print "  DwYOR!"
+    fi
+    remount_ro
+    abort
+  fi
+fi
+ui_print " "
+}
+
+# check
+if [ "$BOOTMODE" == true ]; then
+  DIR=`realpath $MAGISKTMP/mirror/system`
+  DIR2=`realpath $MAGISKTMP/mirror/vendor`
+else
+  DIR=`realpath /system`
+  DIR2=`realpath /vendor`
+fi
+FILE=/lib/libhidlbase.so
+NAME=_ZN7android23sp_report_stack_pointerEv
+ui_print "- Checking"
+ui_print "$NAME"
+ui_print "  function at"
+ui_print "$DIR$FILE"
+ui_print "  Please wait..."
+if ! grep -Eq $NAME $DIR$FILE; then
+  ui_print "  Using legacy libraries."
+  cp -rf $MODPATH/system_10/* $MODPATH/system
+fi
+rm -rf $MODPATH/system_10
+ui_print " "
+FILE=/lib64/libhidlbase.so
+if [ $DOLBY == true ]; then
+  check_function
+fi
+NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
+if [ $DOLBY == true ]; then
+  check_function
 fi
 rm -rf $MODPATH/system_support
 
@@ -704,16 +764,8 @@ if [ $DOLBY == true ]; then
 fi
 
 # remount
-if [ "$BOOTMODE" == true ] && [ $DOLBY == true ]; then
-  mount -o ro,remount $MAGISKTMP/mirror/system
-  mount -o ro,remount $MAGISKTMP/mirror/system_root
-  mount -o ro,remount $MAGISKTMP/mirror/system_ext
-  mount -o ro,remount $MAGISKTMP/mirror/vendor
-  mount -o ro,remount /system
-  mount -o ro,remount /
-  mount -o ro,remount /system_root
-  mount -o ro,remount /system_ext
-  mount -o ro,remount /vendor
+if [ $DOLBY == true ]; then
+  remount_ro
 fi
 
 # function
@@ -898,12 +950,6 @@ fi
 if echo "$PROP" | grep -Eq n; then
   ui_print "- Activating notification stream..."
   sed -i 's/#n//g' $FILE
-  ui_print " "
-fi
-if [ "`grep_prop ozo.audio $OPTIONALS`" != 0 ]; then
-  ui_print "- Activating Nokia OZO Audio Capture for camcorder, mic,"
-  ui_print "  and voice recognition stream..."
-  sed -i 's/#c//g' $FILE
   ui_print " "
 fi
 

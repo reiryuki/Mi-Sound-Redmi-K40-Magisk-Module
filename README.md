@@ -3,11 +3,12 @@
 ## DISCLAIMER
 - Dolby apps and blobs are owned by Dolby™.
 - The MIT license specified here is for the Magisk Module, not for Dolby apps and blobs.
+- MiSound app and blobs are owned by Xiaomi™.
+- The MIT license specified here is for the Magisk Module, not for MiSound app and blobs.
 
 ## Descriptions
-- Dolby Atmos soundfx equalizer with MiSound app ported from Xiaomi Redmi K40 (alioth) and integrated as a Magisk Module for all supported and rooted devices with Magisk
+- Equalizer soundfx ported from Xiaomi Redmi K40 (alioth) and integrated as a Magisk Module for all supported and rooted devices with Magisk
 - Global type soundfx
-- Nokia OZO Audio Capture, improves audio quality on video/audio recordings
 - Doesn't support ACDB module
 
 ## Sources

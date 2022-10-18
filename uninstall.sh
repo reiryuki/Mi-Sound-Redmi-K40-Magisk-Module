@@ -1,6 +1,6 @@
 mount -o rw,remount /data
 MODPATH=${0%/*}
-MODID=`echo "$MODPATH" | sed -n -e 's/\/data\/adb\/modules\///p'`
+MODID=`echo "$MODPATH" | sed 's|/data/adb/modules/||'`
 APP="`ls $MODPATH/system/app` `ls $MODPATH/system/priv-app`"
 PKG=com.miui.misound
 #dPKG="com.miui.misound com.dolby.daxservice"
@@ -18,7 +18,8 @@ if [ "$BOOTMODE" != true ]; then
   rm -rf `find /metadata/early-mount.d\
   /mnt/vendor/persist/early-mount.d /persist/early-mount.d\
   /data/unencrypted/early-mount.d /cache/early-mount.d\
-  /data/adb/modules/early-mount.d -type f -name manifest.xml`
+  /data/adb/modules/early-mount.d -type f -name manifest.xml\
+  -o -name libhidlbase.so`
 fi
 }
 
@@ -35,7 +36,7 @@ rm -rf /mnt/vendor/persist/magisk/"$MODID"
 rm -rf /persist/magisk/"$MODID"
 rm -rf /data/unencrypted/magisk/"$MODID"
 rm -rf /cache/magisk/"$MODID"
-#drm -rf /data/vendor/dolby
+#drm -f /data/vendor/dolby/dax_sqlite3.db
 resetprop -p --delete persist.sys.button_jack_profile
 resetprop -p --delete persist.sys.button_jack_switch
 resetprop -p --delete persist.audio.button_jack.profile
