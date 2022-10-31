@@ -1,11 +1,27 @@
-ui_print " "
+# space
+if [ "$BOOTMODE" == true ]; then
+  ui_print " "
+fi
 
 # magisk
 if [ -d /sbin/.magisk ]; then
   MAGISKTMP=/sbin/.magisk
 else
-  MAGISKTMP=`find /dev -mindepth 2 -maxdepth 2 -type d -name .magisk`
+  MAGISKTMP=`realpath /dev/*/.magisk`
 fi
+
+# path
+if [ "$BOOTMODE" == true ]; then
+  MIRROR=$MAGISKTMP/mirror
+else
+  MIRROR=
+fi
+SYSTEM=`realpath $MIRROR/system`
+PRODUCT=`realpath $MIRROR/product`
+VENDOR=`realpath $MIRROR/vendor`
+SYSTEM_EXT=`realpath $MIRROR/system/system_ext`
+ODM=`realpath /odm`
+MY_PRODUCT=`realpath /my_product`
 
 # optionals
 OPTIONALS=/sdcard/optionals.prop
@@ -157,7 +173,7 @@ conflict() {
 for NAMES in $NAME; do
   DIR=/data/adb/modules_update/$NAMES
   if [ -f $DIR/uninstall.sh ]; then
-    sh $DIR/uninstall.sh
+    . $DIR/uninstall.sh
   fi
   rm -rf $DIR
   DIR=/data/adb/modules/$NAMES
@@ -165,7 +181,7 @@ for NAMES in $NAME; do
   touch $DIR/remove
   FILE=/data/adb/modules/$NAMES/uninstall.sh
   if [ -f $FILE ]; then
-    sh $FILE
+    . $FILE
     rm -f $FILE
   fi
   rm -rf /metadata/magisk/$NAMES
@@ -195,11 +211,11 @@ fi
 # function
 cleanup() {
 if [ -f $DIR/uninstall.sh ]; then
-  sh $DIR/uninstall.sh
+  . $DIR/uninstall.sh
 fi
 DIR=/data/adb/modules_update/$MODID
 if [ -f $DIR/uninstall.sh ]; then
-  sh $DIR/uninstall.sh
+  . $DIR/uninstall.sh
 fi
 }
 
@@ -237,21 +253,31 @@ fi
 rm -rf $MODPATH/system_dolby
 
 # function
+permissive_2() {
+sed -i '1i\
+SELINUX=`getenforce`\
+if [ "$SELINUX" == Enforcing ]; then\
+  magiskpolicy --live "permissive *"\
+fi\' $MODPATH/post-fs-data.sh
+}
 permissive() {
 SELINUX=`getenforce`
 if [ "$SELINUX" == Enforcing ]; then
   setenforce 0
   SELINUX=`getenforce`
   if [ "$SELINUX" == Enforcing ]; then
-    abort "  ! Your device can't be turned to Permissive state"
-  fi
-  setenforce 1
-fi
-sed -i '1i\
+    ui_print "  Your device can't be turned to Permissive state."
+    ui_print "  Using Magisk Permissive mode instead."
+    permissive_2
+  else
+    setenforce 1
+    sed -i '1i\
 SELINUX=`getenforce`\
 if [ "$SELINUX" == Enforcing ]; then\
   setenforce 0\
 fi\' $MODPATH/post-fs-data.sh
+  fi
+fi
 }
 set_read_write() {
 for NAMES in $NAME; do
@@ -363,8 +389,8 @@ if echo $MAGISK_VER | grep -Eq delta\
     EIMDIR=$(readlink $ACTIVEEIMDIR)
     [ "${EIMDIR:0:1}" != "/" ] && EIMDIR="$MAGISKTMP/mirror/$EIMDIR"
   elif ! $ISENCRYPTED\
-  && [ -d $NVBASE/modules/early-mount.d ]; then
-    EIMDIR=$NVBASE/modules/early-mount.d
+  && [ -d /data/adb/modules/early-mount.d ]; then
+    EIMDIR=/data/adb/modules/early-mount.d
   elif [ -d /data/unencrypted/early-mount.d ]\
   && ! grep ' /data ' /proc/mounts | grep -qE 'dm-|f2fs'; then
     EIMDIR=/data/unencrypted/early-mount.d
@@ -402,50 +428,19 @@ fi
 }
 find_file() {
 for NAMES in $NAME; do
-  if [ "$SYSTEM_ROOT" == true ]; then
-    if [ "$BOOTMODE" == true ]; then
-      FILE=`find $MAGISKTMP/mirror/system_root\
-                 $MAGISKTMP/mirror/system_ext\
-                 $MAGISKTMP/mirror/vendor -type f -name $NAMES`
-    else
-      FILE=`find /system_root\
-                 /system_ext\
-                 /vendor -type f -name $NAMES`
-    fi
-  else
-    if [ "$BOOTMODE" == true ]; then
-      FILE=`find $MAGISKTMP/mirror/system\
-                 $MAGISKTMP/mirror/system_ext\
-                 $MAGISKTMP/mirror/vendor -type f -name $NAMES`
-    else
-      FILE=`find /system\
-                 /system_ext\
-                 /vendor -type f -name $NAMES`
-    fi
-  fi
+  FILE=`find $SYSTEM $VENDOR $SYSTEM_EXT -type f -name $NAMES`
   if [ ! "$FILE" ]; then
     if [ "`grep_prop install.hwlib $OPTIONALS`" == 1 ]; then
       sed -i 's/^install.hwlib=1/install.hwlib=0/' $OPTIONALS
       ui_print "- Installing $NAMES directly to /system and /vendor..."
-      if [ "$BOOTMODE" == true ]; then
-        cp $MODPATH/system_support/lib/$NAMES $MAGISKTMP/mirror/system/lib
-        cp $MODPATH/system_support/lib64/$NAMES $MAGISKTMP/mirror/system/lib64
-        cp $MODPATH/system_support/vendor/lib/$NAMES $MAGISKTMP/mirror/vendor/lib
-        cp $MODPATH/system_support/vendor/lib64/$NAMES $MAGISKTMP/mirror/vendor/lib64
-        DES=$MAGISKTMP/mirror/system/lib/$NAMES
-        DES2=$MAGISKTMP/mirror/system/lib64/$NAMES
-        DES3=$MAGISKTMP/mirror/system/vendor/lib/$NAMES
-        DES4=$MAGISKTMP/mirror/system/vendor/lib64/$NAMES
-      else
-        cp $MODPATH/system_support/lib/$NAMES /system/lib
-        cp $MODPATH/system_support/lib64/$NAMES /system/lib64
-        cp $MODPATH/system_support/vendor/lib/$NAMES /vendor/lib
-        cp $MODPATH/system_support/vendor/lib64/$NAMES /vendor/lib64
-        DES=/system/lib/$NAMES
-        DES2=/system/lib64/$NAMES
-        DES3=/system/vendor/lib/$NAMES
-        DES4=/system/vendor/lib64/$NAMES
-      fi
+      cp $MODPATH/system_support/lib/$NAMES $SYSTEM/lib
+      cp $MODPATH/system_support/lib64/$NAMES $SYSTEM/lib64
+      cp $MODPATH/system_support/vendor/lib/$NAMES $VENDOR/lib
+      cp $MODPATH/system_support/vendor/lib64/$NAMES $VENDOR/lib64
+      DES=$SYSTEM/lib/$NAMES
+      DES2=$SYSTEM/lib64/$NAMES
+      DES3=$VENDOR/lib/$NAMES
+      DES4=$VENDOR/lib64/$NAMES
       if [ -f $MODPATH/system_support/lib/$NAMES ]\
       && [ ! -f $DES ]; then
         ui_print "  ! $DES"
@@ -492,13 +487,9 @@ for NAMES in $NAME; do
   fi
 done
 }
-patch_manifest_overlay_d() {
+patch_manifest_eim() {
 if [ $EIM == true ]; then
-  if [ "$BOOTMODE" == true ]; then
-    SRC=$MAGISKTMP/mirror/system/etc/vintf/manifest.xml
-  else
-    SRC=/system/etc/vintf/manifest.xml
-  fi
+  SRC=$SYSTEM/etc/vintf/manifest.xml
   if [ -f $SRC ]; then
     DIR=$EIMDIR/system/etc/vintf
     DES=$DIR/manifest.xml
@@ -528,13 +519,9 @@ if [ $EIM == true ]; then
   fi
 fi
 }
-patch_hwservice_overlay_d() {
+patch_hwservice_eim() {
 if [ $EIM == true ]; then
-  if [ "$BOOTMODE" == true ]; then
-    SRC=$MAGISKTMP/mirror/system/etc/selinux/plat_hwservice_contexts
-  else
-    SRC=/system/etc/selinux/plat_hwservice_contexts
-  fi
+  SRC=$SYSTEM/etc/selinux/plat_hwservice_contexts
   if [ -f $SRC ]; then
     DIR=$EIMDIR/system/etc/selinux
     DES=$DIR/plat_hwservice_contexts
@@ -558,9 +545,14 @@ fi
 
 # permissive
 if [ "`grep_prop permissive.mode $OPTIONALS`" == 1 ]; then
-  ui_print "- Using permissive method"
+  ui_print "- Using device Permissive mode."
   rm -f $MODPATH/sepolicy.rule
   permissive
+  ui_print " "
+elif [ "`grep_prop permissive.mode $OPTIONALS`" == 2 ]; then
+  ui_print "- Using Magisk Permissive mode."
+  rm -f $MODPATH/sepolicy.rule
+  permissive_2
   ui_print " "
 fi
 
@@ -572,70 +564,28 @@ fi
 # early init mount dir
 early_init_mount_dir
 
-# find
-chcon -R u:object_r:system_lib_file:s0 $MODPATH/system_support/lib*
-chcon -R u:object_r:same_process_hal_file:s0 $MODPATH/system_support/vendor/lib*
-NAME="libhidltransport.so libhwbinder.so"
-if [ $DOLBY == true ]; then
-  find_file
-fi
-
 # function
 check_function() {
 ui_print "- Checking"
 ui_print "$NAME"
 ui_print "  function at"
-ui_print "$DIR$FILE"
+ui_print "$SYSTEM$FILE"
 ui_print "  Please wait..."
-if ! grep -Eq $NAME $DIR$FILE; then
+if ! grep -Eq $NAME $SYSTEM$FILE; then
   ui_print "  ! Function not found."
-  if [ "`grep_prop change.hidlbase $OPTIONALS`" == 1 ]\
-  && [ "$API" -ge 30 ]; then
-    sed -i 's/^change.hidlbase=1/change.hidlbase=0/' $OPTIONALS
-    ui_print "  Installing new libhidlbase.so..."
-    ui_print "  If your device reboot automatically, then install this"
-    ui_print "  module again after reboot."
-    sleep 10
-    cp -f $MODPATH/system_support/vendor$FILE $DIR2$FILE
-    if ! grep -Eq $NAME $DIR2$FILE; then
-      ui_print "  ! $DIR2$FILE"
-      ui_print "    installation failed."
-      ui_print "  Using new libhidlbase.so systemlessly."
-      cp -f $MODPATH/system_support/vendor$FILE $MODPATH/system/vendor$FILE
-    fi
-    cp -f $MODPATH/system_support$FILE $DIR$FILE
-    if ! grep -Eq $NAME $DIR$FILE; then
-      ui_print "  ! $DIR$FILE"
-      ui_print "    installation failed."
-      ui_print "  Using new libhidlbase.so systemlessly."
-      cp -f $MODPATH/system_support$FILE $MODPATH/system$FILE
-    fi
-  else
-    if [ "$API" -ge 30 ]; then
-      ui_print "  Using new libhidlbase.so systemlessly."
-      cp -f $MODPATH/system_support/vendor$FILE $MODPATH/system/vendor$FILE
-      cp -f $MODPATH/system_support$FILE $MODPATH/system$FILE
-      ui_print "  If Dolby Atmos still doesn't work, type:"
-      ui_print "  change.hidlbase=1"
-      ui_print "  inside $OPTIONALS"
-      ui_print "  and reinstall this module"
-      ui_print "  to install new libhidlbase.so directly to this ROM."
-      ui_print "  DwYOR!"
-    fi
-    remount_ro
-    abort
-  fi
+  ui_print "    Unsupported ROM."
+  remount_ro
+  abort
 fi
 ui_print " "
 }
 
 # check
-if [ "$BOOTMODE" == true ]; then
-  DIR=`realpath $MAGISKTMP/mirror/system`
-  DIR2=`realpath $MAGISKTMP/mirror/vendor`
-else
-  DIR=`realpath /system`
-  DIR2=`realpath /vendor`
+chcon -R u:object_r:system_lib_file:s0 $MODPATH/system_support/lib*
+chcon -R u:object_r:same_process_hal_file:s0 $MODPATH/system_support/vendor/lib*
+NAME="libhidltransport.so libhwbinder.so"
+if [ $DOLBY == true ]; then
+  find_file
 fi
 FILE=/lib/libhidlbase.so
 NAME=_ZN7android23sp_report_stack_pointerEv
@@ -658,6 +608,15 @@ NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
 if [ $DOLBY == true ]; then
   check_function
 fi
+FILE=/lib/libhidlbase.so
+NAME=_ZN7android23sp_report_stack_pointerEv
+if [ $DOLBY == true ]; then
+  check_function
+fi
+NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
+if [ $DOLBY == true ]; then
+  check_function
+fi
 rm -rf $MODPATH/system_support
 
 # patch manifest.xml
@@ -670,40 +629,26 @@ if [ $DOLBY == true ]; then
         /*/etc/vintf/manifest/*.xml /*/*/etc/vintf/manifest/*.xml"
   if [ "`grep_prop dolby.skip.vendor $OPTIONALS`" != 1 ]\
   && ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -Eq 2.0; then
-    FILE=$MAGISKTMP/mirror/vendor/etc/vintf/manifest.xml
+    FILE=$VENDOR/etc/vintf/manifest.xml
     patch_manifest
   fi
   if [ "`grep_prop dolby.skip.system $OPTIONALS`" != 1 ]\
   && ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -Eq 2.0; then
-    FILE=$MAGISKTMP/mirror/system/etc/vintf/manifest.xml
+    FILE=$SYSTEM/etc/vintf/manifest.xml
     patch_manifest
   fi
   if [ "`grep_prop dolby.skip.system_ext $OPTIONALS`" != 1 ]\
   && ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -Eq 2.0; then
-    FILE=$MAGISKTMP/mirror/system_ext/etc/vintf/manifest.xml
-   patch_manifest
-  fi
-  if [ "`grep_prop dolby.skip.vendor $OPTIONALS`" != 1 ]\
-  && ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -Eq 2.0; then
-    FILE=/vendor/etc/vintf/manifest.xml
-    patch_manifest
-  fi
-  if [ "`grep_prop dolby.skip.system $OPTIONALS`" != 1 ]\
-  && ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -Eq 2.0; then
-    FILE=/system/etc/vintf/manifest.xml
-    patch_manifest
-  fi
-  if [ "`grep_prop dolby.skip.system_ext $OPTIONALS`" != 1 ]\
-  && ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -Eq 2.0; then
-    FILE=/system/system_ext/etc/vintf/manifest.xml
+    FILE=$SYSTEM_EXT/etc/vintf/manifest.xml
     patch_manifest
   fi
   if ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -Eq 2.0; then
-    patch_manifest_overlay_d
+    patch_manifest_eim
     if [ $EIM == false ]; then
       ui_print "- Using systemless manifest.xml patch."
-      ui_print "  On some ROMs, it's buggy or even makes bootloop"
+      ui_print "  On some ROMs, it causes bugs or even makes bootloop"
       ui_print "  because not allowed to restart hwservicemanager."
+      ui_print "  You can fix this by using Magisk Delta Canary."
       ui_print " "
     fi
     FILE="$MAGISKTMP/mirror/*/etc/vintf/manifest.xml
@@ -721,36 +666,21 @@ if [ $DOLBY == true ]; then
         /*/*/etc/selinux/*_hwservice_contexts"
   if [ "`grep_prop dolby.skip.vendor $OPTIONALS`" != 1 ]\
   && ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    FILE=$MAGISKTMP/mirror/vendor/etc/selinux/vendor_hwservice_contexts
+    FILE=$VENDOR/etc/selinux/vendor_hwservice_contexts
     patch_hwservice
   fi
   if [ "`grep_prop dolby.skip.system $OPTIONALS`" != 1 ]\
   && ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    FILE=$MAGISKTMP/mirror/system/etc/selinux/plat_hwservice_contexts
+    FILE=$SYSTEM/etc/selinux/plat_hwservice_contexts
     patch_hwservice
   fi
   if [ "`grep_prop dolby.skip.system_ext $OPTIONALS`" != 1 ]\
    && ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    FILE=$MAGISKTMP/mirror/system_ext/etc/selinux/system_ext_hwservice_contexts
-    patch_hwservice
-  fi
-  if [ "`grep_prop dolby.skip.vendor $OPTIONALS`" != 1 ]\
-  && ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    FILE=/vendor/etc/selinux/vendor_hwservice_contexts
-    patch_hwservice
-  fi
-  if [ "`grep_prop dolby.skip.system $OPTIONALS`" != 1 ]\
-  && ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    FILE=/system/etc/selinux/plat_hwservice_contexts
-    patch_hwservice
-  fi
-  if [ "`grep_prop dolby.skip.system_ext $OPTIONALS`" != 1 ]\
-  && ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    FILE=/system/system_ext/etc/selinux/system_ext_hwservice_contexts
+    FILE=$SYSTEM_EXT/etc/selinux/system_ext_hwservice_contexts
     patch_hwservice
   fi
   if ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    patch_hwservice_overlay_d
+    patch_hwservice_eim
     if [ $EIM == false ]; then
       ui_print "! Failed to set hal_dms_hwservice context."
       ui_print " "
@@ -782,81 +712,37 @@ if [ -d $DIR ]; then
 fi
 }
 hide_app() {
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/system/app/$APPS
-else
-  DIR=/system/app/$APPS
-fi
+DIR=$SYSTEM/app/$APPS
 MODDIR=$MODPATH/system/app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/system/priv-app/$APPS
-else
-  DIR=/system/priv-app/$APPS
-fi
+DIR=$SYSTEM/priv-app/$APPS
 MODDIR=$MODPATH/system/priv-app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/product/app/$APPS
-else
-  DIR=/product/app/$APPS
-fi
+DIR=$PRODUCT/app/$APPS
 MODDIR=$MODPATH/system/product/app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/product/priv-app/$APPS
-else
-  DIR=/product/priv-app/$APPS
-fi
+DIR=$PRODUCT/priv-app/$APPS
 MODDIR=$MODPATH/system/product/priv-app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=/mnt/vendor/my_product/app/$APPS
-else
-  DIR=/my_product/app/$APPS
-fi
+DIR=$MY_PRODUCT/app/$APPS
 MODDIR=$MODPATH/system/product/app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=/mnt/vendor/my_product/priv-app/$APPS
-else
-  DIR=/my_product/priv-app/$APPS
-fi
+DIR=$MY_PRODUCT/priv-app/$APPS
 MODDIR=$MODPATH/system/product/priv-app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/product/preinstall/$APPS
-else
-  DIR=/product/preinstall/$APPS
-fi
+DIR=$PRODUCT/preinstall/$APPS
 MODDIR=$MODPATH/system/product/preinstall/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/system_ext/app/$APPS
-else
-  DIR=/system/system_ext/app/$APPS
-fi
+DIR=$SYSTEM_EXT/app/$APPS
 MODDIR=$MODPATH/system/system_ext/app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/system_ext/priv-app/$APPS
-else
-  DIR=/system/system_ext/priv-app/$APPS
-fi
+DIR=$SYSTEM_EXT/priv-app/$APPS
 MODDIR=$MODPATH/system/system_ext/priv-app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/vendor/app/$APPS
-else
-  DIR=/vendor/app/$APPS
-fi
+DIR=$VENDOR/app/$APPS
 MODDIR=$MODPATH/system/vendor/app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/vendor/euclid/product/app/$APPS
-else
-  DIR=/vendor/euclid/product/app/$APPS
-fi
+DIR=$VENDOR/euclid/product/app/$APPS
 MODDIR=$MODPATH/system/vendor/euclid/product/app/$APPS
 replace_dir
 }
@@ -864,13 +750,8 @@ check_app() {
 if [ "$BOOTMODE" == true ]\
 && [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
   for APPS in $APP; do
-    FILE=`find $MAGISKTMP/mirror/system_root/system\
-               $MAGISKTMP/mirror/system_root/product\
-               $MAGISKTMP/mirror/system_root/system_ext\
-               $MAGISKTMP/mirror/system\
-               $MAGISKTMP/mirror/product\
-               $MAGISKTMP/mirror/system_ext\
-               $MAGISKTMP/mirror/vendor -type f -name $APPS.apk`
+    FILE=`find $SYSTEM $PRODUCT $SYSTEM_EXT $VENDOR\
+               $MY_PRODUCT -type f -name $APPS.apk`
     if [ "$FILE" ]; then
       ui_print "  Checking $APPS.apk"
       ui_print "  Please wait..."
@@ -1021,6 +902,67 @@ if [ $DOLBY == true ]; then
   ui_print " "
 fi
 
+# function
+file_check_system() {
+for NAMES in $NAME; do
+  if [ "$IS64BIT" == true ]; then
+    FILE=$SYSTEM/lib64/$NAMES
+    FILE2=$SYSTEM_EXT/lib64/$NAMES
+    if [ -f $FILE ] || [ -f $FILE2 ]; then
+      ui_print "- Detected $NAMES 64"
+      ui_print " "
+      rm -f $MODPATH/system/lib64/$NAMES
+    fi
+  fi
+  FILE=$SYSTEM/lib/$NAMES
+  FILE2=$SYSTEM_EXT/lib/$NAMES
+  if [ -f $FILE ] || [ -f $FILE2 ]; then
+    ui_print "- Detected $NAMES"
+    ui_print " "
+    rm -f $MODPATH/system/lib/$NAMES
+  fi
+done
+}
+file_check_vendor() {
+for NAMES in $NAME; do
+  if [ "$IS64BIT" == true ]; then
+    FILE=$VENDOR/lib64/$NAMES
+    FILE2=$ODM/lib64/$NAMES
+    if [ -f $FILE ] || [ -f $FILE2 ]; then
+      ui_print "- Detected $NAMES 64"
+      ui_print " "
+      rm -f $MODPATH/system/vendor/lib64/$NAMES
+    fi
+  fi
+  FILE=$VENDOR/lib/$NAMES
+  FILE2=$ODM/lib/$NAMES
+  if [ -f $FILE ] || [ -f $FILE2 ]; then
+    ui_print "- Detected $NAMES"
+    ui_print " "
+    rm -f $MODPATH/system/vendor/lib/$NAMES
+  fi
+done
+}
+
+# check
+NAME=libmigui.so
+file_check_system
+NAME="libqtigef.so libstagefrightdolby.so libdeccfg.so
+      libstagefright_soft_ddpdec.so
+      libstagefright_soft_ac4dec.so"
+if [ $DOLBY == true ]; then
+  file_check_vendor
+fi
+
+# check
+FILE=$VENDOR/lib/soundfx/libmisoundfx.so
+FILE2=$ODM/lib/soundfx/libmisoundfx.so
+if [ -f $FILE ] || [ -f $FILE2 ]; then
+  ui_print "- Built-in misoundfx is detected."
+  rm -f `find $MODPATH/system/vendor -type f -name *misound*`
+  ui_print " "
+fi
+
 # audio rotation
 FILE=$MODPATH/service.sh
 if [ "`grep_prop audio.rotation $OPTIONALS`" == 1 ]; then
@@ -1044,78 +986,6 @@ FILE=$MODPATH/service.sh
 if [ "`grep_prop other.etc $OPTIONALS`" == 1 ]; then
   ui_print "- Activating other etc files bind mount..."
   sed -i 's/#p//g' $FILE
-  ui_print " "
-fi
-
-# function
-file_check_system() {
-for NAMES in $NAME; do
-  if [ "$BOOTMODE" == true ]; then
-    FILE64=$MAGISKTMP/mirror/system/lib64/$NAMES
-    FILE=$MAGISKTMP/mirror/system/lib/$NAMES
-    FILE64_2=$MAGISKTMP/mirror/system_ext/lib64/$NAMES
-    FILE_2=$MAGISKTMP/mirror/system_ext/lib/$NAMES
-  else
-    FILE64=/system/lib64/$NAMES
-    FILE=/system/lib/$NAMES
-    FILE64_2=/system/system_ext/lib64/$NAMES
-    FILE_2=/system/system_ext/lib/$NAMES
-  fi
-  if [ -f $FILE64 ] || [ -f $FILE64_2 ]; then
-    ui_print "- Detected $NAMES 64 bit"
-    rm -f $MODPATH/system/lib64/$NAMES
-    ui_print " "
-  fi
-  if [ -f $FILE ] || [ -f $FILE_2 ]; then
-    ui_print "- Detected $NAMES"
-    rm -f $MODPATH/system/lib/$NAMES
-    ui_print " "
-  fi
-done
-}
-file_check_vendor() {
-for NAMES in $NAME; do
-  if [ "$BOOTMODE" == true ]; then
-    FILE64=$MAGISKTMP/mirror/vendor/lib64/$NAMES
-    FILE=$MAGISKTMP/mirror/vendor/lib/$NAMES
-  else
-    FILE64=/vendor/lib64/$NAMES
-    FILE=/vendor/lib/$NAMES
-  fi
-  FILE64_2=/odm/lib64/$NAMES
-  FILE_2=/odm/lib/$NAMES
-  if [ -f $FILE64 ] || [ -f $FILE64_2 ]; then
-    ui_print "- Detected $NAMES 64 bit"
-    rm -f $MODPATH/system/vendor/lib64/$NAMES
-    ui_print " "
-  fi
-  if [ -f $FILE ] || [ -f $FILE_2 ]; then
-    ui_print "- Detected $NAMES"
-    rm -f $MODPATH/system/vendor/lib/$NAMES
-    ui_print " "
-  fi
-done
-}
-
-# check
-NAME=libmigui.so
-file_check_system
-NAME="libqtigef.so libstagefrightdolby.so libdeccfg.so
-      libstagefright_soft_ddpdec.so
-      libstagefright_soft_ac4dec.so"
-if [ $DOLBY == true ]; then
-  file_check_vendor
-fi
-
-# check
-if [ "$BOOTMODE" == true ]; then
-  FILE=$MAGISKTMP/mirror/vendor/lib/soundfx/libmisoundfx.so
-else
-  FILE=/vendor/lib/soundfx/libmisoundfx.so
-fi
-if [ -f $FILE ]; then
-  ui_print "- Built-in misoundfx is detected."
-  rm -f `find $MODPATH/system/vendor -type f -name *misound*`
   ui_print " "
 fi
 
