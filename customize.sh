@@ -19,9 +19,17 @@ fi
 SYSTEM=`realpath $MIRROR/system`
 PRODUCT=`realpath $MIRROR/product`
 VENDOR=`realpath $MIRROR/vendor`
-SYSTEM_EXT=`realpath $MIRROR/system/system_ext`
-ODM=`realpath /odm`
-MY_PRODUCT=`realpath /my_product`
+SYSTEM_EXT=`realpath $MIRROR/system_ext`
+if [ -d $MIRROR/odm ]; then
+  ODM=`realpath $MIRROR/odm`
+else
+  ODM=`realpath /odm`
+fi
+if [ -d $MIRROR/my_product ]; then
+  MY_PRODUCT=`realpath $MIRROR/my_product`
+else
+  MY_PRODUCT=`realpath /my_product`
+fi
 
 # optionals
 OPTIONALS=/sdcard/optionals.prop
@@ -173,7 +181,7 @@ conflict() {
 for NAMES in $NAME; do
   DIR=/data/adb/modules_update/$NAMES
   if [ -f $DIR/uninstall.sh ]; then
-    . $DIR/uninstall.sh
+    sh $DIR/uninstall.sh
   fi
   rm -rf $DIR
   DIR=/data/adb/modules/$NAMES
@@ -181,7 +189,7 @@ for NAMES in $NAME; do
   touch $DIR/remove
   FILE=/data/adb/modules/$NAMES/uninstall.sh
   if [ -f $FILE ]; then
-    . $FILE
+    sh $FILE
     rm -f $FILE
   fi
   rm -rf /metadata/magisk/$NAMES
@@ -211,11 +219,11 @@ fi
 # function
 cleanup() {
 if [ -f $DIR/uninstall.sh ]; then
-  . $DIR/uninstall.sh
+  sh $DIR/uninstall.sh
 fi
 DIR=/data/adb/modules_update/$MODID
 if [ -f $DIR/uninstall.sh ]; then
-  . $DIR/uninstall.sh
+  sh $DIR/uninstall.sh
 fi
 }
 
@@ -569,9 +577,9 @@ check_function() {
 ui_print "- Checking"
 ui_print "$NAME"
 ui_print "  function at"
-ui_print "$SYSTEM$FILE"
+ui_print "$FILE"
 ui_print "  Please wait..."
-if ! grep -Eq $NAME $SYSTEM$FILE; then
+if ! grep -Eq $NAME $FILE; then
   ui_print "  ! Function not found."
   ui_print "    Unsupported ROM."
   remount_ro
@@ -587,33 +595,44 @@ NAME="libhidltransport.so libhwbinder.so"
 if [ $DOLBY == true ]; then
   find_file
 fi
-FILE=/lib/libhidlbase.so
 NAME=_ZN7android23sp_report_stack_pointerEv
+FILE=$VENDOR/lib/hw/*audio*.so
+FILE2=$VENDOR/lib64/hw/*audio*.so
 ui_print "- Checking"
 ui_print "$NAME"
 ui_print "  function at"
-ui_print "$DIR$FILE"
+ui_print "$FILE"
+if [ "$IS64BIT" == true ]; then
+  ui_print "$FILE2"
+fi
 ui_print "  Please wait..."
-if ! grep -Eq $NAME $DIR$FILE; then
-  ui_print "  Using legacy libraries."
-  cp -rf $MODPATH/system_10/* $MODPATH/system
+if [ "$IS64BIT" == true ]; then
+  if ! grep -Eq $NAME $FILE\
+  || ! grep -Eq $NAME $FILE2; then
+    ui_print "  Using legacy libraries."
+    cp -rf $MODPATH/system_10/* $MODPATH/system
+  fi
+else
+  if ! grep -Eq $NAME $FILE; then
+    ui_print "  Using legacy libraries."
+    cp -rf $MODPATH/system_10/* $MODPATH/system
+  fi
 fi
 rm -rf $MODPATH/system_10
 ui_print " "
-FILE=/lib64/libhidlbase.so
+if [ $DOLBY == true ]; then
+  check_function
+fi
+FILE=$VENDOR/lib64/hw/*audio*.so
 if [ $DOLBY == true ]; then
   check_function
 fi
 NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
+FILE=$SYSTEM/lib64/libhidlbase.so
 if [ $DOLBY == true ]; then
   check_function
 fi
-FILE=/lib/libhidlbase.so
-NAME=_ZN7android23sp_report_stack_pointerEv
-if [ $DOLBY == true ]; then
-  check_function
-fi
-NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
+FILE=$SYSTEM/lib/libhidlbase.so
 if [ $DOLBY == true ]; then
   check_function
 fi
@@ -947,7 +966,7 @@ done
 # check
 NAME=libmigui.so
 file_check_system
-NAME="libqtigef.so libstagefrightdolby.so libdeccfg.so
+NAME="libstagefrightdolby.so libdeccfg.so
       libstagefright_soft_ddpdec.so
       libstagefright_soft_ac4dec.so"
 if [ $DOLBY == true ]; then
@@ -991,18 +1010,26 @@ fi
 
 # permission
 ui_print "- Setting permission..."
-FILE=`find $MODPATH/system/vendor/bin $MODPATH/system/vendor/odm/bin -type f`
+FILE=`find $MODPATH/system/vendor/bin\
+           $MODPATH/system/vendor/odm/bin\
+           $MODPATH/system/odm/bin -type f`
 for FILES in $FILE; do
   chmod 0755 $FILES
-  chown 0.2000 $FILES
 done
 chmod 0751 $MODPATH/system/vendor/bin
 chmod 0751 $MODPATH/system/vendor/bin/hw
 chmod 0755 $MODPATH/system/vendor/odm/bin
 chmod 0755 $MODPATH/system/vendor/odm/bin/hw
+chmod 0755 $MODPATH/system/odm/bin
+chmod 0755 $MODPATH/system/odm/bin/hw
 DIR=`find $MODPATH/system/vendor -type d`
 for DIRS in $DIR; do
   chown 0.2000 $DIRS
+done
+FILE=`find $MODPATH/system/vendor/bin\
+           $MODPATH/system/vendor/odm/bin -type f`
+for FILES in $FILE; do
+  chown 0.2000 $FILES
 done
 ui_print " "
 

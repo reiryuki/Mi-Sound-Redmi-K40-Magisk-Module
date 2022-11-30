@@ -1,6 +1,10 @@
 mount -o rw,remount /data
-MODPATH=${0%/*}
-MODID=`echo "$MODPATH" | sed 's|/data/adb/modules/||'`
+if [ ! "$MODPATH" ]; then
+  MODPATH=${0%/*}
+fi
+if [ ! "$MODID" ]; then
+  MODID=`echo "$MODPATH" | sed 's|/data/adb/modules/||' | sed 's|/data/adb/modules_update/||'`
+fi
 APP="`ls $MODPATH/system/app` `ls $MODPATH/system/priv-app`"
 PKG=com.miui.misound
 #dPKG="com.miui.misound com.dolby.daxservice"

@@ -16,8 +16,7 @@
 - MiSound.apk: apkmirror.com
 - system_10: https://dumps.tadiphone.dev/dumps/xiaomi/ginkgo ginkgo-user-10-QKQ1.200114.002-V12.0.6.0.QCOEUXM-release-keys
 - daxService.apk: https://dumps.tadiphone.dev/dumps/motorola/rhode user-12-S1SR32.38-124-3-a8403-release-keys
-- libhwdap.so: Changed HEX fragment from da21499d2582294ffaae39537a04bcaa to 9108c3a04682ef4aadb8d53e26da0253
-- libswdap.so: https://dumps.tadiphone.dev/dumps/motorola/rhode user-12-S1SR32.38-124-3-a8403-release-keys changed HEX fragment from da21499d2582294ffaae39537a04bcaa to a46db06a16c511466681452799218539
+- libswdap.so: https://dumps.tadiphone.dev/dumps/motorola/rhode user-12-S1SR32.38-124-3-a8403-release-keys
 
 ## Screenshots
 - https://t.me/androidryukimods/488
@@ -40,7 +39,7 @@
 - Install Miui Core Magisk Module v4.0 or above first: https://github.com/reiryuki/Miui-Core-Magisk-Module (except you are in Miui ROM)
 - If your ROM has Dolby in-built, then you need to enable Dolby data clean-up for the first time (READ Optionals!)
 - Install this module https://www.pling.com/p/1769560/ via Magisk Manager or Recovery
-- Install AML Magisk Module https://zackptg5.com/android.php#aml only if using any other audio mod module
+- Install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 only if using any other audio mod module
 - Reboot
 
 ## Optionals & Troubleshootings
