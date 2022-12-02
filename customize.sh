@@ -47,7 +47,7 @@ ui_print " "
 # miuicore
 if [ ! -d /data/adb/modules_update/MiuiCore ] && [ ! -d /data/adb/modules/MiuiCore ]; then
   ui_print "! Miui Core Magisk Module is not installed."
-  ui_print "  Mi Sound app will not be working without"
+  ui_print "  MiSound app will not be working without"
   ui_print "  Miui Core Magisk Module except you are in Miui ROM!"
   ui_print " "
 else
