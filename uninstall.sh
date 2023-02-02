@@ -5,9 +5,6 @@ fi
 if [ ! "$MODID" ]; then
   MODID=`echo "$MODPATH" | sed 's|/data/adb/modules/||' | sed 's|/data/adb/modules_update/||'`
 fi
-APP="`ls $MODPATH/system/app` `ls $MODPATH/system/priv-app`"
-PKG=com.miui.misound
-#dPKG="com.miui.misound com.dolby.daxservice"
 
 # boot mode
 if [ ! "$BOOTMODE" ]; then
@@ -22,18 +19,21 @@ if [ "$BOOTMODE" != true ]; then
   rm -rf `find /metadata/early-mount.d\
   /mnt/vendor/persist/early-mount.d /persist/early-mount.d\
   /data/unencrypted/early-mount.d /cache/early-mount.d\
-  /data/adb/modules/early-mount.d -type f -name manifest.xml\
+  /data/adb/early-mount.d -type f -name manifest.xml\
   -o -name libhidlbase.so`
 fi
 }
 
 # cleaning
-for PKGS in $PKG; do
-  rm -rf /data/user/*/$PKGS
-done
+APP="`ls $MODPATH/system/app` `ls $MODPATH/system/priv-app`"
 for APPS in $APP; do
   rm -f `find /data/system/package_cache -type f -name *$APPS*`
   rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APPS*.apk`
+done
+PKG=com.miui.misound
+#dPKG="com.miui.misound com.dolby.daxservice"
+for PKGS in $PKG; do
+  rm -rf /data/user*/*/$PKGS
 done
 rm -rf /metadata/magisk/"$MODID"
 rm -rf /mnt/vendor/persist/magisk/"$MODID"

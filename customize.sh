@@ -33,6 +33,9 @@ fi
 
 # optionals
 OPTIONALS=/sdcard/optionals.prop
+if [ ! -f $OPTIONALS ]; then
+  touch $OPTIONALS
+fi
 
 # info
 MODVER=`grep_prop version $MODPATH/module.prop`
@@ -95,6 +98,17 @@ else
   ui_print " "
 fi
 
+# dolby
+if [ $DOLBY == true ]; then
+  sed -i 's/#d//g' $MODPATH/.aml.sh
+  sed -i 's/#d//g' $MODPATH/*.sh
+  cp -rf $MODPATH/system_dolby/* $MODPATH/system
+else
+  MODNAME2='Mi Sound Redmi K40'
+  sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
+fi
+rm -rf $MODPATH/system_dolby
+
 # socket
 if [ ! -e /dev/socket/audio_hw_socket ]; then
   ui_print "! Unsupported audio_hw_socket."
@@ -111,13 +125,67 @@ if [ "$BOOTMODE" != true ]; then
   mount -o rw -t auto /dev/block/bootdevice/by-name/metadata /metadata
 fi
 
-# sepolicy.rule
-FILE=$MODPATH/sepolicy.sh
-DES=$MODPATH/sepolicy.rule
-if [ -f $FILE ] && [ "`grep_prop sepolicy.sh $OPTIONALS`" != 1 ]; then
+# function
+check_function() {
+ui_print "- Checking"
+ui_print "$NAME"
+ui_print "  function at"
+ui_print "$FILE"
+ui_print "  Please wait..."
+if ! grep -Eq $NAME $FILE; then
+  ui_print "  ! Function not found."
+  ui_print "    Unsupported ROM."
+  abort
+fi
+ui_print " "
+}
+
+# check
+NAME=_ZN7android23sp_report_stack_pointerEv
+FILE=$VENDOR/lib/hw/*audio*.so
+FILE2=$VENDOR/lib64/hw/*audio*.so
+ui_print "- Checking"
+ui_print "$NAME"
+ui_print "  function at"
+ui_print "$FILE"
+if [ "$IS64BIT" == true ]; then
+  ui_print "$FILE2"
+fi
+ui_print "  Please wait..."
+if [ "$IS64BIT" == true ]; then
+  if ! grep -Eq $NAME $FILE\
+  || ! grep -Eq $NAME $FILE2; then
+    ui_print "  Using legacy libraries."
+    cp -rf $MODPATH/system_10/* $MODPATH/system
+  fi
+else
+  if ! grep -Eq $NAME $FILE; then
+    ui_print "  Using legacy libraries."
+    cp -rf $MODPATH/system_10/* $MODPATH/system
+  fi
+fi
+rm -rf $MODPATH/system_10
+ui_print " "
+if [ $DOLBY == true ]; then
+  check_function
+  FILE=$VENDOR/lib64/hw/*audio*.so
+  check_function
+  NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
+  TARGET=vendor.dolby.hardware.dms@2.0.so
+  LIST=`strings $MODPATH/system/vendor/lib64/$TARGET | grep lib | grep .so`
+  FILE=`for LISTS in $LIST; do echo $SYSTEM/lib64/$LISTS; done`
+  check_function
+  LIST=`strings $MODPATH/system/vendor/lib/$TARGET | grep lib | grep .so`
+  FILE=`for LISTS in $LIST; do echo $SYSTEM/lib/$LISTS; done`
+  check_function
+fi
+
+# sepolicy
+FILE=$MODPATH/sepolicy.rule
+DES=$MODPATH/sepolicy.pfsd
+if [ "`grep_prop sepolicy.sh $OPTIONALS`" == 1 ]\
+&& [ -f $FILE ]; then
   mv -f $FILE $DES
-  sed -i 's/magiskpolicy --live "//g' $DES
-  sed -i 's/"//g' $DES
 fi
 
 # .aml.sh
@@ -144,14 +212,17 @@ fi
 # function
 extract_lib() {
 for APPS in $APP; do
-  ui_print "- Extracting..."
   FILE=`find $MODPATH/system -type f -name $APPS.apk`
-  DIR=`find $MODPATH/system -type d -name $APPS`/lib/$ARCH
-  mkdir -p $DIR
-  rm -rf $TMPDIR/*
-  unzip -d $TMPDIR -o $FILE $DES
-  cp -f $TMPDIR/$DES $DIR
-  ui_print " "
+  if [ -f `dirname $FILE`/extract ]; then
+    rm -f `dirname $FILE`/extract
+    ui_print "- Extracting..."
+    DIR=`dirname $FILE`/lib/$ARCH
+    mkdir -p $DIR
+    rm -rf $TMPDIR/*
+    unzip -d $TMPDIR -o $FILE $DES
+    cp -f $TMPDIR/$DES $DIR
+    ui_print " "
+  fi
 done
 }
 
@@ -162,10 +233,15 @@ extract_lib
 
 # cleaning
 ui_print "- Cleaning..."
-PKG=com.miui.misound
+if [ $DOLBY == true ]; then
+  PKG="com.miui.misound com.dolby.daxservice"
+  rm -f /data/vendor/dolby/dax_sqlite3.db
+else
+  PKG=com.miui.misound
+fi
 if [ "$BOOTMODE" == true ]; then
   for PKGS in $PKG; do
-    RES=`pm uninstall $PKGS`
+    RES=`pm uninstall $PKGS 2>/dev/null`
   done
 fi
 rm -rf $MODPATH/unused
@@ -241,24 +317,6 @@ elif [ -d $DIR ] && ! grep -Eq "$MODNAME" $FILE; then
   cleanup
   ui_print " "
 fi
-
-# dolby
-if [ $DOLBY == true ]; then
-  sed -i 's/#d//g' $MODPATH/.aml.sh
-  sed -i 's/#d//g' $MODPATH/*.sh
-  cp -rf $MODPATH/system_dolby/* $MODPATH/system
-  PKG=com.dolby.daxservice
-  if [ "$BOOTMODE" == true ]; then
-    for PKGS in $PKG; do
-      RES=`pm uninstall $PKGS`
-    done
-  fi
-  rm -f /data/vendor/dolby/dax_sqlite3.db
-else
-  MODNAME2='Mi Sound Redmi K40'
-  sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
-fi
-rm -rf $MODPATH/system_dolby
 
 # function
 permissive_2() {
@@ -566,73 +624,18 @@ if [ $DOLBY == true ]; then
 fi
 
 # early init mount dir
-early_init_mount_dir
-
-# function
-check_function() {
-ui_print "- Checking"
-ui_print "$NAME"
-ui_print "  function at"
-ui_print "$FILE"
-ui_print "  Please wait..."
-if ! grep -Eq $NAME $FILE; then
-  ui_print "  ! Function not found."
-  ui_print "    Unsupported ROM."
-  remount_ro
-  abort
+if [ $DOLBY == true ]; then
+  early_init_mount_dir
 fi
-ui_print " "
-}
 
 # check
-chcon -R u:object_r:system_lib_file:s0 $MODPATH/system_support/lib*
-chcon -R u:object_r:same_process_hal_file:s0 $MODPATH/system_support/vendor/lib*
-NAME="libhidltransport.so libhwbinder.so"
-if [ $DOLBY == true ]; then
-  find_file
-fi
-NAME=_ZN7android23sp_report_stack_pointerEv
-FILE=$VENDOR/lib/hw/*audio*.so
-FILE2=$VENDOR/lib64/hw/*audio*.so
-ui_print "- Checking"
-ui_print "$NAME"
-ui_print "  function at"
-ui_print "$FILE"
-if [ "$IS64BIT" == true ]; then
-  ui_print "$FILE2"
-fi
-ui_print "  Please wait..."
-if [ "$IS64BIT" == true ]; then
-  if ! grep -Eq $NAME $FILE\
-  || ! grep -Eq $NAME $FILE2; then
-    ui_print "  Using legacy libraries."
-    cp -rf $MODPATH/system_10/* $MODPATH/system
-  fi
-else
-  if ! grep -Eq $NAME $FILE; then
-    ui_print "  Using legacy libraries."
-    cp -rf $MODPATH/system_10/* $MODPATH/system
-  fi
-fi
-rm -rf $MODPATH/system_10
-ui_print " "
-if [ $DOLBY == true ]; then
-  check_function
-fi
-FILE=$VENDOR/lib64/hw/*audio*.so
-if [ $DOLBY == true ]; then
-  check_function
-fi
-NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
-FILE=$SYSTEM/lib64/libhidlbase.so
-if [ $DOLBY == true ]; then
-  check_function
-fi
-FILE=$SYSTEM/lib/libhidlbase.so
-if [ $DOLBY == true ]; then
-  check_function
-fi
-rm -rf $MODPATH/system_support
+#chcon -R u:object_r:system_lib_file:s0 $MODPATH/system_support/lib*
+#chcon -R u:object_r:same_process_hal_file:s0 $MODPATH/system_support/vendor/lib*
+#NAME="libhidltransport.so libhwbinder.so"
+#if [ $DOLBY == true ]; then
+#  find_file
+#fi
+#rm -rf $MODPATH/system_support
 
 # patch manifest.xml
 if [ $DOLBY == true ]; then
@@ -663,7 +666,7 @@ if [ $DOLBY == true ]; then
       ui_print "- Using systemless manifest.xml patch."
       ui_print "  On some ROMs, it causes bugs or even makes bootloop"
       ui_print "  because not allowed to restart hwservicemanager."
-      ui_print "  You can fix this by using Magisk Delta Canary."
+      ui_print "  You can fix this by using Magisk Delta."
       ui_print " "
     fi
     FILE="$MAGISKTMP/mirror/*/etc/vintf/manifest.xml
@@ -1030,13 +1033,12 @@ done
 ui_print " "
 
 # vendor_overlay
-if [ $DOLBY == true ]; then
-  DIR=/product/vendor_overlay
-  if [ -d $DIR ]; then
-    ui_print "- Fixing $DIR mount..."
-    cp -rf $DIR/*/* $MODPATH/system/vendor
-    ui_print " "
-  fi
+DIR=/product/vendor_overlay
+if [ "`grep_prop fix.vendor_overlay $OPTIONALS`" == 1 ]\
+&& [ $DOLBY == true ] && [ -d $DIR ]; then
+  ui_print "- Fixing $DIR mount..."
+  cp -rf $DIR/*/* $MODPATH/system/vendor
+  ui_print " "
 fi
 
 # uninstaller

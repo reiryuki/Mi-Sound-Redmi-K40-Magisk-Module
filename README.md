@@ -22,11 +22,10 @@
 - https://t.me/androidryukimods/488
 
 ## Requirements
-- Architecture 64 bit Android 11 and up for the Dolby Atmos
+- Architecture 64 bit Android 11 and up for the Dolby Atmos EQ
 - Miui ROM Android 8 and up for the Mi Sound EQ
-- Magisk installed
+- Magisk installed (Recommended to use Magisk Delta for systemless early init mount manifest.xml if your ROM is Read-Only https://t.me/androidryukimodsdiscussions/100091)
 - Miui Core Magisk Module v4.0 or above installed (except you are in Miui ROM)
-- Recommended to use Magisk Delta for the systemless early init mount manifest.xml https://t.me/androidryukimodsdiscussions/100091
 
 ## WARNING!!!
 - Possibility of bootloop or even softbrick or a service failure on Read-Only ROM if you don't use Magisk Delta.
@@ -38,7 +37,7 @@
 - Reboot
 - Install Miui Core Magisk Module v4.0 or above first: https://github.com/reiryuki/Miui-Core-Magisk-Module (except you are in Miui ROM)
 - If your ROM has Dolby in-built, then you need to enable Dolby data clean-up for the first time (READ Optionals!)
-- Install this module https://www.pling.com/p/1769560/ via Magisk Manager or Recovery
+- Install this module https://www.pling.com/p/1769560/ via Magisk app or Recovery
 - Install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 only if using any other audio mod module
 - Reboot
 
@@ -57,7 +56,7 @@
 - Android 12.1 Nusantara ROM
 - Android 13 AOSP ROM
 
-## Known Issue
+## Known Issues
 - misoundfx doesn't work except in Miui ROM
 - Not all ROM is supported for the MiSound app
 
