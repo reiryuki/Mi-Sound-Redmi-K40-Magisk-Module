@@ -98,6 +98,9 @@ else
   ui_print " "
 fi
 
+# .aml.sh
+mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
+
 # dolby
 if [ $DOLBY == true ]; then
   sed -i 's/#d//g' $MODPATH/.aml.sh
@@ -187,9 +190,6 @@ if [ "`grep_prop sepolicy.sh $OPTIONALS`" == 1 ]\
 && [ -f $FILE ]; then
   mv -f $FILE $DES
 fi
-
-# .aml.sh
-mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
 
 # mod ui
 if [ "`grep_prop mod.ui $OPTIONALS`" == 1 ]; then
