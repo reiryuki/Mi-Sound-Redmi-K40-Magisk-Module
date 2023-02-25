@@ -58,30 +58,6 @@ else
   rm -f /data/adb/modules/MiuiCore/disable
 fi
 
-# bit
-if [ "$IS64BIT" == true ]; then
-  ui_print "- 64 bit"
-  ui_print " "
-  if [ "`grep_prop misound.dolby $OPTIONALS`" != 0 ]; then
-    ui_print "- Activating Dolby Atmos..."
-    DOLBY=true
-    MODNAME2='Mi Sound and Dolby Atmos Redmi K40'
-    sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
-    MODNAME=$MODNAME2
-    ui_print " "
-  else
-    DOLBY=false
-  fi
-else
-  ui_print "- 32 bit"
-  rm -rf `find $MODPATH/system -type d -name *64`
-  DOLBY=false
-  if [ "`grep_prop misound.dolby $OPTIONALS`" != 0 ]; then
-    ui_print "  ! Unsupported Dolby Atmos."
-  fi
-  ui_print " "
-fi
-
 # sdk
 NUM=26
 if [ "$API" -lt $NUM ]; then
@@ -91,8 +67,14 @@ if [ "$API" -lt $NUM ]; then
   abort
 else
   ui_print "- SDK $API"
-  if [ $DOLBY == true ] && [ "$API" -lt 28 ]; then
-    ui_print "  ! Unsupported Dolby Atmos."
+  if [ "`grep_prop misound.dolby $OPTIONALS`" != 0 ]; then
+    if [ "$API" -lt 28 ]; then
+      ui_print "  ! Unsupported Dolby Atmos."
+      DOLBY=false
+    else
+      DOLBY=true
+    fi
+  else
     DOLBY=false
   fi
   ui_print " "
@@ -101,31 +83,20 @@ fi
 # .aml.sh
 mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
 
-# dolby
-if [ $DOLBY == true ]; then
-  sed -i 's/#d//g' $MODPATH/.aml.sh
-  sed -i 's/#d//g' $MODPATH/*.sh
-  cp -rf $MODPATH/system_dolby/* $MODPATH/system
-else
-  MODNAME2='Mi Sound Redmi K40'
-  sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
-fi
-rm -rf $MODPATH/system_dolby
-
-# socket
-if [ ! -e /dev/socket/audio_hw_socket ]; then
-  ui_print "! Unsupported audio_hw_socket."
-  ui_print "  misoundfx will not be working with this device"
-  ui_print "  but you can still use the Dolby Atmos."
-  ui_print " "
-fi
-
 # mount
 if [ "$BOOTMODE" != true ]; then
   mount -o rw -t auto /dev/block/bootdevice/by-name/cust /vendor
   mount -o rw -t auto /dev/block/bootdevice/by-name/vendor /vendor
   mount -o rw -t auto /dev/block/bootdevice/by-name/persist /persist
   mount -o rw -t auto /dev/block/bootdevice/by-name/metadata /metadata
+fi
+
+# socket
+if [ ! -e /dev/socket/audio_hw_socket ]; then
+  ui_print "! Unsupported audio_hw_socket."
+  ui_print "  Mi Sound EQ will not be working with this device"
+  ui_print "  but you can still use the Dolby Atmos EQ."
+  ui_print " "
 fi
 
 # function
@@ -137,11 +108,61 @@ ui_print "$FILE"
 ui_print "  Please wait..."
 if ! grep -Eq $NAME $FILE; then
   ui_print "  ! Function not found."
-  ui_print "    Unsupported ROM."
-  abort
+  ui_print "    Unsupported Dolby Atmos."
+  DOLBY=false
+else
+  DOLBY=true
 fi
 ui_print " "
 }
+
+# bit
+if [ "$IS64BIT" == true ]; then
+  ui_print "- 64 bit"
+  ui_print " "
+  NAME=_ZN7android23sp_report_stack_pointerEv
+  if [ $DOLBY == true ]; then
+    ui_print "- Activating Dolby Atmos..."
+    ui_print " "
+    FILE=$VENDOR/lib64/hw/*audio*.so
+    check_function
+  fi
+  if [ $DOLBY == true ]; then
+    FILE=$VENDOR/lib/hw/*audio*.so
+    check_function
+  fi
+  NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
+  TARGET=vendor.dolby.hardware.dms@2.0.so
+  if [ $DOLBY == true ]; then
+    LISTS=`strings $MODPATH/system_dolby/vendor/lib64/$TARGET | grep ^lib | grep .so`
+    FILE=`for LIST in $LISTS; do echo $SYSTEM/lib64/$LIST; done`
+    check_function
+  fi
+  if [ $DOLBY == true ]; then
+    LISTS=`strings $MODPATH/system_dolby/vendor/lib/$TARGET | grep ^lib | grep .so`
+    FILE=`for LIST in $LISTS; do echo $SYSTEM/lib/$LIST; done`
+    check_function
+  fi
+  if [ $DOLBY == true ]; then
+    MODNAME2='Mi Sound and Dolby Atmos Redmi K40'
+    sed -i "s/$MODNAME/$MODNAME2/g" $MODPATH/module.prop
+    MODNAME=$MODNAME2
+    sed -i 's/#d//g' $MODPATH/.aml.sh
+    sed -i 's/#d//g' $MODPATH/*.sh
+    cp -rf $MODPATH/system_dolby/* $MODPATH/system
+  else
+    DOLBY=false
+  fi
+else
+  ui_print "- 32 bit"
+  rm -rf `find $MODPATH/system -type d -name *64`
+  if [ $DOLBY == true ]; then
+    ui_print "  ! Unsupported Dolby Atmos."
+    DOLBY=false
+  fi
+  ui_print " "
+fi
+rm -rf $MODPATH/system_dolby
 
 # check
 NAME=_ZN7android23sp_report_stack_pointerEv
@@ -167,21 +188,8 @@ else
     cp -rf $MODPATH/system_10/* $MODPATH/system
   fi
 fi
-rm -rf $MODPATH/system_10
 ui_print " "
-if [ $DOLBY == true ]; then
-  check_function
-  FILE=$VENDOR/lib64/hw/*audio*.so
-  check_function
-  NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
-  TARGET=vendor.dolby.hardware.dms@2.0.so
-  LIST=`strings $MODPATH/system/vendor/lib64/$TARGET | grep lib | grep .so`
-  FILE=`for LISTS in $LIST; do echo $SYSTEM/lib64/$LISTS; done`
-  check_function
-  LIST=`strings $MODPATH/system/vendor/lib/$TARGET | grep lib | grep .so`
-  FILE=`for LISTS in $LIST; do echo $SYSTEM/lib/$LISTS; done`
-  check_function
-fi
+rm -rf $MODPATH/system_10
 
 # sepolicy
 FILE=$MODPATH/sepolicy.rule
@@ -234,10 +242,10 @@ extract_lib
 # cleaning
 ui_print "- Cleaning..."
 if [ $DOLBY == true ]; then
-  PKG="com.miui.misound com.dolby.daxservice"
+  PKG=`cat $MODPATH/package-dolby.txt`
   rm -f /data/vendor/dolby/dax_sqlite3.db
 else
-  PKG=com.miui.misound
+  PKG=`cat $MODPATH/package.txt`
 fi
 if [ "$BOOTMODE" == true ]; then
   for PKGS in $PKG; do
@@ -765,8 +773,7 @@ MODDIR=$MODPATH/system/vendor/euclid/product/app/$APPS
 replace_dir
 }
 check_app() {
-if [ "$BOOTMODE" == true ]\
-&& [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
+if [ "$BOOTMODE" == true ]; then
   for APPS in $APP; do
     FILE=`find $SYSTEM $PRODUCT $SYSTEM_EXT $VENDOR\
                $MY_PRODUCT -type f -name $APPS.apk`
@@ -785,7 +792,7 @@ fi
 # hide
 APP="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
 hide_oat
-APP="MusicFX Dirac"
+APP=MusicFX
 for APPS in $APP; do
   hide_app
 done
@@ -798,20 +805,22 @@ if [ $DOLBY == true ]; then
 fi
 
 # dirac & misoundfx
-APP="XiaomiParts ZenfoneParts ZenParts GalaxyParts
-     KharaMeParts DeviceParts PocoParts"
-FILE=$MODPATH/.aml.sh
-NAME=misoundfx
-UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
-ui_print "- Checking $NAME..."
-check_app
-ui_print " "
-FILE=$MODPATH/.aml.sh
-NAME='dirac soundfx'
-UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
-ui_print "- Checking $NAME..."
-check_app
-ui_print " "
+if [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
+  APP="XiaomiParts ZenfoneParts ZenParts GalaxyParts
+       KharaMeParts DeviceParts PocoParts"
+  FILE=$MODPATH/.aml.sh
+  NAME=misoundfx
+  UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
+  ui_print "- Checking $NAME..."
+  check_app
+  ui_print " "
+  FILE=$MODPATH/.aml.sh
+  NAME='dirac soundfx'
+  UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
+  ui_print "- Checking $NAME..."
+  check_app
+  ui_print " "
+fi
 
 # stream mode
 FILE=$MODPATH/.aml.sh

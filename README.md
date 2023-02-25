@@ -57,8 +57,8 @@
 - Android 13 AOSP ROM
 
 ## Known Issues
-- misoundfx doesn't work except in Miui ROM
-- Not all ROM is supported for the MiSound app
+- Mi Sound EQ doesn't work except in Miui ROM
+- Not all ROM is supported for the MiSound app (e.g. CrDroid ROM)
 
 ## Credits and contributors
 - https://t.me/viperatmos
