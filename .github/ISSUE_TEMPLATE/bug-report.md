@@ -1,10 +1,10 @@
 ---
 name: Bug Report
-about: ''
+about: Issues will be closed immediately if you don't follow this guide
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-Issues will be closed immediately if you don't follow this guide: https://t.me/androidryukimodsdiscussions/2618
+https://t.me/androidryukimodsdiscussions/2618
