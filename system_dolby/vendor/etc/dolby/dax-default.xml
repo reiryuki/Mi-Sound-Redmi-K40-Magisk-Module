@@ -1585,24 +1585,4 @@
   <authorized_technologies sku_name="DAX3 Android" device="dax3_android" bundle="DAP MOBILE v1.3" format="2">
     <global_setting virtual_bass_process="1"/>
   </authorized_technologies>
-  <graphic-equalizer>
-    <geq-preset name="custom" id="0" max_edit_gain="576" min_edit_gain="-576">
-    </geq-preset>
-    <geq-preset name="rock" id="1" max_edit_gain="576" min_edit_gain="-576">
-    </geq-preset>
-    <geq-preset name="jazz" id="2" max_edit_gain="576" min_edit_gain="-576">
-    </geq-preset>
-    <geq-preset name="pop" id="3" max_edit_gain="576" min_edit_gain="-576">
-    </geq-preset>
-    <geq-preset name="classical" id="4" max_edit_gain="576" min_edit_gain="-576">
-    </geq-preset>
-    <geq-preset name="hip hop" id="5" max_edit_gain="576" min_edit_gain="-576">
-    </geq-preset>
-    <geq-preset name="blues" id="6" max_edit_gain="576" min_edit_gain="-576">
-    </geq-preset>
-    <geq-preset name="electronic" id="7" max_edit_gain="576" min_edit_gain="-576">
-    </geq-preset>
-    <geq-preset name="metal" id="8" max_edit_gain="576" min_edit_gain="-576">
-    </geq-preset>
-  </graphic-equalizer>
 </device_data>
