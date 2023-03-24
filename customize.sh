@@ -1,7 +1,5 @@
 # space
-if [ "$BOOTMODE" == true ]; then
-  ui_print " "
-fi
+ui_print " "
 
 # magisk
 if [ -d /sbin/.magisk ]; then
@@ -283,8 +281,18 @@ for NAMES in $NAME; do
   rm -rf /cache/magisk/$NAMES
 done
 }
+conflict_disable() {
+for NAMES in $NAME; do
+  DIR=/data/adb/modules_update/$NAMES
+  touch $DIR/disable
+  DIR=/data/adb/modules/$NAMES
+  touch $DIR/disable
+done
+}
 
 # conflict
+NAME=diracmisoundfxRemover
+conflict_disable
 if [ $DOLBY == true ]; then
   NAME="dolbyatmos
         DolbyAudio

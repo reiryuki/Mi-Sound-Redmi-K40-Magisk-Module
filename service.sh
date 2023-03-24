@@ -163,15 +163,28 @@ appops set $PKG SYSTEM_ALERT_WINDOW allow
 if [ "$API" -ge 30 ]; then
   appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
 fi
+if [ "$API" -ge 33 ]; then
+  appops set $PKG ACCESS_RESTRICTED_SETTINGS allow
+fi
+PKGOPS=`appops get $PKG`
+UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 userId= | sed 's/    userId=//'`
+if [ "$UID" -gt 9999 ]; then
+  UIDOPS=`appops get --uid "$UID"`
+fi
 
 # grant
 PKG=com.dolby.daxservice
-if pm list packages | grep $PKG ; then
+if pm list packages | grep $PKG; then
   if [ "$API" -ge 31 ]; then
     pm grant $PKG android.permission.BLUETOOTH_CONNECT
   fi
   if [ "$API" -ge 30 ]; then
     appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
+  fi
+  PKGOPS=`appops get $PKG`
+  UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 userId= | sed 's/    userId=//'`
+  if [ "$UID" -gt 9999 ]; then
+    UIDOPS=`appops get --uid "$UID"`
   fi
 fi
 

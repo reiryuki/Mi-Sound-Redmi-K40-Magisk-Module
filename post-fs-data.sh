@@ -53,6 +53,10 @@ if [ -d $AML ] && [ ! -f $AML/disable ]\
 && [ -d $ACDB ] && [ ! -f $ACDB/disable ]; then
   touch $ACDB/disable
 fi
+DIR=/data/adb/modules/diracmisoundfxRemover
+if [ -d $DIR ] && [ ! -f $DIR/disable ]; then
+  touch $DIR/disable
+fi
 
 # directory
 SKU=`ls $VETC/audio | grep sku_`
