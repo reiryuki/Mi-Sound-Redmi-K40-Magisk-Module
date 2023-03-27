@@ -7,31 +7,31 @@ ro.control_privapp_permissions=log
 #persist.vendor.audio.hifi=false
 
 # note
-#persist.audio.soundfx.type
-#persist.sys.button_jack_profile
-#persist.sys.button_jack_switch
-#persist.vendor.audio.button_jack.profile
-#persist.vendor.audio.button_jack.switch
-#persist.vendor.audio.sfx.mode
-#persist.vendor.audio.sfx.spk.stereomode.state
-#persist.vendor.audio.sfx.stereomode.state
-#persist.vendor.audio.surround.level
-#persist.vendor.audio.vocal.level
-#persist.vendor.audio.spatial.enable
-#persist.vendor.audio.3dsurround.enable
-#persist.vendor.audio.scenario.switch
+#persist.audio.soundfx.type=
+#persist.sys.button_jack_profile=
+#persist.sys.button_jack_switch=
+#persist.vendor.audio.button_jack.profile=
+#persist.vendor.audio.button_jack.switch=
+#persist.vendor.audio.sfx.mode=
+#persist.vendor.audio.sfx.spk.stereomode.state=
+#persist.vendor.audio.sfx.stereomode.state=
+#persist.vendor.audio.surround.level=
+#persist.vendor.audio.vocal.level=
+#persist.vendor.audio.spatial.enable=
+#persist.vendor.audio.3dsurround.enable=
+#persist.vendor.audio.scenario.switch=
 
 # auto
 #persist.vendor.audio.misound.disable=true
-#persist.vendor.audio.sfx.hd.music.state
-#persist.vendor.audio.sfx.hd.type
-#persist.vendor.audio.sfx.hd.eq
-#persist.vendor.audio.ears.compensation.example
-#persist.vendor.audio.ears.compensation.state
-#persist.vendor.audio.ears.compensation.eq.left
-#persist.vendor.audio.ears.compensation.eq.right
-#persist.vendor.audio.scenario
-#persist.vendor.audio.scenario.restore
+#persist.vendor.audio.sfx.hd.music.state=
+#persist.vendor.audio.sfx.hd.type=
+#persist.vendor.audio.sfx.hd.eq=
+#persist.vendor.audio.ears.compensation.example=
+#persist.vendor.audio.ears.compensation.state=
+#persist.vendor.audio.ears.compensation.eq.left=
+#persist.vendor.audio.ears.compensation.eq.right=
+#persist.vendor.audio.scenario=
+#persist.vendor.audio.scenario.restore=
 
 
 
