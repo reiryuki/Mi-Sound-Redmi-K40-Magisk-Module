@@ -392,4 +392,16 @@ misoundfx
 #u  sed -i 's/,raw//g' $MODAP
 #ufi
 
+# patch audio policy
+#dif [ "$MODAP" ]; then
+#d  sed -i 's/COMPRESS_OFFLOAD/NONE/g' $MODAP
+#d  sed -i 's/,compressed_offload//g' $MODAP
+#dfi
+
+
+
+
+
+
+
 

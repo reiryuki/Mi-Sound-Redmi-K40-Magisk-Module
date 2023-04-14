@@ -6,7 +6,7 @@ if echo "$PROP" | grep 64; then
       if [ -f /system/lib64/$NAMES ]; then
         cp -f /system/lib64/$NAMES $DES
       else
-        cp -f /system/apex/*/lib64/$NAMES $DES
+        cp -f /apex/*/lib64/$NAMES $DES
       fi
     done
     chmod 0755 $DES/*
@@ -19,7 +19,7 @@ else
       if [ -f /system/lib/$NAMES ]; then
         cp -f /system/lib/$NAMES $DES
       else
-        cp -f /system/apex/*/lib/$NAMES $DES
+        cp -f /apex/*/lib/$NAMES $DES
       fi
     done
     chmod 0755 $DES/*
