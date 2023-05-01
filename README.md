@@ -23,7 +23,7 @@
 
 ## Requirements
 - Architecture 64 bit Android 11 and up for the Dolby Atmos EQ
-- Miui ROM Android 8 and up for the Mi Sound EQ (It's still shows the UI in non-Miui ROM but doesn't work)
+- Miui ROM Android 8 and up for the Mi Sound EQ (It still shows the UI in non-Miui ROM but doesn't work)
 - Magisk installed (Recommended to use Magisk Delta for systemless early init mount manifest.xml if your ROM is Read-Only https://t.me/androidryukimodsdiscussions/100091)
 - Miui Core Magisk Module installed on non-Miui ROM
 

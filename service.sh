@@ -25,7 +25,6 @@ resetprop ro.audio.hifi false
 resetprop ro.vendor.audio.hifi false
 resetprop ro.vendor.audio.ring.filter true
 resetprop ro.vendor.audio.scenario.support true
-#resetprop ro.vendor.audio.sfx.audiovisual false
 resetprop ro.vendor.audio.sfx.earadj true
 resetprop ro.vendor.audio.sfx.independentequalizer true
 resetprop ro.vendor.audio.sfx.scenario true
@@ -34,8 +33,9 @@ resetprop ro.audio.soundfx.type mi
 resetprop ro.vendor.audio.soundfx.type mi
 resetprop ro.audio.soundfx.usb true
 resetprop ro.vendor.audio.soundfx.usb true
+resetprop ro.vendor.audio.sfx.harmankardon false
+#resetprop ro.vendor.audio.sfx.audiovisual false
 #resetprop ro.audio.soundfx.dirac false
-#resetprop ro.vendor.audio.sfx.harmankardon true
 #resetprop ro.vendor.audio.sfx.speaker true
 #resetprop ro.vendor.audio.sfx.spk.movie true
 #resetprop ro.vendor.audio.surround.headphone.only false
