@@ -1,6 +1,5 @@
 MODPATH=${0%/*}
 API=`getprop ro.build.version.sdk`
-AML=/data/adb/modules/aml
 
 # debug
 exec 2>$MODPATH/debug.log
@@ -33,7 +32,7 @@ resetprop ro.audio.soundfx.type mi
 resetprop ro.vendor.audio.soundfx.type mi
 resetprop ro.audio.soundfx.usb true
 resetprop ro.vendor.audio.soundfx.usb true
-resetprop ro.vendor.audio.sfx.harmankardon false
+#hresetprop ro.vendor.audio.sfx.harmankardon false
 #resetprop ro.vendor.audio.sfx.audiovisual false
 #resetprop ro.audio.soundfx.dirac false
 #resetprop ro.vendor.audio.sfx.speaker true
@@ -99,55 +98,46 @@ killall android.hardware.sensors@2.0-service.multihal
 sleep 20
 
 # aml fix
-DIR=$AML/system/vendor/odm/etc
+AML=/data/adb/modules/aml
+if [ -L $AML/system/vendor ]\
+&& [ -d $AML/vendor ]; then
+  DIR=$AML/vendor/odm/etc
+else
+  DIR=$AML/system/vendor/odm/etc
+fi
 if [ -d $DIR ] && [ ! -f $AML/disable ]; then
   chcon -R u:object_r:vendor_configs_file:s0 $DIR
 fi
-
-# magisk
-if [ -d /sbin/.magisk ]; then
-  MAGISKTMP=/sbin/.magisk
+AUD=`grep AUD= $MODPATH/copy.sh | sed -e 's|AUD=||g' -e 's|"||g'`
+if [ -L $AML/system/vendor ]\
+&& [ -d $AML/vendor ]; then
+  DIR=$AML/vendor
 else
-  MAGISKTMP=`realpath /dev/*/.magisk`
-fi
-
-# path
-MIRROR=$MAGISKTMP/mirror
-SYSTEM=`realpath $MIRROR/system`
-VENDOR=`realpath $MIRROR/vendor`
-ODM=`realpath $MIRROR/odm`
-MY_PRODUCT=`realpath $MIRROR/my_product`
-
-# mount
-NAME="*audio*effects*.conf -o -name *audio*effects*.xml -o -name *policy*.conf -o -name *policy*.xml"
-if [ -d $AML ] && [ ! -f $AML/disable ]\
-&& find $AML/system/vendor -type f -name $NAME; then
-  NAME="*audio*effects*.conf -o -name *audio*effects*.xml"
-#p  NAME="*audio*effects*.conf -o -name *audio*effects*.xml -o -name *policy*.conf -o -name *policy*.xml"
   DIR=$AML/system/vendor
-else
-  DIR=$MODPATH/system/vendor
 fi
-FILES=`find $DIR/etc -maxdepth 1 -type f -name $NAME`
-if [ ! -d $ODM ] && [ "`realpath /odm/etc`" == /odm/etc ]\
-&& [ "$FILES" ]; then
-  for FILE in $FILES; do
-    DES="/odm$(echo $FILE | sed "s|$DIR||")"
-    if [ -f $DES ]; then
-      umount $DES
-      mount -o bind $FILE $DES
-    fi
-  done
-fi
-if [ ! -d $MY_PRODUCT ] && [ -d /my_product/etc ]\
-&& [ "$FILES" ]; then
-  for FILE in $FILES; do
-    DES="/my_product$(echo $FILE | sed "s|$DIR||")"
-    if [ -f $DES ]; then
-      umount $DES
-      mount -o bind $FILE $DES
-    fi
-  done
+FILES=`find $DIR -type f -name $AUD`
+if [ -d $AML ] && [ ! -f $AML/disable ]\
+&& find $DIR -type f -name $AUD; then
+  if ! grep '/odm' $AML/post-fs-data.sh && [ -d /odm ]\
+  && [ "`realpath /odm/etc`" == /odm/etc ]; then
+    for FILE in $FILES; do
+      DES=/odm`echo $FILE | sed "s|$DIR||g"`
+      if [ -f $DES ]; then
+        umount $DES
+        mount -o bind $FILE $DES
+      fi
+    done
+  fi
+  if ! grep '/my_product' $AML/post-fs-data.sh\
+  && [ -d /my_product ]; then
+    for FILE in $FILES; do
+      DES=/my_product`echo $FILE | sed "s|$DIR||g"`
+      if [ -f $DES ]; then
+        umount $DES
+        mount -o bind $FILE $DES
+      fi
+    done
+  fi
 fi
 
 # wait
@@ -238,7 +228,7 @@ if [ "$NEXTPID" ]; then
 else
   PID=`pidof $SERVER`
 fi
-sleep 10
+sleep 15
 stop_log
 NEXTPID=`pidof $SERVER`
 if [ "`getprop init.svc.$SERVER`" != stopped ]; then

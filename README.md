@@ -24,7 +24,7 @@
 ## Requirements
 - Architecture 64 bit Android 11 and up for the Dolby Atmos EQ
 - Miui ROM Android 8 and up for the Mi Sound EQ (It still shows the UI in non-Miui ROM but doesn't work)
-- Magisk installed (Recommended to use Magisk Delta for systemless early init mount manifest.xml if your ROM is Read-Only https://t.me/androidryukimodsdiscussions/100091)
+- Magisk or KernelSU installed (Recommended to use Magisk Delta for systemless early init mount manifest.xml if your ROM is Read-Only https://t.me/androidryukimodsdiscussions/100091)
 - Miui Core Magisk Module installed on non-Miui ROM
 
 ## WARNING!!!
@@ -37,9 +37,10 @@
 - Reboot
 - Install Miui Core Magisk Module first if you are in non-Miui ROM: https://github.com/reiryuki/Miui-Core-Magisk-Module
 - If your ROM has Dolby in-built, then you need to enable Dolby data clean-up for the first time (READ Optionals!)
-- Install this module https://www.pling.com/p/1769560/ via Magisk app or Recovery
+- Install this module https://www.pling.com/p/1769560/ via Magisk app or KernelSU app or Recovery (unless you are using KernelSU)
 - Install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 only if using any other audio mod module
 - Reboot
+- If you are using KernelSU, you need to allow superuser list manually all package name listed in package-dolby.txt and reboot after
 
 ## Optionals & Troubleshootings
 - https://t.me/androidryukimodsdiscussions/75400

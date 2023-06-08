@@ -5,13 +5,13 @@ dontaudit system_server system_file file write
 allow     system_server system_file file write
 
 # context
-create { system_lib_file vendor_file vendor_configs_file vendor_data_file vendor_media_data_file hal_dms_default_exec same_process_hal_file }
-dontaudit { system_file system_lib_file vendor_file vendor_configs_file vendor_data_file vendor_media_data_file hal_dms_default_exec same_process_hal_file } labeledfs filesystem associate
-allow     { system_file system_lib_file vendor_file vendor_configs_file vendor_data_file vendor_media_data_file hal_dms_default_exec same_process_hal_file } labeledfs filesystem associate
+create { system_lib_file vendor_file vendor_configs_file vendor_data_file vendor_media_data_file hal_dms_default_exec }
+dontaudit { system_file system_lib_file vendor_file vendor_configs_file vendor_data_file vendor_media_data_file hal_dms_default_exec } labeledfs filesystem associate
+allow     { system_file system_lib_file vendor_file vendor_configs_file vendor_data_file vendor_media_data_file hal_dms_default_exec } labeledfs filesystem associate
 dontaudit init { system_file system_lib_file vendor_file vendor_configs_file vendor_data_file vendor_media_data_file } { dir file } relabelfrom
 allow     init { system_file system_lib_file vendor_file vendor_configs_file vendor_data_file vendor_media_data_file } { dir file } relabelfrom
-dontaudit init { hal_dms_default_exec same_process_hal_file } file relabelfrom
-allow     init { hal_dms_default_exec same_process_hal_file } file relabelfrom
+dontaudit init hal_dms_default_exec file relabelfrom
+allow     init hal_dms_default_exec file relabelfrom
 
 # hwservice_manager
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app hal_audio_default mtk_hal_audio audioserver } { default_android_hwservice hal_dms_hwservice dms_hwservice } hwservice_manager find
@@ -76,6 +76,10 @@ dontaudit { hal_audio_default mtk_hal_audio audioserver } sysfs file { read open
 allow     { hal_audio_default mtk_hal_audio audioserver } sysfs file { read open }
 dontaudit { hal_audio_default mtk_hal_audio audioserver } system_prop file map
 allow     { hal_audio_default mtk_hal_audio audioserver } system_prop file map
+dontaudit { hal_audio_default mtk_hal_audio audioserver } vendor_pd_locater_dbg_prop file read
+allow     { hal_audio_default mtk_hal_audio audioserver } vendor_pd_locater_dbg_prop file read
+dontaudit { hal_audio_default mtk_hal_audio audioserver } sysfs_net dir search
+allow     { hal_audio_default mtk_hal_audio audioserver } sysfs_net dir search
 dontaudit { hal_audio_default mtk_hal_audio audioserver } { sysfs_net sysfs } dir { read open }
 allow     { hal_audio_default mtk_hal_audio audioserver } { sysfs_net sysfs } dir { read open }
 dontaudit { hal_audio_default mtk_hal_audio audioserver } logd_socket sock_file write
