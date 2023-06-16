@@ -72,8 +72,53 @@ output_session_processing {\
     }\
     notification {\
     }\
+    bluetooth_sco {\
+    }\
+    dtmf {\
+    }\
+    enforced_audible {\
+    }\
+    accessibility {\
+    }\
+    tts {\
+    }\
+    assistant {\
+    }\
+    call_assistant {\
+    }\
+    patch {\
+    }\
+    rerouting {\
+    }\
 }\' $MODAEC
   else
+    if ! grep -q '^    rerouting {' $MODAEC; then
+      sed -i "/^output_session_processing {/a\    rerouting {\n    }" $MODAEC
+    fi
+    if ! grep -q '^    patch {' $MODAEC; then
+      sed -i "/^output_session_processing {/a\    patch {\n    }" $MODAEC
+    fi
+    if ! grep -q '^    call_assistant {' $MODAEC; then
+      sed -i "/^output_session_processing {/a\    call_assistant {\n    }" $MODAEC
+    fi
+    if ! grep -q '^    assistant {' $MODAEC; then
+      sed -i "/^output_session_processing {/a\    assistant {\n    }" $MODAEC
+    fi
+    if ! grep -q '^    tts {' $MODAEC; then
+      sed -i "/^output_session_processing {/a\    tts {\n    }" $MODAEC
+    fi
+    if ! grep -q '^    accessibility {' $MODAEC; then
+      sed -i "/^output_session_processing {/a\    accessibility {\n    }" $MODAEC
+    fi
+    if ! grep -q '^    enforced_audible {' $MODAEC; then
+      sed -i "/^output_session_processing {/a\    enforced_audible {\n    }" $MODAEC
+    fi
+    if ! grep -q '^    dtmf {' $MODAEC; then
+      sed -i "/^output_session_processing {/a\    dtmf {\n    }" $MODAEC
+    fi
+    if ! grep -q '^    bluetooth_sco {' $MODAEC; then
+      sed -i "/^output_session_processing {/a\    bluetooth_sco {\n    }" $MODAEC
+    fi
     if ! grep -q '^    notification {' $MODAEC; then
       sed -i "/^output_session_processing {/a\    notification {\n    }" $MODAEC
     fi
@@ -117,8 +162,53 @@ if [ "$MODAEX" ]; then
         <\/stream>\
         <stream type="notification">\
         <\/stream>\
+        <stream type="bluetooth_sco">\
+        <\/stream>\
+        <stream type="dtmf">\
+        <\/stream>\
+        <stream type="enforced_audible">\
+        <\/stream>\
+        <stream type="accessibility">\
+        <\/stream>\
+        <stream type="tts">\
+        <\/stream>\
+        <stream type="assistant">\
+        <\/stream>\
+        <stream type="call_assistant">\
+        <\/stream>\
+        <stream type="patch">\
+        <\/stream>\
+        <stream type="rerouting">\
+        <\/stream>\
     <\/postprocess>' $MODAEX
   else
+    if ! grep -q '<stream type="rerouting">' $MODAEX; then
+      sed -i "/<postprocess>/a\        <stream type=\"rerouting\">\n        <\/stream>" $MODAEX
+    fi
+    if ! grep -q '<stream type="patch">' $MODAEX; then
+      sed -i "/<postprocess>/a\        <stream type=\"patch\">\n        <\/stream>" $MODAEX
+    fi
+    if ! grep -q '<stream type="call_assistant">' $MODAEX; then
+      sed -i "/<postprocess>/a\        <stream type=\"call_assistant\">\n        <\/stream>" $MODAEX
+    fi
+    if ! grep -q '<stream type="assistant">' $MODAEX; then
+      sed -i "/<postprocess>/a\        <stream type=\"assistant\">\n        <\/stream>" $MODAEX
+    fi
+    if ! grep -q '<stream type="tts">' $MODAEX; then
+      sed -i "/<postprocess>/a\        <stream type=\"tts\">\n        <\/stream>" $MODAEX
+    fi
+    if ! grep -q '<stream type="accessibility">' $MODAEX; then
+      sed -i "/<postprocess>/a\        <stream type=\"accessibility\">\n        <\/stream>" $MODAEX
+    fi
+    if ! grep -q '<stream type="enforced_audible">' $MODAEX; then
+      sed -i "/<postprocess>/a\        <stream type=\"enforced_audible\">\n        <\/stream>" $MODAEX
+    fi
+    if ! grep -q '<stream type="dtmf">' $MODAEX; then
+      sed -i "/<postprocess>/a\        <stream type=\"dtmf\">\n        <\/stream>" $MODAEX
+    fi
+    if ! grep -q '<stream type="bluetooth_sco">' $MODAEX; then
+      sed -i "/<postprocess>/a\        <stream type=\"bluetooth_sco\">\n        <\/stream>" $MODAEX
+    fi
     if ! grep -q '<stream type="notification">' $MODAEX\
     || grep -q '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
     || grep -q '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
@@ -167,6 +257,15 @@ if [ "$MODAEC" ]; then
 #s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
 #v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
 #n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+#b  sed -i "/^    bluetooth_sco {/a\        $NAME {\n        }" $MODAEC
+#f  sed -i "/^    dtmf {/a\        $NAME {\n        }" $MODAEC
+#e  sed -i "/^    enforced_audible {/a\        $NAME {\n        }" $MODAEC
+#y  sed -i "/^    accessibility {/a\        $NAME {\n        }" $MODAEC
+#t  sed -i "/^    tts {/a\        $NAME {\n        }" $MODAEC
+#i  sed -i "/^    assistant {/a\        $NAME {\n        }" $MODAEC
+#c  sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
+#p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
+#g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
 fi
 # patch effects xml
 if [ "$MODAEX" ]; then
@@ -179,13 +278,22 @@ if [ "$MODAEX" ]; then
 #s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#b  sed -i "/<stream type=\"bluetooth_sco\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#f  sed -i "/<stream type=\"dtmf\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#e  sed -i "/<stream type=\"enforced_audible\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#y  sed -i "/<stream type=\"accessibility\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#t  sed -i "/<stream type=\"tts\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#i  sed -i "/<stream type=\"assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#c  sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
 }
 dirac() {
 # store
 LIB=libdirac.so
-LIBNAME=dirac
-NAME=dirac
+LIBNAME=dirac_mod
+NAME=dirac_mod
 UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
 RMVS="$LIB $LIBNAME $NAME $UUID"
 # patch audio effects conf
@@ -200,7 +308,7 @@ global_processing {\
 }\' $MODAEC
   fi
   sed -i '/^global_processing {/a\
-  dirac {\
+  dirac_mod {\
     bl@lakala {\
       param {\
         int 6\
@@ -232,6 +340,15 @@ global_processing {\
 #s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
 #v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
 #n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+#b  sed -i "/^    bluetooth_sco {/a\        $NAME {\n        }" $MODAEC
+#f  sed -i "/^    dtmf {/a\        $NAME {\n        }" $MODAEC
+#e  sed -i "/^    enforced_audible {/a\        $NAME {\n        }" $MODAEC
+#y  sed -i "/^    accessibility {/a\        $NAME {\n        }" $MODAEC
+#t  sed -i "/^    tts {/a\        $NAME {\n        }" $MODAEC
+#i  sed -i "/^    assistant {/a\        $NAME {\n        }" $MODAEC
+#c  sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
+#p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
+#g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
 fi
 # patch effects xml
 if [ "$MODAEX" ]; then
@@ -244,6 +361,15 @@ if [ "$MODAEX" ]; then
 #s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#b  sed -i "/<stream type=\"bluetooth_sco\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#f  sed -i "/<stream type=\"dtmf\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#e  sed -i "/<stream type=\"enforced_audible\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#y  sed -i "/<stream type=\"accessibility\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#t  sed -i "/<stream type=\"tts\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#i  sed -i "/<stream type=\"assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#c  sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
 }
 dap_proxy() {
@@ -274,6 +400,15 @@ if [ "$MODAEC" ]; then
 #s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
 #v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
 #n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+#b  sed -i "/^    bluetooth_sco {/a\        $NAME {\n        }" $MODAEC
+#f  sed -i "/^    dtmf {/a\        $NAME {\n        }" $MODAEC
+#e  sed -i "/^    enforced_audible {/a\        $NAME {\n        }" $MODAEC
+#y  sed -i "/^    accessibility {/a\        $NAME {\n        }" $MODAEC
+#t  sed -i "/^    tts {/a\        $NAME {\n        }" $MODAEC
+#i  sed -i "/^    assistant {/a\        $NAME {\n        }" $MODAEC
+#c  sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
+#p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
+#g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
 fi
 # patch audio effects xml
 if [ "$MODAEX" ]; then
@@ -291,6 +426,15 @@ if [ "$MODAEX" ]; then
 #s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#b  sed -i "/<stream type=\"bluetooth_sco\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#f  sed -i "/<stream type=\"dtmf\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#e  sed -i "/<stream type=\"enforced_audible\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#y  sed -i "/<stream type=\"accessibility\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#t  sed -i "/<stream type=\"tts\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#i  sed -i "/<stream type=\"assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#c  sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
 }
 dap() {
@@ -313,6 +457,15 @@ if [ "$MODAEC" ]; then
 #s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
 #v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
 #n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+#b  sed -i "/^    bluetooth_sco {/a\        $NAME {\n        }" $MODAEC
+#f  sed -i "/^    dtmf {/a\        $NAME {\n        }" $MODAEC
+#e  sed -i "/^    enforced_audible {/a\        $NAME {\n        }" $MODAEC
+#y  sed -i "/^    accessibility {/a\        $NAME {\n        }" $MODAEC
+#t  sed -i "/^    tts {/a\        $NAME {\n        }" $MODAEC
+#i  sed -i "/^    assistant {/a\        $NAME {\n        }" $MODAEC
+#c  sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
+#p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
+#g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
 fi
 # patch effects xml
 if [ "$MODAEX" ]; then
@@ -325,6 +478,15 @@ if [ "$MODAEX" ]; then
 #s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#b  sed -i "/<stream type=\"bluetooth_sco\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#f  sed -i "/<stream type=\"dtmf\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#e  sed -i "/<stream type=\"enforced_audible\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#y  sed -i "/<stream type=\"accessibility\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#t  sed -i "/<stream type=\"tts\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#i  sed -i "/<stream type=\"assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#c  sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
 }
 vqe() {
@@ -365,6 +527,15 @@ if [ "$MODAEC" ]; then
 #s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
 #v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
 #n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+#b  sed -i "/^    bluetooth_sco {/a\        $NAME {\n        }" $MODAEC
+#f  sed -i "/^    dtmf {/a\        $NAME {\n        }" $MODAEC
+#e  sed -i "/^    enforced_audible {/a\        $NAME {\n        }" $MODAEC
+#y  sed -i "/^    accessibility {/a\        $NAME {\n        }" $MODAEC
+#t  sed -i "/^    tts {/a\        $NAME {\n        }" $MODAEC
+#i  sed -i "/^    assistant {/a\        $NAME {\n        }" $MODAEC
+#c  sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
+#p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
+#g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
 fi
 # patch audio effects xml
 if [ "$MODAEX" ]; then
@@ -377,6 +548,15 @@ if [ "$MODAEX" ]; then
 #s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#b  sed -i "/<stream type=\"bluetooth_sco\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#f  sed -i "/<stream type=\"dtmf\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#e  sed -i "/<stream type=\"enforced_audible\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#y  sed -i "/<stream type=\"accessibility\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#t  sed -i "/<stream type=\"tts\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#i  sed -i "/<stream type=\"assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#c  sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
 }
 
