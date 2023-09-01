@@ -292,7 +292,9 @@ fi
 dirac() {
 # store
 LIB=libdirac.so
+LIBNAME=dirac
 LIBNAME=dirac_mod
+NAME=dirac
 NAME=dirac_mod
 UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
 RMVS="$LIB $LIBNAME $NAME $UUID"
