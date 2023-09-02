@@ -24,7 +24,7 @@ VAL=/vendor/etc/acdbdata/$NAME2
 FILE=`find $MODPATH -type f -name $NAME2`
 ROW=`getprop | grep $NAME | grep $NAME2`
 if [ "$FILE" ] && [ ! "$ROW" ] ; then
-  NUM=`getprop | grep $NAME | tail -1 | sed 's|]: .*||g' | sed "s|\[$NAME||g"`
+  NUM=`getprop | grep $NAME | sed 's|]: .*||g' | sed "s|\[$NAME||g" | tr '\n' ' ' | tr ' ' '\n' | sort -n | tail -1`
   [ "$NUM" ] && NUM=`expr "$NUM" + 1` || NUM=0
   PROP=$NAME$NUM
   resetprop -p --delete $PROP
