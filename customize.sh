@@ -1009,8 +1009,12 @@ done
 }
 
 # check
-FILES=libmigui.so
+FILES=/lib/libmigui.so
 file_check_system
+if "$IS64BIT"; then
+  FILES=/lib64/libmigui.so
+  file_check_system
+fi
 if [ $DOLBY == true ]; then
   FILES="/etc/acdbdata/adsp_avs_config.acdb
          /lib/libstagefrightdolby.so
