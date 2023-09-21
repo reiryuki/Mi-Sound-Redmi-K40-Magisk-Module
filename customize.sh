@@ -123,7 +123,7 @@ fi
 
 # function
 run_check_function() {
-LISTS=`strings $MODPATH/system/vendor$DIR/$DES | grep ^lib | grep .so`
+LISTS=`strings $MODPATH/system_dolby/vendor$DIR/$DES | grep ^lib | grep .so`
 FILE=`for LIST in $LISTS; do echo $SYSTEM$DIR/$LIST; done`
 ui_print "- Checking"
 ui_print "$NAME"
