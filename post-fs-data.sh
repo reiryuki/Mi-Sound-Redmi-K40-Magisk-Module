@@ -80,9 +80,7 @@ fi
 # function
 dolby_data() {
 DIR=/data/vendor/dolby
-if [ ! -d $DIR ]; then
-  mkdir -p $DIR
-fi
+mkdir -p $DIR
 chmod 0770 $DIR
 chown 1013.1013 $DIR
 chcon u:object_r:vendor_data_file:s0 $DIR

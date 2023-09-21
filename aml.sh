@@ -1,12 +1,18 @@
 [ -z $MODPATH ] && MODPATH=${0%/*}
 
 # destination
-LIBPATH="\/vendor\/lib\/soundfx"
 MODAEC=`find $MODPATH -type f -name *audio*effects*.conf`
 MODAEX=`find $MODPATH -type f -name *audio*effects*.xml`
 MODAP=`find $MODPATH -type f -name *policy*.conf -o -name *policy*.xml`
 
 # function
+libpath() {
+if [ -f /vendor/lib/soundfx/$LIB ]; then
+  LIBPATH="\/vendor\/lib\/soundfx"
+else
+  LIBPATH="\/vendor\/lib64\/soundfx"
+fi
+}
 remove_conf() {
 for RMV in $RMVS; do
   sed -i "s|$RMV|removed|g" $MODAEC
@@ -15,6 +21,10 @@ sed -i 's|path /vendor/lib/soundfx/removed||g' $MODAEC
 sed -i 's|path /system/lib/soundfx/removed||g' $MODAEC
 sed -i 's|path /vendor/lib/removed||g' $MODAEC
 sed -i 's|path /system/lib/removed||g' $MODAEC
+sed -i 's|path /vendor/lib64/soundfx/removed||g' $MODAEC
+sed -i 's|path /system/lib64/soundfx/removed||g' $MODAEC
+sed -i 's|path /vendor/lib64/removed||g' $MODAEC
+sed -i 's|path /system/lib64/removed||g' $MODAEC
 sed -i 's|library removed||g' $MODAEC
 sed -i 's|uuid removed||g' $MODAEC
 sed -i "/^        removed {/ {;N s/        removed {\n        }//}" $MODAEC
@@ -246,6 +256,7 @@ LIBNAME=misoundfx
 NAME=misoundfx
 UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
 RMVS="$LIB $LIBNAME $NAME $UUID"
+libpath
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -298,6 +309,7 @@ NAME=dirac
 NAME=dirac_mod
 UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
 RMVS="$LIB $LIBNAME $NAME $UUID"
+libpath
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -387,6 +399,7 @@ UUIDHW=a0c30891-8246-4aef-b8ad-d53e26da0253
 UUIDPROXY=9d4921da-8225-4f29-aefa-39537a04bcaa
 RMVS="$LIB $LIBHW $LIBNAME $LIBNAMEHW $NAME $UUID
       $UUIDHW $UUIDPROXY libeffectproxy.so"
+libpath
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -448,6 +461,7 @@ NAME=dap
 NAME=dap_mod
 UUID=9d4921da-8225-4f29-aefa-39537a04bcaa
 RMVS="$LIB $LIBNAME $NAME $UUID"
+libpath
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -498,6 +512,7 @@ LIBNAME=vqe
 NAME=vqe
 UUID=64a0f614-7fa4-48b8-b081-d59dc954616f
 RMVS="$LIB $LIBNAME $NAME $UUID"
+libpath
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -518,6 +533,7 @@ LIBNAME=gamedap
 NAME=gamedap
 UUID=3783c334-d3a0-4d13-874f-0032e5fb80e2
 RMVS="$LIB $LIBNAME $NAME $UUID"
+libpath
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
