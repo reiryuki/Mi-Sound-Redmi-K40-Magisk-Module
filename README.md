@@ -22,11 +22,16 @@
 - https://t.me/androidryukimods/488
 
 ## Requirements
-- 64 bit architecture with Android 11 and up for the Dolby Atmos EQ
-- Miui ROM with Android 8 and up for the Mi Sound EQ (In non-Miui ROM, the UI still showing but the EQ doesn't work)
-- Android 10 and bellow requires 32 bit architecture or 64 bit architecture with 32 bit library support, otherwise not
 - Magisk or KernelSU installed (Recommended to use Magisk Delta for systemless early init mount manifest.xml if your ROM is Read-Only https://t.me/androidryukimodsdiscussions/100091)
-- Miui Core Magisk Module installed on non-Miui ROM
+- Miui Core Magisk Module installed in non-Miui ROM
+- Mi Sound EQ
+  - Miui ROM (In non-Miui ROM, the UI still showing even it doesn't work)
+  - Android 8 and up
+  - Android 10 and bellow requires 32 bit architecture or 64 bit architecture with 32 bit library support, otherwise not
+- Dolby Atmos EQ
+  - 64 bit architecture
+  - Android 11 and up
+  - ROM doesn't use vendor.dolby.media.c2@1.0-service
 
 ## WARNING!!!
 - Possibility of bootloop or even softbrick or a service failure on Read-Only ROM if you don't use Magisk Delta.
@@ -46,9 +51,9 @@
 
 ## Optionals & Troubleshootings
 - https://t.me/androidryukimodsdiscussions/75400
-- https://t.me/androidryukimodsdiscussions/60861
-- https://t.me/androidryukimodsdiscussions/26764
-- https://t.me/androidryukimodsdiscussions/29836
+- Global: https://t.me/androidryukimodsdiscussions/60861
+- Global: https://t.me/androidryukimodsdiscussions/29836
+- Stream: https://t.me/androidryukimodsdiscussions/26764
 
 ## Support & Bug Report
 - https://t.me/androidryukimodsdiscussions/2618
