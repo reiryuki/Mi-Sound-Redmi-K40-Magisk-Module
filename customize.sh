@@ -192,6 +192,7 @@ if [ "$IS64BIT" == true ]; then
       ui_print "    Unsupported Dolby Atmos."
       DOLBY=false
     fi
+    ui_print " "
   fi
   if [ $DOLBY == true ] && [ "$LIST32BIT" ]; then
     FILE=$VENDOR/lib/hw/*audio*.so
@@ -220,20 +221,31 @@ if [ "$IS64BIT" == true ]; then
     MODNAME2='Mi Sound and Dolby Atmos Redmi K40'
     sed -i "s|$MODNAME|$MODNAME2|g" $MODPATH/module.prop
     MODNAME=$MODNAME2
+    cp -rf $MODPATH/system_dolby/* $MODPATH/system
+    if [ "`grep_prop dolby.rhode $OPTIONALS`" == 1 ]; then
+      ui_print "- Using libswdap.so from Moto G52 (rhode)"
+      cp -rf $MODPATH/system_rhode/* $MODPATH/system
+      sed -i 's|resetprop ro.product.brand|#resetprop ro.product.brand|g' $MODPATH/service.sh
+      sed -i 's|resetprop ro.product.device|#resetprop ro.product.device|g' $MODPATH/service.sh
+      sed -i 's|#ddap_proxy|dap|g' $MODPATH/.aml.sh
+      ui_print " "
+    else
+      sed -i 's|#ddap_proxy|dap_proxy|g' $MODPATH/.aml.sh
+    fi
     sed -i 's|#d||g' $MODPATH/.aml.sh
     sed -i 's|#d||g' $MODPATH/*.sh
-    cp -rf $MODPATH/system_dolby/* $MODPATH/system
   fi
 else
   ui_print "- 32 bit architecture"
   rm -rf `find $MODPATH -type d -name *64*`
   if [ $DOLBY == true ]; then
     ui_print "  ! Unsupported Dolby Atmos."
-    DOLBY=false
   fi
+  DOLBY=false
   ui_print " "
 fi
 rm -rf $MODPATH/system_dolby
+rm -rf $MODPATH/system_rhode
 
 # check
 FILE=$VENDOR/lib/soundfx/libmisoundfx.so
@@ -260,6 +272,7 @@ else
       ui_print "  Function not found."
       FUNC64=false
     fi
+    ui_print " "
   else
     FUNC64=false
   fi
@@ -276,16 +289,18 @@ else
       ui_print "  Function not found."
       FUNC32=false
     fi
+    ui_print " "
   else
     FUNC32=false
   fi
   if [ $FUNC64 != true ] && [ $FUNC32 != true ]; then
     if [ ! "$LIST32BIT" ]; then
-      abort "  ! This ROM doesn't support 32 bit library."
+      abort "! This ROM doesn't support 32 bit library."
     fi
-    ui_print "  Using legacy libraries."
+    ui_print "- Using legacy libraries."
     cp -rf $MODPATH/system_10/* $MODPATH/system
     rm -f $MODPATH/system/vendor/lib64/soundfx/libmisoundfx.so
+    ui_print " "
   elif [ $FUNC64 == true ] && [ $FUNC32 != true ]; then
     rm -f $MODPATH/system/vendor/lib/soundfx/libmisoundfx.so
   elif [ $FUNC64 != true ] && [ $FUNC32 == true ]; then
@@ -404,6 +419,11 @@ if [ $DOLBY == true ]; then
   if grep -q 'Dolby Atmos Xperia' $FILE; then
     conflict
   fi
+  NAMES=DolbyAtmosSpatialSound
+  FILE=/data/adb/modules/$NAMES/module.prop
+  if grep -q 'Dolby Atmos and' $FILE; then
+    conflict
+  fi
 fi
 
 # function
@@ -463,15 +483,21 @@ fi
 backup() {
 if [ ! -f $FILE.orig ] && [ ! -f $FILE.bak ]; then
   cp -af $FILE $FILE.orig
+  if [ -f $FILE.orig ]; then
+    ui_print "- Created"
+    ui_print "$FILE.orig"
+  else
+    ui_print "- Failed to create"
+    ui_print "$FILE.orig"
+    ui_print "  Probably Read-Only or no space left"
+  fi
+  ui_print " "
 fi
 }
 patch_manifest() {
 if [ -f $FILE ]; then
   backup
   if [ -f $FILE.orig ] || [ -f $FILE.bak ]; then
-    ui_print "- Created"
-    ui_print "$FILE.orig"
-    ui_print " "
     ui_print "- Patching"
     ui_print "$FILE"
     ui_print "  directly..."
@@ -479,17 +505,8 @@ if [ -f $FILE ]; then
     <hal format="hidl">\
         <name>vendor.dolby.hardware.dms</name>\
         <transport>hwbinder</transport>\
-        <version>2.0</version>\
-        <interface>\
-            <name>IDms</name>\
-            <instance>default</instance>\
-        </interface>\
         <fqname>@2.0::IDms/default</fqname>\
     </hal>' $FILE
-    ui_print " "
-  else
-    ui_print "- Failed to create"
-    ui_print "$FILE.orig"
     ui_print " "
   fi
 fi
@@ -498,18 +515,11 @@ patch_hwservice() {
 if [ -f $FILE ]; then
   backup
   if [ -f $FILE.orig ] || [ -f $FILE.bak ]; then
-    ui_print "- Created"
-    ui_print "$FILE.orig"
-    ui_print " "
     ui_print "- Patching"
     ui_print "$FILE"
     ui_print "  directly..."
     sed -i '1i\
 vendor.dolby.hardware.dms::IDms u:object_r:hal_dms_hwservice:s0' $FILE
-    ui_print " "
-  else
-    ui_print "- Failed to create"
-    ui_print "$FILE.orig"
     ui_print " "
   fi
 fi
@@ -644,11 +654,6 @@ if [ $EIM == true ]; then
     <hal format="hidl">\
         <name>vendor.dolby.hardware.dms</name>\
         <transport>hwbinder</transport>\
-        <version>2.0</version>\
-        <interface>\
-            <name>IDms</name>\
-            <instance>default</instance>\
-        </interface>\
         <fqname>@2.0::IDms/default</fqname>\
     </hal>' $DES
       ui_print " "
@@ -1015,6 +1020,30 @@ if [ $DOLBY == true ]; then
 fi
 
 # function
+change_name() {
+if grep -q $NAME $FILE; then
+  ui_print "- Changing"
+  ui_print "$NAME"
+  ui_print "  to"
+  ui_print "$NAME2"
+  ui_print "  at"
+  ui_print "$FILE"
+  ui_print "  Please wait..."
+  sed -i "s|$NAME|$NAME2|g" $FILE
+  ui_print " "
+fi
+}
+
+# Change 9d4921da-8225-4f29-aefa-39537a04bcaa
+# to a0c30891-8246-4aef-b8ad-d53e26da0253
+if [ $DOLBY == true ]; then
+  NAME=$'\xda\x21\x49\x9d\x25\x82\x29\x4f\xfa\xae\x39\x53\x7a\x04\xbc\xaa'
+  NAME2=$'\x91\x08\xc3\xa0\x46\x82\xef\x4a\xad\xb8\xd5\x3e\x26\xda\x02\x53'
+  FILE=$MODPATH/system/vendor/lib*/soundfx/libhwdap.so
+  change_name
+fi
+
+# function
 file_check_system() {
 for FILE in $FILES; do
   DES=$SYSTEM$FILE
@@ -1051,17 +1080,19 @@ if [ $DOLBY == true ]; then
   FILES=/etc/acdbdata/adsp_avs_config.acdb
   file_check_vendor
   if "$IS64BIT"; then
-    FILES="/lib64/libdeccfg.so
-           /lib64/libstagefrightdolby.so
-           /lib64/libstagefright_soft_ddpdec.so
-           /lib64/libstagefright_soft_ac4dec.so"
+    FILES=/lib64/libqtigef.so
+#           "/lib64/libdeccfg.so
+#           /lib64/libstagefrightdolby.so
+#           /lib64/libstagefright_soft_ddpdec.so
+#           /lib64/libstagefright_soft_ac4dec.so"
     file_check_vendor
   fi
   if [ "$LIST32BIT" ]; then
-    FILES="/lib/libdeccfg.so
-           /lib/libstagefrightdolby.so
-           /lib/libstagefright_soft_ddpdec.so
-           /lib/libstagefright_soft_ac4dec.so"
+    FILES=/lib/libqtigef.so
+#           "/lib/libdeccfg.so
+#           /lib/libstagefrightdolby.so
+#           /lib/libstagefright_soft_ddpdec.so
+#           /lib/libstagefright_soft_ac4dec.so"
     file_check_vendor
   fi
 fi
@@ -1079,7 +1110,8 @@ FILE=$MODPATH/service.sh
 if [ "`grep_prop audio.rotation $OPTIONALS`" == 1 ]; then
   ui_print "- Enables ro.audio.monitorRotation=true"
   sed -i '1i\
-resetprop ro.audio.monitorRotation true' $FILE
+resetprop ro.audio.monitorRotation true\
+resetprop ro.audio.monitorWindowRotation true' $FILE
   ui_print " "
 fi
 

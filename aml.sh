@@ -581,7 +581,7 @@ fi
 
 # effect
 misoundfx
-#ddap
+#ddap_proxy
 #dvqe
 #dgamedap
 

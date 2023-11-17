@@ -173,11 +173,6 @@ if ! grep -A2 vendor.dolby.hardware.dms $FILE | grep 2.0; then
     <hal format="hidl">\
         <name>vendor.dolby.hardware.dms</name>\
         <transport>hwbinder</transport>\
-        <version>2.0</version>\
-        <interface>\
-            <name>IDms</name>\
-            <instance>default</instance>\
-        </interface>\
         <fqname>@2.0::IDms/default</fqname>\
     </hal>' $MODPATH$M
     mount -o bind $MODPATH$M $M

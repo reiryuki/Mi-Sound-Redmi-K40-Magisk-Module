@@ -11,7 +11,6 @@ persist.sys.button_jack_switch=0
 
 # note
 #persist.audio.soundfx.type=
-
 #persist.vendor.audio.sfx.mode=
 #persist.vendor.audio.sfx.spk.stereomode.state=
 #persist.vendor.audio.sfx.stereomode.state=

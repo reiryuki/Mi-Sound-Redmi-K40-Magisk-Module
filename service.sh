@@ -10,6 +10,8 @@ API=`getprop ro.build.version.sdk`
 
 # function
 dolby_prop() {
+resetprop ro.product.brand Redmi
+resetprop ro.product.device alioth
 resetprop ro.vendor.dolby.dax.version DAX3_3.6.1.6_r1
 resetprop vendor.audio.dolby.ds2.enabled false
 resetprop vendor.audio.dolby.ds2.hardbypass false
