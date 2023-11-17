@@ -227,6 +227,7 @@ if [ "$IS64BIT" == true ]; then
       cp -rf $MODPATH/system_rhode/* $MODPATH/system
       sed -i 's|resetprop ro.product.brand|#resetprop ro.product.brand|g' $MODPATH/service.sh
       sed -i 's|resetprop ro.product.device|#resetprop ro.product.device|g' $MODPATH/service.sh
+      sed -i 's|resetprop ro.product.manufacturer|#resetprop ro.product.manufacturer|g' $MODPATH/service.sh
       sed -i 's|#ddap_proxy|dap|g' $MODPATH/.aml.sh
       ui_print " "
     else

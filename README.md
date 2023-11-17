@@ -10,7 +10,7 @@
 - Equalizers soundfx ported from Xiaomi Redmi K40 (alioth) and integrated as a Magisk Module for all supported and rooted devices with Magisk
 - Global type soundfx
 - Mi Sound, Dolby Atmos, & Bluetooth microphone enhancer
-- Dolby Atmos changes/spoofs ro.product.brand to Redmi and ro.product.device to alioth which may break some system apps and features functionality
+- Dolby Atmos changes/spoofs ro.product.brand to Redmi, ro.product.device to alioth, & ro.product.manufacturer to Xiaomi which may break some system apps and features functionality
 - Doesn't support ACDB module
 
 ## Sources
