@@ -32,7 +32,6 @@
 - Dolby Atmos EQ
   - 64 bit architecture
   - Android 11 and up
-  - ROM doesn't use vendor.dolby.media.c2@1.0-service
 
 ## WARNING!!!
 - Possibility of bootloop or even softbrick or a service failure on Read-Only ROM if you don't use Magisk Delta.
