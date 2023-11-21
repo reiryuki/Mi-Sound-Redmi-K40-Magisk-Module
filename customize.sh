@@ -1024,13 +1024,17 @@ if [ $DOLBY == true ]; then
 fi
 
 # function
+rename_file() {
+ui_print "- Renaming"
+ui_print "$FILE"
+ui_print "  to"
+ui_print "$MODFILE"
+mv -f $FILE $MODFILE
+ui_print " "
+}
 change_name() {
 if grep -q $NAME $FILE; then
-  ui_print "- Changing"
-  ui_print "$NAME"
-  ui_print "  to"
-  ui_print "$NAME2"
-  ui_print "  at"
+  ui_print "- Changing $NAME to $NAME2 at"
   ui_print "$FILE"
   ui_print "  Please wait..."
   sed -i "s|$NAME|$NAME2|g" $FILE
@@ -1044,6 +1048,52 @@ if [ $DOLBY == true ]; then
   NAME=$'\xda\x21\x49\x9d\x25\x82\x29\x4f\xfa\xae\x39\x53\x7a\x04\xbc\xaa'
   NAME2=$'\x91\x08\xc3\xa0\x46\x82\xef\x4a\xad\xb8\xd5\x3e\x26\xda\x02\x53'
   FILE=$MODPATH/system/vendor/lib*/soundfx/libhwdap.so
+  change_name
+fi
+
+# mod
+if [ $DOLBY == true ]\
+&& [ "`grep_prop dolby.mod $OPTIONALS`" != 0 ]; then
+  NAME=libswdap.so
+  NAME2=libswdlb.so
+  if [ "$IS64BIT" == true ]; then
+    FILE=$MODPATH/system/vendor/lib64/soundfx/$NAME
+    MODFILE=$MODPATH/system/vendor/lib64/soundfx/$NAME2
+    rename_file
+  fi
+  if [ "$LIST32BIT" ]; then
+    FILE=$MODPATH/system/vendor/lib/soundfx/$NAME
+    MODFILE=$MODPATH/system/vendor/lib/soundfx/$NAME2
+    rename_file
+  fi
+  FILE="$MODPATH/system/vendor/lib*/soundfx/$NAME2
+$MODPATH/.aml.sh"
+  change_name
+  NAME=libhwdap.so
+  NAME2=libhwdlb.so
+  if [ "$IS64BIT" == true ]; then
+    FILE=$MODPATH/system/vendor/lib64/soundfx/$NAME
+    MODFILE=$MODPATH/system/vendor/lib64/soundfx/$NAME2
+    rename_file
+  fi
+  if [ "$LIST32BIT" ]; then
+    FILE=$MODPATH/system/vendor/lib/soundfx/$NAME
+    MODFILE=$MODPATH/system/vendor/lib/soundfx/$NAME2
+    rename_file
+  fi
+  FILE="$MODPATH/system/vendor/lib*/soundfx/$NAME2
+$MODPATH/.aml.sh"
+  change_name
+  NAME=libdlbdsservice.so
+  NAME2=libdapdsservice.so
+  if [ "$IS64BIT" == true ]; then
+    FILE=$MODPATH/system/vendor/lib64/$NAME
+    MODFILE=$MODPATH/system/vendor/lib64/$NAME2
+    rename_file
+  fi
+  FILE="$MODPATH/system/vendor/lib*/$NAME2
+$MODPATH/system/vendor/lib*/vendor.dolby.hardware.dms@*-impl.so
+$MODPATH/system/vendor/bin/hw/vendor.dolby.hardware.dms@*-service"
   change_name
 fi
 
