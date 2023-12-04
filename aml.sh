@@ -251,6 +251,145 @@ if [ "$MODAEX" ]; then
   fi
 fi
 
+# function
+misoundfx() {
+# store
+LIB=libmisoundfx.so
+LIBNAME=misoundfx
+NAME=misoundfx
+UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
+RMVS="$LIB $LIBNAME $NAME $UUID"
+archdir
+# patch audio effects conf
+if [ "$MODAEC" ]; then
+  remove_conf
+  sed -i "/^libraries {/a\  $LIBNAME {\n    path \\$libdir\\$ARCHDIR\/soundfx\/$LIB\n  }" $MODAEC
+  sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
+#m  sed -i "/^    music {/a\        $NAME {\n        }" $MODAEC
+#r  sed -i "/^    ring {/a\        $NAME {\n        }" $MODAEC
+#a  sed -i "/^    alarm {/a\        $NAME {\n        }" $MODAEC
+#s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
+#v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
+#n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+#b  sed -i "/^    bluetooth_sco {/a\        $NAME {\n        }" $MODAEC
+#f  sed -i "/^    dtmf {/a\        $NAME {\n        }" $MODAEC
+#e  sed -i "/^    enforced_audible {/a\        $NAME {\n        }" $MODAEC
+#y  sed -i "/^    accessibility {/a\        $NAME {\n        }" $MODAEC
+#t  sed -i "/^    tts {/a\        $NAME {\n        }" $MODAEC
+#i  sed -i "/^    assistant {/a\        $NAME {\n        }" $MODAEC
+#c  sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
+#p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
+#g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
+fi
+# patch effects xml
+if [ "$MODAEX" ]; then
+  remove_xml
+  sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
+  sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
+#m  sed -i "/<stream type=\"music\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#r  sed -i "/<stream type=\"ring\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#a  sed -i "/<stream type=\"alarm\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#b  sed -i "/<stream type=\"bluetooth_sco\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#f  sed -i "/<stream type=\"dtmf\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#e  sed -i "/<stream type=\"enforced_audible\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#y  sed -i "/<stream type=\"accessibility\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#t  sed -i "/<stream type=\"tts\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#i  sed -i "/<stream type=\"assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#c  sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+fi
+}
+dirac() {
+# store
+LIB=libdirac.so
+LIBNAME=dirac
+LIBNAME=dirac_mod
+NAME=dirac
+NAME=dirac_mod
+UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
+RMVS="$LIB $LIBNAME $NAME $UUID"
+archdir
+# patch audio effects conf
+if [ "$MODAEC" ]; then
+  remove_conf
+  sed -i "/^libraries {/a\  $LIBNAME {\n    path \\$libdir\\$ARCHDIR\/soundfx\/$LIB\n  }" $MODAEC
+  sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
+  if ! grep -q '^global_processing {' $MODAEC; then
+    sed -i -e '$a\
+\
+global_processing {\
+}\' $MODAEC
+  fi
+  sed -i '/^global_processing {/a\
+  dirac_mod {\
+    bl@lakala {\
+      param {\
+        int 6\
+      }\
+      value {\
+        string *com.lakala.android\
+      }\
+    }\
+    bl@jawboneup {\
+      param {\
+        int 6\
+      }\
+      value {\
+        string *com.jawbone.up\
+      }\
+    }\
+    bl@hojyremote {\
+      param {\
+        int 6\
+      }\
+      value {\
+        string *com.hojy.hremote\
+      }\
+    }\
+  }' $MODAEC
+#m  sed -i "/^    music {/a\        $NAME {\n        }" $MODAEC
+#r  sed -i "/^    ring {/a\        $NAME {\n        }" $MODAEC
+#a  sed -i "/^    alarm {/a\        $NAME {\n        }" $MODAEC
+#s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
+#v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
+#n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+#b  sed -i "/^    bluetooth_sco {/a\        $NAME {\n        }" $MODAEC
+#f  sed -i "/^    dtmf {/a\        $NAME {\n        }" $MODAEC
+#e  sed -i "/^    enforced_audible {/a\        $NAME {\n        }" $MODAEC
+#y  sed -i "/^    accessibility {/a\        $NAME {\n        }" $MODAEC
+#t  sed -i "/^    tts {/a\        $NAME {\n        }" $MODAEC
+#i  sed -i "/^    assistant {/a\        $NAME {\n        }" $MODAEC
+#c  sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
+#p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
+#g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
+fi
+# patch effects xml
+if [ "$MODAEX" ]; then
+  remove_xml
+  sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
+  sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
+#m  sed -i "/<stream type=\"music\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#r  sed -i "/<stream type=\"ring\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#a  sed -i "/<stream type=\"alarm\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#b  sed -i "/<stream type=\"bluetooth_sco\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#f  sed -i "/<stream type=\"dtmf\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#e  sed -i "/<stream type=\"enforced_audible\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#y  sed -i "/<stream type=\"accessibility\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#t  sed -i "/<stream type=\"tts\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#i  sed -i "/<stream type=\"assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#c  sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+fi
+}
+dap_proxy() {
 # store
 LIB=libswdap.so
 LIBHW=libhwdap.so
@@ -266,7 +405,6 @@ UUIDPROXY=9d4921da-8225-4f29-aefa-39537a04bcaa
 RMVS="$LIB $LIBHW $LIBNAME $LIBNAMEHW $NAME $UUID
       $UUIDHW $UUIDPROXY libeffectproxy.so"
 archdir
-
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
@@ -292,7 +430,6 @@ if [ "$MODAEC" ]; then
 #p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
 #g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
 fi
-
 # patch audio effects xml
 if [ "$MODAEX" ]; then
   remove_xml
@@ -319,7 +456,61 @@ if [ "$MODAEX" ]; then
 #p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 fi
-
+}
+dap() {
+# store
+LIB=libswdap.so
+LIBNAME=dap
+LIBNAME=dap_mod
+NAME=dap
+NAME=dap_mod
+UUID=9d4921da-8225-4f29-aefa-39537a04bcaa
+RMVS="$LIB $LIBNAME $NAME $UUID"
+archdir
+# patch audio effects conf
+if [ "$MODAEC" ]; then
+  remove_conf
+  sed -i "/^libraries {/a\  $LIBNAME {\n    path \\$libdir\\$ARCHDIR\/soundfx\/$LIB\n  }" $MODAEC
+  sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
+#m  sed -i "/^    music {/a\        $NAME {\n        }" $MODAEC
+#r  sed -i "/^    ring {/a\        $NAME {\n        }" $MODAEC
+#a  sed -i "/^    alarm {/a\        $NAME {\n        }" $MODAEC
+#s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
+#v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
+#n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+#b  sed -i "/^    bluetooth_sco {/a\        $NAME {\n        }" $MODAEC
+#f  sed -i "/^    dtmf {/a\        $NAME {\n        }" $MODAEC
+#e  sed -i "/^    enforced_audible {/a\        $NAME {\n        }" $MODAEC
+#y  sed -i "/^    accessibility {/a\        $NAME {\n        }" $MODAEC
+#t  sed -i "/^    tts {/a\        $NAME {\n        }" $MODAEC
+#i  sed -i "/^    assistant {/a\        $NAME {\n        }" $MODAEC
+#c  sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
+#p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
+#g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
+fi
+# patch effects xml
+if [ "$MODAEX" ]; then
+  remove_xml
+  sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
+  sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
+#m  sed -i "/<stream type=\"music\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#r  sed -i "/<stream type=\"ring\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#a  sed -i "/<stream type=\"alarm\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#b  sed -i "/<stream type=\"bluetooth_sco\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#f  sed -i "/<stream type=\"dtmf\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#e  sed -i "/<stream type=\"enforced_audible\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#y  sed -i "/<stream type=\"accessibility\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#t  sed -i "/<stream type=\"tts\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#i  sed -i "/<stream type=\"assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#c  sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+fi
+}
+vqe() {
 # store
 LIB=libswvqe.so
 LIBNAME=vqe
@@ -329,26 +520,78 @@ NAME=vqe_mod
 UUID=64a0f614-7fa4-48b8-b081-d59dc954616f
 RMVS="$LIB $LIBNAME $NAME $UUID"
 archdir
-
 # patch audio effects conf
 if [ "$MODAEC" ]; then
   remove_conf
   sed -i "/^libraries {/a\  $LIBNAME {\n    path \\$libdir\\$ARCHDIR\/soundfx\/$LIB\n  }" $MODAEC
   sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
 fi
-
 # patch audio effects xml
 if [ "$MODAEX" ]; then
   remove_xml
   sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
   sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
 fi
+}
+gamedap() {
+# store
+LIB=libswgamedap.so
+LIBNAME=gamedap
+LIBNAME=gamedap_mod
+NAME=gamedap
+NAME=gamedap_mod
+UUID=3783c334-d3a0-4d13-874f-0032e5fb80e2
+RMVS="$LIB $LIBNAME $NAME $UUID"
+archdir
+# patch audio effects conf
+if [ "$MODAEC" ]; then
+  remove_conf
+  sed -i "/^libraries {/a\  $LIBNAME {\n    path \\$libdir\\$ARCHDIR\/soundfx\/$LIB\n  }" $MODAEC
+  sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
+#m  sed -i "/^    music {/a\        $NAME {\n        }" $MODAEC
+#r  sed -i "/^    ring {/a\        $NAME {\n        }" $MODAEC
+#a  sed -i "/^    alarm {/a\        $NAME {\n        }" $MODAEC
+#s  sed -i "/^    system {/a\        $NAME {\n        }" $MODAEC
+#v  sed -i "/^    voice_call {/a\        $NAME {\n        }" $MODAEC
+#n  sed -i "/^    notification {/a\        $NAME {\n        }" $MODAEC
+#b  sed -i "/^    bluetooth_sco {/a\        $NAME {\n        }" $MODAEC
+#f  sed -i "/^    dtmf {/a\        $NAME {\n        }" $MODAEC
+#e  sed -i "/^    enforced_audible {/a\        $NAME {\n        }" $MODAEC
+#y  sed -i "/^    accessibility {/a\        $NAME {\n        }" $MODAEC
+#t  sed -i "/^    tts {/a\        $NAME {\n        }" $MODAEC
+#i  sed -i "/^    assistant {/a\        $NAME {\n        }" $MODAEC
+#c  sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
+#p  sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
+#g  sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
+fi
+# patch audio effects xml
+if [ "$MODAEX" ]; then
+  remove_xml
+  sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
+  sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
+#m  sed -i "/<stream type=\"music\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#r  sed -i "/<stream type=\"ring\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#a  sed -i "/<stream type=\"alarm\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#s  sed -i "/<stream type=\"system\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#v  sed -i "/<stream type=\"voice_call\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#n  sed -i "/<stream type=\"notification\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#b  sed -i "/<stream type=\"bluetooth_sco\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#f  sed -i "/<stream type=\"dtmf\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#e  sed -i "/<stream type=\"enforced_audible\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#y  sed -i "/<stream type=\"accessibility\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#t  sed -i "/<stream type=\"tts\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#i  sed -i "/<stream type=\"assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#c  sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#p  sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+#g  sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
+fi
+}
 
-# patch audio policy
-#oif [ "$MODAP" ]; then
-#o  sed -i 's|COMPRESS_OFFLOAD|NONE|g' $MODAP
-#o  sed -i 's|,compressed_offload||g' $MODAP
-#ofi
+# effect
+misoundfx
+#ddap_proxy
+#dvqe
+#dgamedap
 
 # patch audio policy
 #uif [ "$MODAP" ]; then
@@ -356,6 +599,11 @@ fi
 #u  sed -i 's|,raw||g' $MODAP
 #ufi
 
+# patch audio policy
+#dif [ "$MODAP" ]; then
+#d  sed -i 's|COMPRESS_OFFLOAD|NONE|g' $MODAP
+#d  sed -i 's|,compressed_offload||g' $MODAP
+#dfi
 
 
 

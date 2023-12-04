@@ -1,8 +1,8 @@
-id=DolbyAtmos
-name=Dolby Atmos OnePlus 8 Visible
-version=v9.1
-versionCode=91
+id=MiSound
+name=Mi Sound Redmi K40
+version=v3.6-R
+versionCode=36
 author=Rei Ryuki the Fixer
-description=An EQ global type soundfx ported from OnePlus 8 Visible for any Android 9 and up, 64 bit architecture.
+description=Equalizers global type soundfx by Xiaomi Inc. ported from Redmi K40 (alioth). Dolby Atmos EQ for any Android 11 and up architecture 64 bit. Mi Sound EQ for Miui ROM Android 8 and up.
 
 
