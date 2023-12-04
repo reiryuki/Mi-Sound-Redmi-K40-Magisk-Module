@@ -1,5 +1,3 @@
-## Dolby
-
 # debug
 allow system_server system_file file write
 
@@ -76,41 +74,6 @@ allow audioserver audioserver capability { sys_nice dac_override sys_admin dac_r
 allow hal_audio_default hal_audio_default tcp_socket create
 allow mtk_hal_audio mtk_hal_audio tcp_socket create
 allow audioserver audioserver tcp_socket create
-
-
-## MiSound
-
-# context
-create audio_socket
-allow audio_socket labeledfs filesystem associate
-allow init audio_socket sock_file relabelfrom
-
-# dir
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } mcd_data_file dir search
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } mqsas_data_file dir { search getattr }
-
-# file
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } vendor_display_prop file { read open getattr map }
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { migt_file mcd_data_file } file { read open getattr }
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } vendor_displayfeature_prop file { open map }
-
-# sock_file
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } property_socket sock_file write
-allow { hal_audio_default audioserver mtk_hal_audio } { audio_socket property_socket socket_device } sock_file write
-allow init { audio_socket property_socket socket_device } sock_file { unlink create setattr }
-
-# unix_stream_socket
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } zygote unix_stream_socket getopt
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app hal_audio_default audioserver mtk_hal_audio } init unix_stream_socket connectto
-allow crash_dump { hal_audio_default audioserver mtk_hal_audio } unix_stream_socket { read write }
-
-# property_service
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app hal_audio_default audioserver mtk_hal_audio } vendor_audio_prop property_service set
-
-
-
-
-
 
 
 

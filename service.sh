@@ -8,58 +8,20 @@ set -x
 # var
 API=`getprop ro.build.version.sdk`
 
-# function
-dolby_prop() {
-resetprop ro.product.brand Redmi
-resetprop ro.product.device alioth
-resetprop ro.product.manufacturer Xiaomi
-resetprop ro.vendor.dolby.dax.version DAX3_3.6.1.6_r1
-resetprop vendor.audio.dolby.ds2.enabled false
-resetprop vendor.audio.dolby.ds2.hardbypass false
-resetprop ro.vendor.audio.dolby.dax.support true
-resetprop ro.vendor.audio.dolby.fade_switch true
-#resetprop vendor.dolby.dap.param.tee false
-#resetprop vendor.dolby.mi.metadata.log false
-#resetprop vendor.audio.gef.enable.traces false
-#resetprop vendor.audio.gef.debug.flags false
-NAME=persist.vendor.audio.calfile
-NAME2=adsp_avs_config.acdb
-VAL=/vendor/etc/acdbdata/$NAME2
-FILE=`find $MODPATH -type f -name $NAME2`
-ROW=`getprop | grep $NAME | grep $NAME2`
-if [ "$FILE" ] && [ ! "$ROW" ] ; then
-  NUM=`getprop | grep $NAME | sed 's|]: .*||g' | sed "s|\[$NAME||g" | tr '\n' ' ' | tr ' ' '\n' | sort -n | tail -1`
-  [ "$NUM" ] && NUM=`expr "$NUM" + 1` || NUM=0
-  PROP=$NAME$NUM
-  resetprop -p --delete $PROP
-  resetprop -n $PROP $VAL
-fi
-}
-
 # property
 resetprop ro.audio.ignore_effects false
-#ddolby_prop
-resetprop ro.audio.hifi false
-resetprop ro.vendor.audio.hifi false
-resetprop ro.vendor.audio.ring.filter true
-resetprop ro.vendor.audio.scenario.support true
-resetprop ro.vendor.audio.sfx.earadj true
-resetprop ro.vendor.audio.sfx.independentequalizer true
-resetprop ro.vendor.audio.sfx.scenario true
-resetprop ro.vendor.audio.sfx.spk.stereo true
-resetprop ro.audio.soundfx.type mi
-resetprop ro.vendor.audio.soundfx.type mi
-resetprop ro.audio.soundfx.usb true
-resetprop ro.vendor.audio.soundfx.usb true
-resetprop ro.vendor.audio.misound.bluetooth.enable true
-resetprop ro.vendor.audio.sfx.speaker true
-resetprop ro.vendor.audio.sfx.spk.movie true
-resetprop ro.vendor.audio.surround.headphone.only false
-resetprop ro.vendor.audio.scenario.headphone.only false
-resetprop ro.vendor.audio.feature.spatial true
-#hresetprop ro.vendor.audio.sfx.harmankardon false
-#resetprop ro.vendor.audio.sfx.audiovisual false
-#resetprop ro.audio.soundfx.dirac false
+resetprop ro.vendor.dolby.dax.version DAX3_3.5.6.11_r1
+#11resetprop ro.vendor.product.device.db OP_DEVICE
+#11resetprop ro.vendor.product.manufacturer.db OP_PHONE
+#10resetprop vendor.product.device OP_PHONE
+#10resetprop vendor.product.manufacturer OPD
+resetprop ro.dolby.mod_uuid false
+resetprop vendor.audio.dolby.ds2.enabled false
+resetprop vendor.audio.dolby.ds2.hardbypass false
+#resetprop vendor.audio.gef.debug.flags false
+#resetprop vendor.audio.gef.enable.traces false
+#resetprop vendor.dolby.dap.param.tee false
+#resetprop vendor.dolby.mi.metadata.log false
 
 # restart
 if [ "$API" -ge 24 ]; then
@@ -72,8 +34,6 @@ if [ "$PID" ]; then
   killall $SERVER android.hardware.audio@4.0-service-mediatek
 fi
 
-# function
-dolby_service() {
 # stop
 NAMES="dms-hal-1-0 dms-hal-2-0 dms-v36-hal-2-0"
 for NAME in $NAMES; do
@@ -82,6 +42,7 @@ for NAME in $NAMES; do
     stop $NAME
   fi
 done
+
 # mount
 DIR=/odm/bin/hw
 FILES="$DIR/vendor.dolby_v3_6.hardware.dms360@2.0-service
@@ -98,6 +59,7 @@ if [ "`realpath $DIR`" == $DIR ]; then
     fi
   done
 fi
+
 # run
 SERVICES=`realpath /vendor`/bin/hw/vendor.dolby.hardware.dms@2.0-service
 for SERVICE in $SERVICES; do
@@ -105,6 +67,7 @@ for SERVICE in $SERVICES; do
   $SERVICE &
   PID=`pidof $SERVICE`
 done
+
 # restart
 killall vendor.qti.hardware.vibrator.service\
  vendor.qti.hardware.vibrator.service.oneplus9\
@@ -120,10 +83,6 @@ killall vendor.qti.hardware.vibrator.service\
  android.hardware.sensors@2.0-service-mediatek\
  android.hardware.sensors@2.0-service.multihal\
  android.hardware.health-service.qti
-}
-
-# dolby
-#ddolby_service
 
 # wait
 sleep 20
@@ -176,67 +135,9 @@ until [ "`getprop sys.boot_completed`" == "1" ]; do
   sleep 10
 done
 
-# function
-grant_permission() {
-pm grant $PKG android.permission.READ_EXTERNAL_STORAGE
-pm grant $PKG android.permission.WRITE_EXTERNAL_STORAGE
-if [ "$API" -ge 29 ]; then
-  pm grant $PKG android.permission.ACCESS_MEDIA_LOCATION 2>/dev/null
-  appops set $PKG ACCESS_MEDIA_LOCATION allow
-fi
-if [ "$API" -ge 33 ]; then
-  pm grant $PKG android.permission.READ_MEDIA_AUDIO
-  pm grant $PKG android.permission.READ_MEDIA_VIDEO
-  pm grant $PKG android.permission.READ_MEDIA_IMAGES
-  appops set $PKG ACCESS_RESTRICTED_SETTINGS allow
-fi
-appops set $PKG LEGACY_STORAGE allow
-appops set $PKG READ_EXTERNAL_STORAGE allow
-appops set $PKG WRITE_EXTERNAL_STORAGE allow
-appops set $PKG READ_MEDIA_AUDIO allow
-appops set $PKG READ_MEDIA_VIDEO allow
-appops set $PKG READ_MEDIA_IMAGES allow
-appops set $PKG WRITE_MEDIA_AUDIO allow
-appops set $PKG WRITE_MEDIA_VIDEO allow
-appops set $PKG WRITE_MEDIA_IMAGES allow
-if [ "$API" -ge 30 ]; then
-  appops set $PKG MANAGE_EXTERNAL_STORAGE allow
-  appops set $PKG NO_ISOLATED_STORAGE allow
-  appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
-fi
-if [ "$API" -ge 31 ]; then
-  appops set $PKG MANAGE_MEDIA allow
-fi
-PKGOPS=`appops get $PKG`
-UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 userId= | sed 's|    userId=||g'`
-if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
-  appops set --uid "$UID" LEGACY_STORAGE allow
-  if [ "$API" -ge 29 ]; then
-    appops set --uid "$UID" ACCESS_MEDIA_LOCATION allow
-  fi
-  UIDOPS=`appops get --uid "$UID"`
-fi
-}
-
-# grant
-PKG=com.miui.misound
-pm grant $PKG android.permission.READ_PHONE_STATE
-pm grant $PKG android.permission.RECORD_AUDIO
-appops set $PKG SYSTEM_ALERT_WINDOW allow
-if [ "$API" -ge 33 ]; then
-  pm grant $PKG android.permission.POST_NOTIFICATIONS
-fi
-if [ "$API" -ge 31 ]; then
-  pm grant $PKG android.permission.BLUETOOTH_CONNECT
-fi
-grant_permission
-
-# grant
-PKG=com.dolby.daxservice
+# allow
+PKG=com.dolby.daxappui
 if appops get $PKG > /dev/null 2>&1; then
-  if [ "$API" -ge 31 ]; then
-    pm grant $PKG android.permission.BLUETOOTH_CONNECT
-  fi
   if [ "$API" -ge 30 ]; then
     appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
   fi
@@ -245,6 +146,40 @@ if appops get $PKG > /dev/null 2>&1; then
   if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
     UIDOPS=`appops get --uid "$UID"`
   fi
+fi
+
+# grant
+PKG=com.oneplus.sound.tuner
+if appops get $PKG > /dev/null 2>&1; then
+  pm grant $PKG android.permission.READ_EXTERNAL_STORAGE
+  pm grant $PKG android.permission.WRITE_EXTERNAL_STORAGE
+  pm grant $PKG android.permission.READ_PHONE_STATE
+  pm grant $PKG android.permission.READ_CALL_LOG
+  if [ "$API" -ge 30 ]; then
+    appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
+  fi
+  PKGOPS=`appops get $PKG`
+  UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 userId= | sed 's|    userId=||g'`
+  if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
+    UIDOPS=`appops get --uid "$UID"`
+  fi
+  OBM=`settings get system oem_black_mode`
+  if [ "$OBM" == null ] || [ "$OBM" == 0 ]; then
+    settings put system oem_black_mode 1
+  fi
+fi
+
+# grant
+PKG=com.dolby.daxservice
+pm grant $PKG android.permission.READ_EXTERNAL_STORAGE
+pm grant $PKG android.permission.WRITE_EXTERNAL_STORAGE
+if [ "$API" -ge 30 ]; then
+  appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
+fi
+PKGOPS=`appops get $PKG`
+UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 userId= | sed 's|    userId=||g'`
+if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
+  UIDOPS=`appops get --uid "$UID"`
 fi
 
 # function
@@ -272,23 +207,17 @@ else
 fi
 check_audioserver
 }
-check_service() {
+
+# check
 for SERVICE in $SERVICES; do
   if ! pidof $SERVICE; then
     $SERVICE &
     PID=`pidof $SERVICE`
   fi
 done
-}
-
-# check
-#dcheck_service
-PROC=com.miui.misound
-#dPROC="com.miui.misound com.dolby.daxservice"
+PROC="com.dolby.daxservice com.oneplus.sound.tuner com.dolby.daxappui"
 killall $PROC
 check_audioserver
-
-
 
 
 

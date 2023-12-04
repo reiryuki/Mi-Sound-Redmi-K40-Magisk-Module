@@ -48,7 +48,6 @@ sepolicy_sh
 # list
 (
 PKGS=`cat $MODPATH/package.txt`
-#dPKGS=`cat $MODPATH/package-dolby.txt`
 for PKG in $PKGS; do
   magisk --denylist rm $PKG
   magisk --sulist add $PKG
@@ -67,27 +66,16 @@ fi
 rm -f $FILE
 ) 2>/dev/null
 
-# conflict
-DIR=/data/adb/modules/diracmisoundfxRemover
-if [ -d $DIR ] && [ ! -f $DIR/disable ]; then
-  touch $DIR/disable
-fi
-
 # run
 . $MODPATH/copy.sh
 . $MODPATH/.aml.sh
 
-# function
-dolby_data() {
+# directory
 DIR=/data/vendor/dolby
 mkdir -p $DIR
 chmod 0770 $DIR
 chown 1013.1013 $DIR
 chcon u:object_r:vendor_data_file:s0 $DIR
-}
-
-# directory
-#ddolby_data
 
 # permission
 DIRS=`find $MODPATH/vendor\
@@ -112,8 +100,8 @@ if [ -L $MODPATH/system/vendor ]\
   chcon -R u:object_r:vendor_file:s0 $MODPATH/vendor
   chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/vendor/etc
   chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/vendor/odm/etc
-#d  chcon u:object_r:hal_dms_default_exec:s0 $MODPATH/vendor/bin/hw/vendor.dolby*.hardware.dms*@*-service
-#d  chcon u:object_r:hal_dms_default_exec:s0 $MODPATH/vendor/odm/bin/hw/vendor.dolby*.hardware.dms*@*-service
+  chcon u:object_r:hal_dms_default_exec:s0 $MODPATH/vendor/bin/hw/vendor.dolby*.hardware.dms*@*-service
+  chcon u:object_r:hal_dms_default_exec:s0 $MODPATH/vendor/odm/bin/hw/vendor.dolby*.hardware.dms*@*-service
 else
   chmod 0751 $MODPATH/system/vendor/bin
   chmod 0751 $MODPATH/system/vendor/bin/hw
@@ -128,8 +116,8 @@ else
   chcon -R u:object_r:vendor_file:s0 $MODPATH/system/vendor
   chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/etc
   chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/odm/etc
-#d  chcon u:object_r:hal_dms_default_exec:s0 $MODPATH/system/vendor/bin/hw/vendor.dolby*.hardware.dms*@*-service
-#d  chcon u:object_r:hal_dms_default_exec:s0 $MODPATH/system/vendor/odm/bin/hw/vendor.dolby*.hardware.dms*@*-service
+  chcon u:object_r:hal_dms_default_exec:s0 $MODPATH/system/vendor/bin/hw/vendor.dolby*.hardware.dms*@*-service
+  chcon u:object_r:hal_dms_default_exec:s0 $MODPATH/system/vendor/odm/bin/hw/vendor.dolby*.hardware.dms*@*-service
 fi
 
 # function
@@ -160,8 +148,7 @@ if ! grep -E 'delta|Delta|kitsune' /data/adb/magisk/util_functions.sh; then
   mount_helper
 fi
 
-# function
-dolby_manifest() {
+# patch manifest
 M=/system/etc/vintf/manifest.xml
 rm -f $MODPATH$M
 FILE="/*/etc/vintf/manifest.xml /*/*/etc/vintf/manifest.xml
@@ -180,10 +167,6 @@ if ! grep -A2 vendor.dolby.hardware.dms $FILE | grep 2.0; then
     killall hwservicemanager
   fi
 fi
-}
-
-# manifest
-#ddolby_manifest
 
 # function
 mount_bind_file() {
@@ -215,10 +198,6 @@ if [ -f $FILE ]; then
   . $FILE
   mv -f $FILE $FILE\.txt
 fi
-
-
-
-
 
 
 

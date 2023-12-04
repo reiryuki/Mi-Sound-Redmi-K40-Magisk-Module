@@ -48,38 +48,31 @@ else
 fi
 ui_print " "
 
+# bit
+if [ "$IS64BIT" == true ]; then
+  ui_print "- 64 bit architecture"
+  ui_print " "
+  # 32 bit
+  if [ "$LIST32BIT" ]; then
+    ui_print "- 32 bit library support"
+  else
+    ui_print "- Doesn't support 32 bit library"
+    rm -rf $MODPATH/system*/lib $MODPATH/system*/vendor/lib
+  fi
+  ui_print " "
+else
+  abort "- This module is only for 64 bit architecture."
+fi
+
 # sdk
-NUM=26
+NUM=28
 if [ "$API" -lt $NUM ]; then
-  ui_print "! Unsupported SDK $API."
-  ui_print "  You have to upgrade your Android version"
-  ui_print "  at least SDK API $NUM to use this module."
+  ui_print "! Unsupported SDK $API. You have to upgrade your"
+  ui_print "  Android version at least SDK API $NUM to use this module."
   abort
 else
   ui_print "- SDK $API"
-  if [ "`grep_prop misound.dolby $OPTIONALS`" != 0 ]; then
-    if [ "$API" -lt 28 ]; then
-      ui_print "  ! Unsupported Dolby Atmos."
-      DOLBY=false
-    else
-      DOLBY=true
-    fi
-  else
-    DOLBY=false
-  fi
   ui_print " "
-fi
-
-# miuicore
-if [ ! -d /data/adb/modules_update/MiuiCore ]\
-&& [ ! -d /data/adb/modules/MiuiCore ]; then
-  ui_print "! Miui Core Magisk Module is not installed."
-  ui_print "  MiSound app will not be working without"
-  ui_print "  Miui Core Magisk Module except you are in Miui ROM!"
-  ui_print " "
-else
-  rm -f /data/adb/modules/MiuiCore/remove
-  rm -f /data/adb/modules/MiuiCore/disable
 fi
 
 # recovery
@@ -113,154 +106,20 @@ SYSTEM_EXT=`realpath $MIRROR/system_ext`
 ODM=`realpath $MIRROR/odm`
 MY_PRODUCT=`realpath $MIRROR/my_product`
 
-# .aml.sh
-mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
-
-# socket
-if [ ! -e /dev/socket/audio_hw_socket ]; then
-  ui_print "! Unsupported audio_hw_socket."
-  ui_print "  Mi Sound EQ will not be working with this device"
-  ui_print "  but you can still use the Dolby Atmos EQ."
-  ui_print " "
-fi
-
-# function
-run_check_function() {
-LISTS=`strings $MODPATH/system_dolby/vendor$DIR/$DES | grep ^lib | grep .so`
-FILE=`for LIST in $LISTS; do echo $SYSTEM$DIR/$LIST; done`
-ui_print "- Checking"
-ui_print "$NAME"
-ui_print "  function at"
-ui_print "$FILE"
-ui_print "  Please wait..."
-if ! grep -q $NAME $FILE; then
-  ui_print "  Function not found."
-  ui_print "  Using new $DIR/$LIB"
-  mv -f $MODPATH/system_support$DIR/$LIB $MODPATH/system$DIR
-fi
-ui_print " "
-}
-check_function() {
-if [ "$IS64BIT" == true ]; then
-  DIR=/lib64
-  run_check_function
-fi
-if [ "$LIST32BIT" ] && [ $DOLBY32 == true ]; then
-  DIR=/lib
-  run_check_function
-fi
-}
-
-# bit
-if [ "$IS64BIT" == true ]; then
-  ui_print "- 64 bit architecture"
-  ui_print " "
-  # 32 bit
-  if [ "$LIST32BIT" ]; then
-    ui_print "- 32 bit library support"
-  else
-    ui_print "- Doesn't support 32 bit library"
-    rm -rf $MODPATH/armeabi-v7a $MODPATH/x86\
-     $MODPATH/system*/lib $MODPATH/system*/vendor/lib
-  fi
-  ui_print " "
-  # check
-  NAME=_ZN7android23sp_report_stack_pointerEv
-  if [ $DOLBY == true ]; then
-    ui_print "- Activating Dolby Atmos..."
-    ui_print " "
-    FILE=$VENDOR/lib64/hw/*audio*.so
-    ui_print "- Checking"
-    ui_print "$NAME"
-    ui_print "  function at"
-    ui_print "$FILE"
-    ui_print "  Please wait..."
-    if grep -q $NAME $FILE; then
-      DOLBY=true
-    else
-      ui_print "  ! Function not found."
-      ui_print "    Unsupported Dolby Atmos."
-      DOLBY=false
-    fi
-    ui_print " "
-  fi
-  if [ $DOLBY == true ] && [ "$LIST32BIT" ]; then
-    FILE=$VENDOR/lib/hw/*audio*.so
-    ui_print "- Checking"
-    ui_print "$NAME"
-    ui_print "  function at"
-    ui_print "$FILE"
-    ui_print "  Please wait..."
-    if grep -q $NAME $FILE; then
-      DOLBY32=true
-    else
-      ui_print "  Function not found."
-      DOLBY32=false
-      rm -rf $MODPATH/system_dolby/lib $MODPATH/system_dolby/vendor/lib
-    fi
-    ui_print " "
-  fi
-  # check
-  NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
-  DES=vendor.dolby.hardware.dms@2.0.so
-  LIB=libhidlbase.so
-  if [ $DOLBY == true ]; then
-    check_function
-  fi
-  if [ $DOLBY == true ]; then
-    MODNAME2='Mi Sound and Dolby Atmos Redmi K40'
-    sed -i "s|$MODNAME|$MODNAME2|g" $MODPATH/module.prop
-    MODNAME=$MODNAME2
-    cp -rf $MODPATH/system_dolby/* $MODPATH/system
-    if [ "`grep_prop dolby.rhode $OPTIONALS`" == 1 ]; then
-      ui_print "- Using libswdap.so from Moto G52 (rhode)"
-      cp -rf $MODPATH/system_rhode/* $MODPATH/system
-      sed -i 's|resetprop ro.product.brand|#resetprop ro.product.brand|g' $MODPATH/service.sh
-      sed -i 's|resetprop ro.product.device|#resetprop ro.product.device|g' $MODPATH/service.sh
-      sed -i 's|resetprop ro.product.manufacturer|#resetprop ro.product.manufacturer|g' $MODPATH/service.sh
-      sed -i 's|#ddap_proxy|dap|g' $MODPATH/.aml.sh
-      ui_print " "
-    else
-      sed -i 's|#ddap_proxy|dap_proxy|g' $MODPATH/.aml.sh
-    fi
-    sed -i 's|#d||g' $MODPATH/.aml.sh
-    sed -i 's|#d||g' $MODPATH/*.sh
-  fi
-else
-  ui_print "- 32 bit architecture"
-  rm -rf `find $MODPATH -type d -name *64*`
-  if [ $DOLBY == true ]; then
-    ui_print "  ! Unsupported Dolby Atmos."
-  fi
-  DOLBY=false
-  ui_print " "
-fi
-rm -rf $MODPATH/system_dolby
-rm -rf $MODPATH/system_rhode
-
 # check
-if [ $DOLBY == true ]; then
-  FILE=/bin/hw/vendor.dolby.media.c2@1.0-service
-  if [ -f /system$FILE ] || [ -f /vendor$FILE ]\
-  || [ -f /odm$FILE ] || [ -f /system_ext$FILE ]\
-  || [ -f /product$FILE ]; then
-    ui_print "! Dolby Atmos maybe conflicting with your"
-    ui_print "  $FILE"
-    ui_print "  causes your internal storage mount failed"
-    ui_print " "
-  fi
+FILE=/bin/hw/vendor.dolby.media.c2@1.0-service
+if [ -f /system$FILE ] || [ -f /vendor$FILE ]\
+|| [ -f /odm$FILE ] || [ -f /system_ext$FILE ]\
+|| [ -f /product$FILE ]; then
+  ui_print "! This module maybe conflicting with your"
+  ui_print "  $FILE"
+  ui_print "  causes your internal storage mount failed"
+  ui_print " "
 fi
 
 # check
-FILE=$VENDOR/lib/soundfx/libmisoundfx.so
-FILE2=$ODM/lib/soundfx/libmisoundfx.so
-FILE3=$VENDOR/lib64/soundfx/libmisoundfx.so
-FILE4=$ODM/lib64/soundfx/libmisoundfx.so
-if [ -f $FILE ] || [ -f $FILE2 ] || [ -f $FILE3 ]\
-|| [ -f $FILE4 ]; then
-  ui_print "- Built-in misoundfx is detected."
-  rm -f `find $MODPATH/system/vendor -type f -name *misound*`
-  ui_print " "
+if [ "`grep_prop dolby.10 $OPTIONALS`" == 1 ]; then
+  SYSTEM_10=true
 else
   NAME=_ZN7android23sp_report_stack_pointerEv
   if [ "$IS64BIT" == true ]; then
@@ -297,21 +156,57 @@ else
   else
     FUNC32=false
   fi
-  if [ $FUNC64 != true ] && [ $FUNC32 != true ]; then
-    if [ ! "$LIST32BIT" ]; then
-      abort "! This ROM doesn't support 32 bit library."
-    fi
-    ui_print "- Using legacy libraries."
-    cp -rf $MODPATH/system_10/* $MODPATH/system
-    rm -f $MODPATH/system/vendor/lib64/soundfx/libmisoundfx.so
-    ui_print " "
-  elif [ $FUNC64 == true ] && [ $FUNC32 != true ]; then
-    rm -f $MODPATH/system/vendor/lib/soundfx/libmisoundfx.so
-  elif [ $FUNC64 != true ] && [ $FUNC32 == true ]; then
-    rm -f $MODPATH/system/vendor/lib64/soundfx/libmisoundfx.so
+  if [ $FUNC64 == true ] && [ $FUNC32 == true ]; then
+    SYSTEM_10=false
+  else
+    SYSTEM_10=true
   fi
 fi
+if [ "$SYSTEM_10" == true ]; then
+  ui_print "- Using legacy libraries"
+  if [ "$API" -ge 30 ]; then
+    rm -rf $MODPATH/system_10/framework
+  fi
+  cp -rf $MODPATH/system_10/* $MODPATH/system
+  sed -i 's|#10||g' $MODPATH/service.sh
+  ui_print " "
+else
+  sed -i 's|#11||g' $MODPATH/service.sh
+fi
 rm -rf $MODPATH/system_10
+
+# function
+run_check_function() {
+LISTS=`strings $MODPATH/system/vendor$DIR/$DES | grep ^lib | grep .so`
+FILE=`for LIST in $LISTS; do echo $SYSTEM$DIR/$LIST; done`
+ui_print "- Checking"
+ui_print "$NAME"
+ui_print "  function at"
+ui_print "$FILE"
+ui_print "  Please wait..."
+if ! grep -q $NAME $FILE; then
+  ui_print "  Function not found."
+  ui_print "  Using new $DIR/$LIB"
+  mv -f $MODPATH/system_support$DIR/$LIB $MODPATH/system$DIR
+fi
+ui_print " "
+}
+check_function() {
+if [ "$IS64BIT" == true ]; then
+  DIR=/lib64
+  run_check_function
+fi
+if [ "$LIST32BIT" ]; then
+  DIR=/lib
+  run_check_function
+fi
+}
+
+# check
+NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
+DES=vendor.dolby.hardware.dms@2.0.so
+LIB=libhidlbase.so
+check_function
 
 # sepolicy
 FILE=$MODPATH/sepolicy.rule
@@ -321,9 +216,13 @@ if [ "`grep_prop sepolicy.sh $OPTIONALS`" == 1 ]\
   mv -f $FILE $DES
 fi
 
+# .aml.sh
+mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
+
 # mod ui
+MOD_UI=false
 if [ "`grep_prop mod.ui $OPTIONALS`" == 1 ]; then
-  APP=MiSound
+  APP=OPSoundTuner
   FILE=/sdcard/$APP.apk
   DIR=`find $MODPATH/system -type d -name $APP`
   ui_print "- Using modified UI apk..."
@@ -331,6 +230,7 @@ if [ "`grep_prop mod.ui $OPTIONALS`" == 1 ]; then
     cp -f $FILE $DIR
     chmod 0644 $DIR/$APP.apk
     ui_print "  Applied"
+    MOD_UI=true
   else
     ui_print "  ! There is no $FILE file."
     ui_print "    Please place the apk to your internal storage first"
@@ -339,45 +239,29 @@ if [ "`grep_prop mod.ui $OPTIONALS`" == 1 ]; then
   ui_print " "
 fi
 
-# function
-extract_lib() {
-for APP in $APPS; do
-  FILE=`find $MODPATH/system -type f -name $APP.apk`
-  if [ -f `dirname $FILE`/extract ]; then
-    rm -f `dirname $FILE`/extract
-    ui_print "- Extracting..."
-    DIR=`dirname $FILE`/lib/"$ARCH"
-    mkdir -p $DIR
-    rm -rf $TMPDIR/*
-    DES=lib/"$ABI"/*
-    unzip -d $TMPDIR -o $FILE $DES
-    cp -f $TMPDIR/$DES $DIR
-    ui_print " "
-  fi
-done
-}
-
-# extract
-APPS="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
-extract_lib
+# 36 dB
+PROP=`grep_prop dolby.gain $OPTIONALS`
+if [ "$MOD_UI" != true ] && [ "$PROP" ]\
+&& [ "$PROP" -gt 192 ]; then
+  ui_print "- Using max/min limit 36 dB"
+  cp -rf $MODPATH/system_36dB/* $MODPATH/system
+  ui_print " "
+fi
+rm -rf $MODPATH/system_36dB
 
 # cleaning
 ui_print "- Cleaning..."
-if [ $DOLBY == true ]; then
-  PKGS=`cat $MODPATH/package-dolby.txt`
-  if [ "`grep_prop dolby.mod $OPTIONALS`" == 0 ]; then
-    rm -f /data/vendor/dolby/dax_sqlite3.db
-  else
-    rm -f /data/vendor/dolby/dap_sqlite3.db
-    sed -i 's|dax_sqlite3.db|dap_sqlite3.db|g' $MODPATH/uninstall.sh
-  fi
-else
-  PKGS=`cat $MODPATH/package.txt`
-fi
+PKGS=`cat $MODPATH/package.txt`
 if [ "$BOOTMODE" == true ]; then
   for PKG in $PKGS; do
     RES=`pm uninstall $PKG 2>/dev/null`
   done
+fi
+if [ "`grep_prop dolby.mod $OPTIONALS`" == 0 ]; then
+  rm -f /data/vendor/dolby/dax_sqlite3.db
+else
+  rm -f /data/vendor/dolby/dap_sqlite3.db
+  sed -i 's|dax_sqlite3.db|dap_sqlite3.db|g' $MODPATH/uninstall.sh
 fi
 rm -rf $MODPATH/unused
 remove_sepolicy_rule
@@ -407,32 +291,30 @@ for NAME in $NAMES; do
   rm -rf /cust/magisk/$NAME
 done
 }
-conflict_disable() {
-for NAME in $NAMES; do
-  DIR=/data/adb/modules_update/$NAME
-  touch $DIR/disable
-  DIR=/data/adb/modules/$NAME
-  touch $DIR/disable
-done
-}
 
 # conflict
-NAMES=diracmisoundfxRemover
-conflict_disable
-if [ $DOLBY == true ]; then
-  NAMES="dolbyatmos DolbyAudio DolbyAtmos MotoDolby
+if [ "`grep_prop dolby.mod $OPTIONALS`" == 0 ]; then
+  NAMES="dolbyatmos DolbyAudio MotoDolby
          DolbyAtmos360 dsplus Dolby"
+else
+  NAMES="dolbyatmos DolbyAudio MotoDolby
+         DolbyAtmos360"
+fi
+conflict
+NAMES=SoundEnhancement
+FILE=/data/adb/modules/$NAMES/module.prop
+if grep -q 'Dolby Atmos Xperia' $FILE; then
   conflict
-  NAMES=SoundEnhancement
-  FILE=/data/adb/modules/$NAMES/module.prop
-  if grep -q 'Dolby Atmos Xperia' $FILE; then
-    conflict
-  fi
-  NAMES=DolbyAtmosSpatialSound
-  FILE=/data/adb/modules/$NAMES/module.prop
-  if grep -q 'Dolby Atmos and' $FILE; then
-    conflict
-  fi
+fi
+NAMES=MiSound
+FILE=/data/adb/modules/$NAMES/module.prop
+if grep -q 'and Dolby Atmos' $FILE; then
+  conflict
+fi
+NAMES=DolbyAtmosSpatialSound
+FILE=/data/adb/modules/$NAMES/module.prop
+if grep -q 'Dolby Atmos and' $FILE; then
+  conflict
 fi
 
 # function
@@ -721,98 +603,90 @@ elif [ "`grep_prop permissive.mode $OPTIONALS`" == 2 ]; then
 fi
 
 # remount
-if [ $DOLBY == true ]; then
-  remount_rw
-fi
+remount_rw
 
 # early init mount dir
-if [ $DOLBY == true ]; then
-  early_init_mount_dir
-fi
+early_init_mount_dir
 
 # check
 chcon -R u:object_r:system_lib_file:s0 $MODPATH/system_support/lib*
-NAMES="libhidltransport.so libhwbinder.so"
-#if [ $DOLBY == true ]; then
-#  find_file
-#fi
+if [ "$SYSTEM_10" == true ]; then
+  NAMES="libhidltransport.so libhwbinder.so"
+else
+  NAMES=libhidltransport.so
+fi
+find_file
 rm -rf $MODPATH/system_support
 
 # patch manifest.xml
-if [ $DOLBY == true ]; then
-  FILE="$MAGISKTMP/mirror/*/etc/vintf/manifest.xml
-        $MAGISKTMP/mirror/*/*/etc/vintf/manifest.xml
-        /*/etc/vintf/manifest.xml /*/*/etc/vintf/manifest.xml
-        $MAGISKTMP/mirror/*/etc/vintf/manifest/*.xml
-        $MAGISKTMP/mirror/*/*/etc/vintf/manifest/*.xml
-        /*/etc/vintf/manifest/*.xml /*/*/etc/vintf/manifest/*.xml"
-  if [ "`grep_prop dolby.skip.vendor $OPTIONALS`" != 1 ]\
-  && ! df -h $VENDOR | grep 100%\
-  && ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -q 2.0; then
-    FILE=$VENDOR/etc/vintf/manifest.xml
-    patch_manifest
-  fi
-  if [ "`grep_prop dolby.skip.system $OPTIONALS`" != 1 ]\
-  && ! df -h $SYSTEM | grep 100%\
-  && ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -q 2.0; then
-    FILE=$SYSTEM/etc/vintf/manifest.xml
-    patch_manifest
-  fi
-  if [ "`grep_prop dolby.skip.system_ext $OPTIONALS`" != 1 ]\
-  && ! df -h $SYSTEM_EXT | grep 100%\
-  && ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -q 2.0; then
-    FILE=$SYSTEM_EXT/etc/vintf/manifest.xml
-    patch_manifest
-  fi
-  if ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -q 2.0; then
-    patch_manifest_eim
-    if [ $EIM == false ]; then
-      ui_print "- Using systemless manifest.xml patch."
-      ui_print "  On some ROMs, it causes bugs or even makes bootloop"
-      ui_print "  because not allowed to restart hwservicemanager."
-      ui_print "  You can fix this by using Magisk Delta/Kitsune Mask."
-      ui_print " "
-    fi
+FILE="$MAGISKTMP/mirror/*/etc/vintf/manifest.xml
+      $MAGISKTMP/mirror/*/*/etc/vintf/manifest.xml
+      /*/etc/vintf/manifest.xml /*/*/etc/vintf/manifest.xml
+      $MAGISKTMP/mirror/*/etc/vintf/manifest/*.xml
+      $MAGISKTMP/mirror/*/*/etc/vintf/manifest/*.xml
+      /*/etc/vintf/manifest/*.xml /*/*/etc/vintf/manifest/*.xml"
+if [ "`grep_prop dolby.skip.vendor $OPTIONALS`" != 1 ]\
+&& ! df -h $VENDOR | grep 100%\
+&& ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -q 2.0; then
+  FILE=$VENDOR/etc/vintf/manifest.xml
+  patch_manifest
+fi
+if [ "`grep_prop dolby.skip.system $OPTIONALS`" != 1 ]\
+&& ! df -h $SYSTEM | grep 100%\
+&& ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -q 2.0; then
+  FILE=$SYSTEM/etc/vintf/manifest.xml
+  patch_manifest
+fi
+if [ "`grep_prop dolby.skip.system_ext $OPTIONALS`" != 1 ]\
+&& ! df -h $SYSTEM_EXT | grep 100%\
+&& ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -q 2.0; then
+  FILE=$SYSTEM_EXT/etc/vintf/manifest.xml
+  patch_manifest
+fi
+if ! grep -A2 vendor.dolby.hardware.dms $FILE | grep -q 2.0; then
+  patch_manifest_eim
+  if [ $EIM == false ]; then
+    ui_print "- Using systemless manifest.xml patch."
+    ui_print "  On some ROMs, it causes bugs or even makes bootloop"
+    ui_print "  because not allowed to restart hwservicemanager."
+    ui_print "  You can fix this by using Magisk Delta/Kitsune Mask."
+    ui_print " "
   fi
 fi
 
 # patch hwservice contexts
-if [ $DOLBY == true ]; then
-  FILE="$MAGISKTMP/mirror/*/etc/selinux/*_hwservice_contexts
-        $MAGISKTMP/mirror/*/*/etc/selinux/*_hwservice_contexts
-        /*/etc/selinux/*_hwservice_contexts
-        /*/*/etc/selinux/*_hwservice_contexts"
-  if [ "`grep_prop dolby.skip.vendor $OPTIONALS`" != 1 ]\
-  && ! df -h $VENDOR | grep 100%\
-  && ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    FILE=$VENDOR/etc/selinux/vendor_hwservice_contexts
-    patch_hwservice
-  fi
-  if [ "`grep_prop dolby.skip.system $OPTIONALS`" != 1 ]\
-  && ! df -h $SYSTEM | grep 100%\
-  && ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    FILE=$SYSTEM/etc/selinux/plat_hwservice_contexts
-    patch_hwservice
-  fi
-  if [ "`grep_prop dolby.skip.system_ext $OPTIONALS`" != 1 ]\
-  && ! df -h $SYSTEM_EXT | grep 100%\
-  && ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    FILE=$SYSTEM_EXT/etc/selinux/system_ext_hwservice_contexts
-    patch_hwservice
-  fi
-  if ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
-    patch_hwservice_eim
-    if [ $EIM == false ]; then
-      ui_print "! Failed to set hal_dms_hwservice context."
-      ui_print " "
-    fi
+FILE="$MAGISKTMP/mirror/*/etc/selinux/*_hwservice_contexts
+      $MAGISKTMP/mirror/*/*/etc/selinux/*_hwservice_contexts
+      /*/etc/selinux/*_hwservice_contexts
+      /*/*/etc/selinux/*_hwservice_contexts"
+if [ "`grep_prop dolby.skip.vendor $OPTIONALS`" != 1 ]\
+&& ! df -h $VENDOR | grep 100%\
+&& ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
+  FILE=$VENDOR/etc/selinux/vendor_hwservice_contexts
+  patch_hwservice
+fi
+if [ "`grep_prop dolby.skip.system $OPTIONALS`" != 1 ]\
+&& ! df -h $SYSTEM | grep 100%\
+&& ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
+  FILE=$SYSTEM/etc/selinux/plat_hwservice_contexts
+  patch_hwservice
+fi
+if [ "`grep_prop dolby.skip.system_ext $OPTIONALS`" != 1 ]\
+&& ! df -h $SYSTEM_EXT | grep 100%\
+&& ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
+  FILE=$SYSTEM_EXT/etc/selinux/system_ext_hwservice_contexts
+  patch_hwservice
+fi
+if ! grep -Eq 'u:object_r:hal_dms_hwservice:s0|u:object_r:default_android_hwservice:s0' $FILE; then
+  patch_hwservice_eim
+  if [ $EIM == false ]; then
+    ui_print "! Failed to set hal_dms_hwservice context."
+    ui_print " "
   fi
 fi
 
 # remount
-if [ $DOLBY == true ]; then
-  remount_ro
-fi
+remount_ro
 
 # function
 hide_oat() {
@@ -863,26 +737,49 @@ for APP in $APPS; do
   replace_dir
 done
 }
+grant_permission() {
+if [ "$BOOTMODE" == true ]\
+&& ! dumpsys package $PKG | grep -q "$NAME: granted=true"; then
+  FILE=`find $MODPATH/system -type f -name $APP.apk`
+  ui_print "- Granting all runtime permissions for $PKG..."
+  RES=`pm install -g -i com.android.vending $FILE 2>/dev/null`
+  pm grant $PKG $NAME
+  if ! dumpsys package $PKG | grep -q "$NAME: granted=true"; then
+    ui_print "  ! Failed."
+    ui_print "  Maybe insufficient storage."
+    ui_print "  or maybe there is in-built $PKG exist."
+    ui_print "  Just ignore this."
+  fi
+  RES=`pm uninstall -k $PKG 2>/dev/null`
+  ui_print " "
+fi
+}
+
+# ui app
+if [ "$MOD_UI" != true ]\
+&& [ "`grep_prop dolby.daxui $OPTIONALS`" == 1 ]; then
+  ui_print "- Using DaxUI instead of OPSoundTuner"
+  APPS=OPSoundTuner
+  ui_print " "
+else
+  APP=OPSoundTuner
+  PKG=com.oneplus.sound.tuner
+  NAME=android.permission.READ_CALL_LOG
+  grant_permission
+  sed -i 's|#o||g' $MODPATH/.aml.sh
+  APPS=DaxUI
+fi
+for APP in $APPS; do
+  rm -rf `find $MODPATH/system -type d -name $APP`
+done
+hide_app
 
 # hide
 APPS="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
 hide_oat
-APPS=MusicFX
+APPS="MusicFX MotoDolbyDax3 MotoDolbyV3 DolbyAtmos
+      AudioEffectCenter"
 hide_app
-if [ $DOLBY == true ]; then
-  APPS="DaxUI MotoDolbyDax3 MotoDolbyV3 OPSoundTuner
-       DolbyAtmos AudioEffectCenter"
-  hide_app
-fi
-
-# hide
-if [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
-  APPS="XiaomiParts ZenfoneParts ZenParts GalaxyParts
-       KharaMeParts DeviceParts PocoParts"
-  ui_print "- Hides * Parts app"
-  hide_app
-  ui_print " "
-fi
 
 # stream mode
 FILE=$MODPATH/.aml.sh
@@ -966,8 +863,7 @@ if echo "$PROP" | grep -q g; then
   ui_print " "
 fi
 
-# function
-dolby_settings() {
+# settings
 FILE=$MODPATH/system/vendor/etc/dolby/dax-default.xml
 PROP=`grep_prop dolby.bass $OPTIONALS`
 if [ "$PROP" == true ]; then
@@ -1027,12 +923,6 @@ if [ "`grep_prop dolby.deepbass $OPTIONALS`" == 1 ]; then
   sed -i 's|frequency="19688"|frequency="13875"|g' $FILE
 fi
 ui_print " "
-}
-
-# settings
-if [ $DOLBY == true ]; then
-  dolby_settings
-fi
 
 # function
 rename_file() {
@@ -1055,18 +945,8 @@ if grep -q $NAME $FILE; then
 fi
 }
 
-# Change 9d4921da-8225-4f29-aefa-39537a04bcaa
-# to a0c30891-8246-4aef-b8ad-d53e26da0253
-if [ $DOLBY == true ]; then
-  NAME=$'\xda\x21\x49\x9d\x25\x82\x29\x4f\xfa\xae\x39\x53\x7a\x04\xbc\xaa'
-  NAME2=$'\x91\x08\xc3\xa0\x46\x82\xef\x4a\xad\xb8\xd5\x3e\x26\xda\x02\x53'
-  FILE=$MODPATH/system/vendor/lib*/soundfx/libhwdap.so
-  change_name
-fi
-
 # mod
-if [ $DOLBY == true ]\
-&& [ "`grep_prop dolby.mod $OPTIONALS`" != 0 ]; then
+if [ "`grep_prop dolby.mod $OPTIONALS`" != 0 ]; then
   NAME=dax-default.xml
   NAME2=dap-default.xml
   FILE=$MODPATH/system/vendor/etc/dolby/$NAME
@@ -1118,68 +998,28 @@ $MODPATH/.aml.sh"
 $MODPATH/system/vendor/lib*/vendor.dolby*.hardware.dms*@*-impl.so
 $MODPATH/system/vendor/bin/hw/vendor.dolby*.hardware.dms*@*-service"
   change_name
-fi
-
-# function
-file_check_system() {
-for FILE in $FILES; do
-  DES=$SYSTEM$FILE
-  DES2=$SYSTEM_EXT$FILE
-  if [ -f $DES ] || [ -f $DES2 ]; then
-    ui_print "- Detected $FILE"
-    ui_print " "
-    rm -f $MODPATH/system$FILE
-  fi
-done
-}
-file_check_vendor() {
-for FILE in $FILES; do
-  DES=$VENDOR$FILE
-  DES2=$ODM$FILE
-  if [ -f $DES ] || [ -f $DES2 ]; then
-    ui_print "- Detected $FILE"
-    ui_print " "
-    rm -f $MODPATH/system/vendor$FILE
-  fi
-done
-}
-
-# check
-if [ "$IS64BIT" == true ]; then
-  FILES=/lib64/libmigui.so
-  file_check_system
-fi
-if [ "$LIST32BIT" ]; then
-  FILES=/lib/libmigui.so
-  file_check_system
-fi
-if [ $DOLBY == true ]; then
-  FILES=/etc/acdbdata/adsp_avs_config.acdb
-  file_check_vendor
-  if [ "$IS64BIT" == true ]; then
-    FILES=/lib64/libqtigef.so
-#           "/lib64/libdeccfg.so
-#           /lib64/libstagefrightdolby.so
-#           /lib64/libstagefright_soft_ddpdec.so
-#           /lib64/libstagefright_soft_ac4dec.so"
-    file_check_vendor
-  fi
-  if [ "$LIST32BIT" ]; then
-    FILES=/lib/libqtigef.so
-#           "/lib/libdeccfg.so
-#           /lib/libstagefrightdolby.so
-#           /lib/libstagefright_soft_ddpdec.so
-#           /lib/libstagefright_soft_ac4dec.so"
-    file_check_vendor
-  fi
-fi
-
-# harman kardon
-FILE=$MODPATH/service.sh
-if [ "`grep_prop misound.harmankardon $OPTIONALS`" == 0 ]; then
-  ui_print "- Disables Harman Kardon"
-  sed -i 's|#h||g' $FILE
-  ui_print " "
+  sed -i 's|ro.dolby.mod_uuid false|ro.dolby.mod_uuid true|g' $MODPATH/service.sh
+  NAME=$'\x39\x53\x7a\x04\xbc\xaa'
+  NAME2=_ryuki
+  FILE=$MODPATH/system/vendor/lib*/soundfx/libswdlb.so
+#  change_name
+  NAME=$'\x45\x27\x99\x21\x85\x39'
+  FILE=$MODPATH/system/vendor/lib*/soundfx/libswdlb.so
+  change_name
+  NAME=$'\xd5\x3e\x26\xda\x02\x53'
+  FILE=$MODPATH/system/vendor/lib*/soundfx/libhwdlb.so
+  change_name
+  NAME=$'\xef\x93\x7f\x67\x55\x87'
+  FILE=$MODPATH/system/vendor/lib*/soundfx/lib*wdlb.so
+  change_name
+  NAME=39537a04bcaa
+  NAME2=5f7279756b69
+  FILE=$MODPATH/.aml.sh
+  change_name
+  NAME=452799218539
+  change_name
+  NAME=d53e26da0253
+  change_name
 fi
 
 # audio rotation
@@ -1201,10 +1041,41 @@ else
   sed -i 's|#u||g' $FILE
 fi
 
+# function
+file_check_vendor() {
+for FILE in $FILES; do
+  DES=$VENDOR$FILE
+  DES2=$ODM$FILE
+  if [ -f $DES ] || [ -f $DES2 ]; then
+    ui_print "- Detected $FILE"
+    ui_print " "
+    rm -f $MODPATH/system/vendor$FILE
+  fi
+done
+}
+
+# check
+if [ "$IS64BIT" == true ]; then
+  FILES=/lib64/libqtigef.so
+#         "/lib64/libdeccfg.so
+#         /lib64/libstagefrightdolby.so
+#         /lib64/libstagefright_soft_ddpdec.so
+#         /lib64/libstagefright_soft_ac4dec.so"
+  file_check_vendor
+fi
+if [ "$LIST32BIT" ]; then
+  FILES=/lib/libqtigef.so
+#         "/lib/libdeccfg.so
+#         /lib/libstagefrightdolby.so
+#         /lib/libstagefright_soft_ddpdec.so
+#         /lib/libstagefright_soft_ac4dec.so"
+  file_check_vendor
+fi
+
 # vendor_overlay
 DIR=/product/vendor_overlay
 if [ "`grep_prop fix.vendor_overlay $OPTIONALS`" == 1 ]\
-&& [ $DOLBY == true ] && [ -d $DIR ]; then
+&& [ -d $DIR ]; then
   ui_print "- Fixing $DIR mount..."
   cp -rf $DIR/*/* $MODPATH/system/vendor
   ui_print " "
@@ -1212,13 +1083,11 @@ fi
 
 # uninstaller
 NAME=DolbyModuleUninstaller.zip
-if [ $DOLBY == true ]; then
-  cp -f $MODPATH/$NAME /sdcard
-  ui_print "- Flash /sdcard/$NAME"
-  ui_print "  via recovery only if you got bootloop"
-  ui_print " "
-fi
+cp -f $MODPATH/$NAME /sdcard
 rm -f $MODPATH/$NAME
+ui_print "- Flash /sdcard/$NAME"
+ui_print "  via recovery only if you got bootloop"
+ui_print " "
 
 # run
 . $MODPATH/copy.sh
@@ -1228,7 +1097,6 @@ rm -f $MODPATH/$NAME
 if [ "$BOOTMODE" == true ] && [ ! "$MAGISKPATH" ]; then
   unmount_mirror
 fi
-
 
 
 
