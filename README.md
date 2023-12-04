@@ -1,4 +1,4 @@
-# Mi Sound Redmi K40 Magisk Module
+# Mi Sound and Dolby Atmos Redmi K40 Magisk Module
 
 ## DISCLAIMER
 - Dolby apps and blobs are owned by Dolby™.
@@ -11,7 +11,7 @@
 - Global type soundfx
 - Mi Sound, Dolby Atmos, & Bluetooth microphone enhancer
 - Dolby Atmos changes/spoofs ro.product.brand to Redmi, ro.product.device to alioth, & ro.product.manufacturer to Xiaomi which may break some system apps and features functionality
-- Doesn't support ACDB module
+- Dolby Atmos conflicted with vendor.dolby_v3_6.hardware.dms360@2.0-service
 
 ## Sources
 - https://dumps.tadiphone.dev/dumps/redmi/alioth qssi-user-12-SKQ1.211006.001-V13.0.3.0.SKHEUXM-release-keys

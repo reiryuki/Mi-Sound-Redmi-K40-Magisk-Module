@@ -8,7 +8,9 @@ MODAP=`find $MODPATH -type f -name *policy*.conf -o -name *policy*.xml`
 
 # function
 archdir() {
-if [ -f $libdir/lib/soundfx/$LIB ]; then
+if [ -f $libdir/lib/soundfx/$LIB ]\
+|| [ -f $MODPATH/system$libdir/lib/soundfx/$LIB ]\
+|| [ -f $MODPATH$libdir/lib/soundfx/$LIB ]; then
   ARCHDIR=/lib
 else
   ARCHDIR=/lib64
@@ -392,7 +394,9 @@ dap_proxy() {
 LIB=libswdap.so
 LIBHW=libhwdap.so
 LIBNAME=dap_sw
+LIBNAME=dap_sw_mod
 LIBNAMEHW=dap_hw
+LIBNAMEHW=dap_hw_mod
 NAME=dap
 NAME=dap_mod
 UUID=6ab06da4-c516-4611-8166-452799218539
@@ -510,7 +514,9 @@ vqe() {
 # store
 LIB=libswvqe.so
 LIBNAME=vqe
+LIBNAME=vqe_mod
 NAME=vqe
+NAME=vqe_mod
 UUID=64a0f614-7fa4-48b8-b081-d59dc954616f
 RMVS="$LIB $LIBNAME $NAME $UUID"
 archdir
@@ -531,7 +537,9 @@ gamedap() {
 # store
 LIB=libswgamedap.so
 LIBNAME=gamedap
+LIBNAME=gamedap_mod
 NAME=gamedap
+NAME=gamedap_mod
 UUID=3783c334-d3a0-4d13-874f-0032e5fb80e2
 RMVS="$LIB $LIBNAME $NAME $UUID"
 archdir
