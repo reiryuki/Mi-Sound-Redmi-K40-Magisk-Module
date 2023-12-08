@@ -10,19 +10,19 @@ API=`getprop ro.build.version.sdk`
 
 # function
 dolby_prop() {
-resetprop ro.product.brand Redmi
-resetprop ro.product.device alioth
-resetprop ro.product.manufacturer Xiaomi
-resetprop ro.vendor.dolby.dax.version DAX3_3.6.1.6_r1
-resetprop vendor.audio.dolby.ds2.enabled false
-resetprop vendor.audio.dolby.ds2.hardbypass false
-resetprop ro.vendor.audio.dolby.dax.support true
-resetprop ro.vendor.audio.dolby.fade_switch true
-resetprop ro.dolby.mod_uuid false
-#resetprop vendor.dolby.dap.param.tee false
-#resetprop vendor.dolby.mi.metadata.log false
-#resetprop vendor.audio.gef.enable.traces false
-#resetprop vendor.audio.gef.debug.flags false
+resetprop -n ro.product.brand Redmi
+resetprop -n ro.product.device alioth
+resetprop -n ro.product.manufacturer Xiaomi
+resetprop -n ro.vendor.dolby.dax.version DAX3_3.6.1.6_r1
+resetprop -n vendor.audio.dolby.ds2.enabled false
+resetprop -n vendor.audio.dolby.ds2.hardbypass false
+resetprop -n ro.vendor.audio.dolby.dax.support true
+resetprop -n ro.vendor.audio.dolby.fade_switch true
+resetprop -n ro.dolby.mod_uuid false
+#resetprop -n vendor.dolby.dap.param.tee false
+#resetprop -n vendor.dolby.mi.metadata.log false
+#resetprop -n vendor.audio.gef.enable.traces false
+#resetprop -n vendor.audio.gef.debug.flags false
 NAME=persist.vendor.audio.calfile
 NAME2=adsp_avs_config.acdb
 VAL=/vendor/etc/acdbdata/$NAME2
@@ -38,29 +38,29 @@ fi
 }
 
 # property
-resetprop ro.audio.ignore_effects false
+resetprop -n ro.audio.ignore_effects false
 #ddolby_prop
-resetprop ro.audio.hifi false
-resetprop ro.vendor.audio.hifi false
-resetprop ro.vendor.audio.ring.filter true
-resetprop ro.vendor.audio.scenario.support true
-resetprop ro.vendor.audio.sfx.earadj true
-resetprop ro.vendor.audio.sfx.independentequalizer true
-resetprop ro.vendor.audio.sfx.scenario true
-resetprop ro.vendor.audio.sfx.spk.stereo true
-resetprop ro.audio.soundfx.type mi
-resetprop ro.vendor.audio.soundfx.type mi
-resetprop ro.audio.soundfx.usb true
-resetprop ro.vendor.audio.soundfx.usb true
-resetprop ro.vendor.audio.misound.bluetooth.enable true
-resetprop ro.vendor.audio.sfx.speaker true
-resetprop ro.vendor.audio.sfx.spk.movie true
-resetprop ro.vendor.audio.surround.headphone.only false
-resetprop ro.vendor.audio.scenario.headphone.only false
-resetprop ro.vendor.audio.feature.spatial true
-#hresetprop ro.vendor.audio.sfx.harmankardon false
-#resetprop ro.vendor.audio.sfx.audiovisual false
-#resetprop ro.audio.soundfx.dirac false
+resetprop -n ro.audio.hifi false
+resetprop -n ro.vendor.audio.hifi false
+resetprop -n ro.vendor.audio.ring.filter true
+resetprop -n ro.vendor.audio.scenario.support true
+resetprop -n ro.vendor.audio.sfx.earadj true
+resetprop -n ro.vendor.audio.sfx.independentequalizer true
+resetprop -n ro.vendor.audio.sfx.scenario true
+resetprop -n ro.vendor.audio.sfx.spk.stereo true
+resetprop -n ro.audio.soundfx.type mi
+resetprop -n ro.vendor.audio.soundfx.type mi
+resetprop -n ro.audio.soundfx.usb true
+resetprop -n ro.vendor.audio.soundfx.usb true
+resetprop -n ro.vendor.audio.misound.bluetooth.enable true
+resetprop -n ro.vendor.audio.sfx.speaker true
+resetprop -n ro.vendor.audio.sfx.spk.movie true
+resetprop -n ro.vendor.audio.surround.headphone.only false
+resetprop -n ro.vendor.audio.scenario.headphone.only false
+resetprop -n ro.vendor.audio.feature.spatial true
+#hresetprop -n ro.vendor.audio.sfx.harmankardon false
+#resetprop -n ro.vendor.audio.sfx.audiovisual false
+#resetprop -n ro.audio.soundfx.dirac false
 
 # restart
 if [ "$API" -ge 24 ]; then
@@ -121,6 +121,7 @@ killall vendor.qti.hardware.vibrator.service\
  android.hardware.sensors@2.0-service-mediatek\
  android.hardware.sensors@2.0-service.multihal\
  android.hardware.health-service.qti
+#skillall vendor.qti.hardware.display.allocator-service
 }
 
 # dolby
