@@ -103,6 +103,14 @@ fi
 SERVICES=`realpath /vendor`/bin/hw/vendor.dolby.hardware.dms@2.0-service
 for SERVICE in $SERVICES; do
   killall $SERVICE
+  if ! stat -c %a $SERVICE | grep 755\
+  || [ "`stat -c %u.%g $SERVICE`" != 0.2000 ]\
+  || ! ls -Z $SERVICE | grep hal_dms_default_exec; then
+    mount -o remount,rw $SERVICE
+    chmod 0755 $SERVICE
+    chown 0.2000 $SERVICE
+    chcon u:object_r:hal_dms_default_exec:s0 $SERVICE
+  fi
   $SERVICE &
   PID=`pidof $SERVICE`
 done

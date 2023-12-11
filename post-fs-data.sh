@@ -175,6 +175,7 @@ fi
 # function
 dolby_manifest() {
 M=/system/etc/vintf/manifest.xml
+rm -f $MODPATH$M
 FILE="/*/etc/vintf/manifest.xml /*/*/etc/vintf/manifest.xml
       /*/etc/vintf/manifest/*.xml /*/*/etc/vintf/manifest/*.xml"
 if ! grep -A2 vendor.dolby.hardware.dms $FILE | grep 2.0; then
@@ -189,7 +190,6 @@ if ! grep -A2 vendor.dolby.hardware.dms $FILE | grep 2.0; then
     umount $M
     mount -o bind $MODPATH$M $M
     killall hwservicemanager
-    rm -f $MODPATH$M
   fi
 fi
 }

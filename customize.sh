@@ -1193,22 +1193,23 @@ if [ "$LIST32BIT" ]; then
   file_check_system
 fi
 if [ $DOLBY == true ]; then
-  FILES=/etc/acdbdata/adsp_avs_config.acdb
+  FILES="/etc/acdbdata/adsp_avs_config.acdb
+         /etc/media_codecs_dolby_audio.xml"
   file_check_vendor
   if [ "$IS64BIT" == true ]; then
-    FILES=/lib64/libqtigef.so
-#           "/lib64/libdeccfg.so
-#           /lib64/libstagefrightdolby.so
-#           /lib64/libstagefright_soft_ddpdec.so
-#           /lib64/libstagefright_soft_ac4dec.so"
+    FILES="/lib64/libqtigef.so
+           /lib64/libdeccfg.so
+           /lib64/libstagefrightdolby.so
+           /lib64/libstagefright_soft_ddpdec.so
+           /lib64/libstagefright_soft_ac4dec.so"
     file_check_vendor
   fi
   if [ "$LIST32BIT" ]; then
-    FILES=/lib/libqtigef.so
-#           "/lib/libdeccfg.so
-#           /lib/libstagefrightdolby.so
-#           /lib/libstagefright_soft_ddpdec.so
-#           /lib/libstagefright_soft_ac4dec.so"
+    FILES="/lib/libqtigef.so
+           /lib/libdeccfg.so
+           /lib/libstagefrightdolby.so
+           /lib/libstagefright_soft_ddpdec.so
+           /lib/libstagefright_soft_ac4dec.so"
     file_check_vendor
   fi
 fi
