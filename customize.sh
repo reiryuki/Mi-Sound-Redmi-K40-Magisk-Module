@@ -1193,8 +1193,7 @@ if [ "$LIST32BIT" ]; then
   file_check_system
 fi
 if [ $DOLBY == true ]; then
-  FILES="/etc/acdbdata/adsp_avs_config.acdb
-         /etc/media_codecs_dolby_audio.xml"
+  FILES=/etc/acdbdata/adsp_avs_config.acdb
   file_check_vendor
   if [ "$IS64BIT" == true ]; then
     FILES="/lib64/libqtigef.so
