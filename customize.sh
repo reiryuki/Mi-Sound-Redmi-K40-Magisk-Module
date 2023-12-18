@@ -865,13 +865,8 @@ hide_oat
 APPS=MusicFX
 hide_app
 if [ $DOLBY == true ]; then
-  if [ "`grep_prop dolby.mod $OPTIONALS`" == 1 ]; then
-    APPS="DaxUI MotoDolbyDax3 MotoDolbyV3 OPSoundTuner
-          DolbyAtmos AudioEffectCenter"
-  else
-    APPS="DaxUI MotoDolbyDax3 MotoDolbyV3 OPSoundTuner
-          DolbyAtmos"
-  fi
+  APPS="DaxUI MotoDolbyDax3 MotoDolbyV3 OPSoundTuner
+        DolbyAtmos AudioEffectCenter"
   hide_app
 fi
 
@@ -879,7 +874,7 @@ fi
 if [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
   APPS="XiaomiParts ZenfoneParts ZenParts GalaxyParts
        KharaMeParts DeviceParts PocoParts"
-  ui_print "- Hides * Parts app"
+  ui_print "- Hides Parts app"
   hide_app
   ui_print " "
 fi
