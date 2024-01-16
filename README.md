@@ -44,7 +44,7 @@
 - Install Miui Core Magisk Module first if you are in non-Miui ROM: https://github.com/reiryuki/Miui-Core-Magisk-Module
 - If you have Dolby in-built in your ROM, then you need to activate data.cleanup=1 at the first time install (READ Optionals bellow!)
 - Install this module https://www.pling.com/p/1769560/ via Magisk app or KernelSU app or Recovery if Magisk installed
-- Install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 only if using any other audio mod module
+- Install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 only if using any other else audio mod module
 - Reboot
 - If you are using KernelSU, you need to allow superuser list manually all package name listed in package-dolby.txt (and your home launcher app also) (enable show system apps) and reboot after
 - If you are using SUList, you need to allow list manually your home launcher app (enable show system apps) and reboot after
@@ -62,7 +62,7 @@
 ## Tested on
 - Android 12 AncientOS ROM
 - Android 12.1 Nusantara ROM
-- Android 13 AOSP ROM & CrDroid ROM
+- Android 13 AOSP ROM, CrDroid ROM, & AlphaDroid ROM
 
 ## Credits and contributors
 - https://t.me/viperatmos
