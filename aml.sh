@@ -70,7 +70,7 @@ if [ "$MODAEC" ]; then
     sed -i "s|$RMV {}||g" $MODAEC
   done
   if ! grep -q '^output_session_processing {' $MODAEC; then
-    sed -i -e '$a\
+    sed -i '$a\
 \
 output_session_processing {\
     music {\
@@ -319,7 +319,7 @@ if [ "$MODAEC" ]; then
   sed -i "/^libraries {/a\  $LIBNAME {\n    path \\$libdir\\$ARCHDIR\/soundfx\/$LIB\n  }" $MODAEC
   sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
   if ! grep -q '^global_processing {' $MODAEC; then
-    sed -i -e '$a\
+    sed -i '$a\
 \
 global_processing {\
 }\' $MODAEC

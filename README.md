@@ -11,13 +11,14 @@
 - Global type soundfx
 - Mi Sound, Dolby Atmos, & Bluetooth microphone enhancer
 - Dolby Atmos changes/spoofs ro.product.brand to Redmi, ro.product.device to alioth, & ro.product.manufacturer to Xiaomi which may break some system apps and features functionality
-- Dolby Atmos conflicted with `vendor.dolby_v3_6.hardware.dms360@2.0-service` & `vendor.dolby.hardware.dms@1.0-service`
+- Dolby Atmos conflicted with `vendor.dolby_v3_6.hardware.dms360@2.0-service`, `vendor.dolby_sp.hardware.dmssp@2.0-service`, & `vendor.dolby.hardware.dms@1.0-service`
 
 ## Sources
 - https://dumps.tadiphone.dev/dumps/redmi/alioth qssi-user-12-SKQ1.211006.001-V13.0.3.0.SKHEUXM-release-keys
 - MiSound.apk: https://apkmirror.com com.miui.misound by Xiaomi Inc.
-- system_10: https://dumps.tadiphone.dev/dumps/xiaomi/ginkgo ginkgo-user-10-QKQ1.200114.002-V12.0.6.0.QCOEUXM-release-keys
 - daxService.apk: https://dumps.tadiphone.dev/dumps/motorola/rhode user-12-S1SR32.38-124-3-a8403-release-keys
+- libhidlbase.so: CrDroid ROM Android 13
+- android.hardware.audio.effect@*-impl.so: https://dumps.tadiphone.dev/dumps/oneplus/op594dl1 qssi-user-14-UKQ1.230924.001-1701915639192-release-keys--US
 
 ## Screenshots
 - https://t.me/androidryukimods/488
@@ -63,6 +64,9 @@
 - Android 12 AncientOS ROM
 - Android 12.1 Nusantara ROM
 - Android 13 AOSP ROM, CrDroid ROM, & AlphaDroid ROM
+
+## Known Issue
+- Dolby Atmos is unsupported in some Android 14 ROMs
 
 ## Credits and contributors
 - https://t.me/viperatmos

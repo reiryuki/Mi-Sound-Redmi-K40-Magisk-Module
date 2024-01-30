@@ -74,7 +74,7 @@ killall $SERVER\
 # function
 dolby_service() {
 # stop
-NAMES="dms-hal-1-0 dms-hal-2-0 dms-v36-hal-2-0"
+NAMES="dms-hal-1-0 dms-hal-2-0 dms-v36-hal-2-0 dms-sp-hal-2-0"
 for NAME in $NAMES; do
   if [ "`getprop init.svc.$NAME`" == running ]\
   || [ "`getprop init.svc.$NAME`" == restarting ]; then
@@ -84,7 +84,8 @@ done
 # mount
 DIR=/odm/bin/hw
 FILES="$DIR/vendor.dolby_v3_6.hardware.dms360@2.0-service
-       $DIR/vendor.dolby.hardware.dms@2.0-service"
+       $DIR/vendor.dolby.hardware.dms@2.0-service
+       $DIR/vendor.dolby_sp.hardware.dmssp@2.0-service"
 if [ "`realpath $DIR`" == $DIR ]; then
   for FILE in $FILES; do
     if [ -f $FILE ]; then
@@ -106,7 +107,6 @@ for SERVICE in $SERVICES; do
     mount -o remount,rw $SERVICE
     chmod 0755 $SERVICE
     chown 0.2000 $SERVICE
-    chcon u:object_r:hal_dms_default_exec:s0 $SERVICE
   fi
   $SERVICE &
   PID=`pidof $SERVICE`
@@ -122,13 +122,15 @@ killall vendor.qti.hardware.vibrator.service\
  android.hardware.light-service.mt6768\
  android.hardware.lights-service.xiaomi_mithorium\
  vendor.samsung.hardware.light-service\
- android.hardware.sensors@1.0-service\
- android.hardware.sensors@2.0-service\
- android.hardware.sensors@2.0-service-mediatek\
- android.hardware.sensors@2.0-service.multihal\
  android.hardware.health-service.qti
 #skillall vendor.qti.hardware.display.allocator-service\
 #s vendor.qti.hardware.display.composer-service
+if [ "$API" -le 33 ]; then
+  killall android.hardware.sensors@1.0-service\
+   android.hardware.sensors@2.0-service\
+   android.hardware.sensors@2.0-service-mediatek\
+   android.hardware.sensors@2.0-service.multihal
+fi
 }
 
 # dolby
@@ -181,7 +183,7 @@ if [ -d $AML ] && [ ! -f $AML/disable ]\
 fi
 
 # wait
-until [ "`getprop sys.boot_completed`" == "1" ]; do
+until [ "`getprop sys.boot_completed`" == 1 ]; do
   sleep 10
 done
 
@@ -216,12 +218,20 @@ fi
 if [ "$API" -ge 31 ]; then
   appops set $PKG MANAGE_MEDIA allow
 fi
+if [ "$API" -ge 34 ]; then
+  appops set "$PKG" READ_MEDIA_VISUAL_USER_SELECTED allow
+fi
 PKGOPS=`appops get $PKG`
-UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 userId= | sed 's|    userId=||g'`
+UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 Id= | sed -e 's|    userId=||g' -e 's|    appId=||g'`
 if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
   appops set --uid "$UID" LEGACY_STORAGE allow
+  appops set --uid "$UID" READ_EXTERNAL_STORAGE allow
+  appops set --uid "$UID" WRITE_EXTERNAL_STORAGE allow
   if [ "$API" -ge 29 ]; then
     appops set --uid "$UID" ACCESS_MEDIA_LOCATION allow
+  fi
+  if [ "$API" -ge 34 ]; then
+    appops set --uid "$UID" READ_MEDIA_VISUAL_USER_SELECTED allow
   fi
   UIDOPS=`appops get --uid "$UID"`
 fi
@@ -250,7 +260,7 @@ if appops get $PKG > /dev/null 2>&1; then
     appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
   fi
   PKGOPS=`appops get $PKG`
-  UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 userId= | sed 's|    userId=||g'`
+  UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 Id= | sed -e 's|    userId=||g' -e 's|    appId=||g'`
   if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
     UIDOPS=`appops get --uid "$UID"`
   fi
