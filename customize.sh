@@ -905,13 +905,17 @@ elif [ "$PROP" == false ]; then
 elif [ "$PROP" ] && [ "$PROP" != def ] && [ "$PROP" -gt 0 ]; then
   ui_print "- Changing all bass-enhancer-enable value to true"
   sed -i 's|bass-enhancer-enable value="false"|bass-enhancer-enable value="true"|g' $FILE
-  ROWS=`grep bass-enhancer-boost $FILE | sed -e 's|<bass-enhancer-boost value="||g' -e 's|"/>||g'`
-  ui_print "- Default bass-enhancer-boost value:"
-  ui_print "$ROWS"
-  ui_print "- Changing all bass-enhancer-boost value to $PROP"
-  for ROW in $ROWS; do
-    sed -i "s|bass-enhancer-boost value=\"$ROW\"|bass-enhancer-boost value=\"$PROP\"|g" $FILE
-  done
+  ROWS=`grep bass-enhancer-boost $FILE | sed -e 's|<bass-enhancer-boost value="||g' -e 's|"/>||g' -e 's|" />||g'`
+  if [ "$ROWS" ]; then
+    ui_print "- Default bass-enhancer-boost value:"
+    ui_print "$ROWS"
+    ui_print "- Changing all bass-enhancer-boost value to $PROP"
+    for ROW in $ROWS; do
+      sed -i "s|bass-enhancer-boost value=\"$ROW\"|bass-enhancer-boost value=\"$PROP\"|g" $FILE
+    done
+  else
+    ui_print "- This version does not support bass-enhancer-boost"
+  fi
 fi
 if [ "`grep_prop dolby.virtualizer $OPTIONALS`" == 1 ]; then
   ui_print "- Changing all virtualizer-enable value to true"
@@ -1127,6 +1131,15 @@ FILE=$MODPATH/service.sh
 if [ "`grep_prop misound.harmankardon $OPTIONALS`" == 0 ]; then
   ui_print "- Disables Harman Kardon"
   sed -i 's|#h||g' $FILE
+  ui_print " "
+fi
+
+# fix sensor
+if [ $DOLBY == true ]\
+&& [ "`grep_prop dolby.fix.sensor $OPTIONALS`" == 1 ]; then
+  ui_print "- Fixing sensors issue"
+  ui_print "  This causes bootloop in some ROMs"
+  sed -i 's|#x||g' $MODPATH/service.sh
   ui_print " "
 fi
 
