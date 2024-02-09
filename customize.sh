@@ -120,20 +120,12 @@ MY_PRODUCT=`realpath $MIRROR/my_product`
 # .aml.sh
 mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
 
-# socket
-if [ ! -e /dev/socket/audio_hw_socket ]; then
-  ui_print "! Unsupported audio_hw_socket."
-  ui_print "  Mi Sound EQ will not be working with this device"
-  ui_print "  but you can still use the Dolby Atmos EQ."
-  ui_print " "
-fi
-
 # check
 if [ $DOLBY == true ]; then
   FILE=/bin/hw/vendor.dolby.media.c2@1.0-service
-  if [ -f /system$FILE ] || [ -f /vendor$FILE ]\
-  || [ -f /odm$FILE ] || [ -f /system_ext$FILE ]\
-  || [ -f /product$FILE ]; then
+  if [ -f $SYSTEM$FILE ] || [ -f $VENDOR$FILE ]\
+  || [ -f $ODM$FILE ] || [ -f $SYSTEM_EXT$FILE ]\
+  || [ -f $PRODUCT$FILE ]; then
     ui_print "! Dolby Atmos maybe conflicting with your"
     ui_print "  $FILE"
     ui_print "  causes your internal storage mount failed"
@@ -242,6 +234,14 @@ if [ -f $FILE ] || [ -f $FILE2 ] || [ -f $FILE3 ]\
   rm -f `find $MODPATH/system/vendor -type f -name *misound*`
   ui_print " "
 else
+  if [ ! -e /dev/socket/audio_hw_socket ]; then
+    ui_print "! Unsupported audio_hw_socket."
+    ui_print "  Mi Sound EQ will not be working with this device"
+    if [ $DOLBY == true ]; then
+      ui_print "  but you can still use the Dolby Atmos EQ."
+    fi
+    ui_print " "
+  fi
   NAME=_ZN7android23sp_report_stack_pointerEv
   LIB=libhidlbase.so
   unset MES
@@ -501,7 +501,10 @@ fi
 early_init_mount_dir() {
 if echo $MAGISK_VER | grep -Eq 'delta|Delta|kitsune'\
 && [ "`grep_prop dolby.skip.early $OPTIONALS`" != 1 ]; then
-  EIM=true
+  check_data
+  get_flags
+  ui_print "  This is for detection only"
+  ui_print " "
   if [ "$BOOTMODE" == true ]; then
     if [ -L $MIRROR/early-mount ]; then
       EIMDIR=`readlink $MIRROR/early-mount`
@@ -515,6 +518,8 @@ if echo $MAGISK_VER | grep -Eq 'delta|Delta|kitsune'\
           else
             EIMDIR=/data/unencrypted/early-mount.d
           fi
+        elif [ "$NAME" == persist ] && [ ! -d /persist ]; then
+          EIMDIR=/mnt/vendor/persist/early-mount.d
         else
           EIMDIR=/$NAME/early-mount.d
         fi
@@ -543,43 +548,44 @@ if echo $MAGISK_VER | grep -Eq 'delta|Delta|kitsune'\
       EIMDIR=/mnt/vendor/persist/early-mount.d
     elif grep ' /cust ' /proc/mounts | grep -q ext4; then
       EIMDIR=/cust/early-mount.d
-    elif [ "$MAGISK_VER_CODE" -ge 26000 ]\
-    && [ -d /data/unencrypted ]\
+    fi
+  fi
+  if [ ! "$EIMDIR" ]\
+  && [ "$MAGISK_VER_CODE" -ge 26000 ]; then
+    if [ -d /data/unencrypted ]\
     && ! grep ' /data ' /proc/mounts | grep -q dm-\
     && grep ' /data ' /proc/mounts | grep -q f2fs; then
       EIMDIR=/data/unencrypted/early-mount.d
-    elif [ "$MAGISK_VER_CODE" -ge 26000 ]\
-    && grep ' /cache ' /proc/mounts | grep -q f2fs; then
+    elif grep ' /cache ' /proc/mounts | grep -q f2fs; then
       EIMDIR=/cache/early-mount.d
-    elif [ "$MAGISK_VER_CODE" -ge 26000 ]\
-    && grep ' /metadata ' /proc/mounts | grep -q f2fs; then
+    elif grep ' /metadata ' /proc/mounts | grep -q f2fs; then
       EIMDIR=/metadata/early-mount.d
-    elif [ "$MAGISK_VER_CODE" -ge 26000 ]\
-    && grep ' /persist ' /proc/mounts | grep -q f2fs; then
+    elif grep ' /persist ' /proc/mounts | grep -q f2fs; then
       EIMDIR=/persist/early-mount.d
-    elif [ "$MAGISK_VER_CODE" -ge 26000 ]\
-    && grep ' /mnt/vendor/persist ' /proc/mounts | grep -q f2fs; then
+    elif grep ' /mnt/vendor/persist ' /proc/mounts | grep -q f2fs; then
       EIMDIR=/mnt/vendor/persist/early-mount.d
-    elif [ "$MAGISK_VER_CODE" -ge 26000 ]\
-    && grep ' /cust ' /proc/mounts | grep -q f2fs; then
+    elif grep ' /cust ' /proc/mounts | grep -q f2fs; then
       EIMDIR=/cust/early-mount.d
-    else
-      EIM=false
-      ui_print "- Unable to find early init mount directory"
-      ui_print " "
     fi
   fi
-  if [ -d ${EIMDIR%/early-mount.d} ]; then
-    mkdir -p $EIMDIR
-    ui_print "- Your early init mount directory is"
-    ui_print "  $EIMDIR"
-    ui_print "  Any file stored to this directory will not be deleted"
-    ui_print "  even you have uninstalled this module."
+  if [ "$EIMDIR" ]; then
+    if [ -d ${EIMDIR%/early-mount.d} ]; then
+      EIM=true
+      mkdir -p $EIMDIR
+      ui_print "- Your early init mount directory is"
+      ui_print "  $EIMDIR"
+      ui_print "  Any file stored to this directory will not be deleted"
+      ui_print "  even you have uninstalled this module."
+    else
+      EIM=false
+      ui_print "- Unable to find early init mount directory ${EIMDIR%/early-mount.d}"
+    fi
+    ui_print " "
   else
     EIM=false
-    ui_print "- Unable to find early init mount directory ${EIMDIR%/early-mount.d}"
+    ui_print "- Unable to find early init mount directory"
+    ui_print " "
   fi
-  ui_print " "
 else
   EIM=false
 fi
