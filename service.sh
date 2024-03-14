@@ -18,6 +18,8 @@ resetprop -n vendor.audio.dolby.ds2.enabled false
 resetprop -n vendor.audio.dolby.ds2.hardbypass false
 resetprop -n ro.vendor.audio.dolby.dax.support true
 resetprop -n ro.vendor.audio.dolby.fade_switch true
+resetprop -n ro.vendor.audio.dolby.surround.enable true
+resetprop -n ro.vendor.audio.dolby.dialog_enchancement.parameter true
 resetprop -n ro.dolby.mod_uuid false
 #resetprop -n vendor.dolby.dap.param.tee false
 #resetprop -n vendor.dolby.mi.metadata.log false
@@ -58,6 +60,9 @@ resetprop -n ro.vendor.audio.sfx.spk.movie true
 resetprop -n ro.vendor.audio.surround.headphone.only false
 resetprop -n ro.vendor.audio.scenario.headphone.only false
 resetprop -n ro.vendor.audio.feature.spatial true
+resetprop -n ro.vendor.audio.multichannel.5point1.headset true
+resetprop -n ro.vendor.audio.multichannel.5point1.speak true
+resetprop -n ro.vendor.audio.videobox.switch true
 #hresetprop -n ro.vendor.audio.sfx.harmankardon false
 #resetprop -n ro.vendor.audio.sfx.audiovisual false
 #resetprop -n ro.audio.soundfx.dirac false
@@ -125,11 +130,13 @@ killall vendor.qti.hardware.vibrator.service\
  vendor.qti.hardware.lights.service\
  android.hardware.health-service.qti
 #skillall vendor.qti.hardware.display.allocator-service\
-#s vendor.qti.hardware.display.composer-service
+#s vendor.qti.hardware.display.composer-service\
+#s camerahalserver
 #xkillall android.hardware.sensors@1.0-service\
 #x android.hardware.sensors@2.0-service\
 #x android.hardware.sensors@2.0-service-mediatek\
-#x android.hardware.sensors@2.0-service.multihal
+#x android.hardware.sensors@2.0-service.multihal\
+#x android.hardware.sensors@2.0-service.multihal-mediatek
 }
 
 # dolby

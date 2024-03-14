@@ -1,7 +1,7 @@
 # prevent bootloop
 ro.control_privapp_permissions=log
 
-# property
+# mi sound
 persist.vendor.audio.hifi=false
 persist.vendor.audio.spatial.enable=true
 persist.vendor.audio.3dsurround.enable=true
