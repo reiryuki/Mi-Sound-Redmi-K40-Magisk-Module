@@ -64,13 +64,12 @@
 - Android 12 AncientOS ROM
 - Android 12.1 Nusantara ROM
 - Android 13 AOSP ROM, CrDroid ROM, & AlphaDroid ROM
-
-## Known Issue
-- Dolby Atmos is unsupported in some Android 14 ROMs
+- Android 14 LineageOS ROM
 
 ## Credits and Contributors
 - https://t.me/viperatmos
 - https://t.me/androidryukimodsdiscussions
+- @HELLBOY017
 - You can contribute ideas about this Magisk Module here: https://t.me/androidappsportdevelopment
 
 ## Sponsors

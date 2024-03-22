@@ -175,7 +175,6 @@ fi
 if [ $DOLBY == true ]; then
   ui_print "- Activating Dolby Atmos..."
   ui_print " "
-  MES="  Dolby Atmos may not work."
   NAME=_ZN7android23sp_report_stack_pointerEv
   LIB=libhidlbase.so
   if [ "$IS64BIT" == true ]; then
@@ -220,8 +219,6 @@ if [ $DOLBY == true ]; then
   sed -i 's|#d||g' $MODPATH/.aml.sh
   sed -i 's|#d||g' $MODPATH/*.sh
 fi
-rm -rf $MODPATH/system_dolby $MODPATH/system_rhode\
- $MODPATH/system_support
 
 # check
 FILE=$VENDOR/lib/soundfx/libmisoundfx.so
@@ -326,7 +323,8 @@ if [ "$BOOTMODE" == true ]; then
     fi
   done
 fi
-rm -rf $MODPATH/unused
+rm -rf $MODPATH/system_dolby $MODPATH/system_rhode\
+ $MODPATH/system_support $MODPATH/unused
 remove_sepolicy_rule
 ui_print " "
 
@@ -346,12 +344,12 @@ for NAME in $NAMES; do
     sh $FILE
     rm -f $FILE
   fi
-  rm -rf /metadata/magisk/$NAME
-  rm -rf /mnt/vendor/persist/magisk/$NAME
-  rm -rf /persist/magisk/$NAME
-  rm -rf /data/unencrypted/magisk/$NAME
-  rm -rf /cache/magisk/$NAME
-  rm -rf /cust/magisk/$NAME
+  rm -rf /metadata/magisk/$NAME\
+   /mnt/vendor/persist/magisk/$NAME\
+   /persist/magisk/$NAME\
+   /data/unencrypted/magisk/$NAME\
+   /cache/magisk/$NAME\
+   /cust/magisk/$NAME
 done
 }
 conflict_disable() {
@@ -749,6 +747,9 @@ if echo "$PROP" | grep -q m; then
   ui_print "- Activating music stream..."
   sed -i 's|#m||g' $FILE
   sed -i 's|musicstream=|musicstream=true|g' $MODPATH/acdb.conf
+  sed -i 's|music_stream false|music_stream true|g' $MODPATH/service.sh
+  ui_print "  Sound FX will always be enabled"
+  ui_print "  and cannot be disabled by on/off togglers"
   ui_print " "
 else
   APPS=AudioFX

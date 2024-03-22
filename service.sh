@@ -21,6 +21,7 @@ resetprop -n ro.vendor.audio.dolby.fade_switch true
 resetprop -n ro.vendor.audio.dolby.surround.enable true
 resetprop -n ro.vendor.audio.dolby.dialog_enchancement.parameter true
 resetprop -n ro.dolby.mod_uuid false
+resetprop -n ro.dolby.music_stream false
 #resetprop -n vendor.dolby.dap.param.tee false
 #resetprop -n vendor.dolby.mi.metadata.log false
 #resetprop -n vendor.audio.gef.enable.traces false
@@ -42,6 +43,7 @@ fi
 # property
 resetprop -n ro.audio.ignore_effects false
 #ddolby_prop
+resetprop -n ro.misound.music_stream false
 resetprop -n ro.audio.hifi false
 resetprop -n ro.vendor.audio.hifi false
 resetprop -n ro.vendor.audio.ring.filter true
@@ -131,7 +133,7 @@ killall vendor.qti.hardware.vibrator.service\
  android.hardware.health-service.qti
 #skillall vendor.qti.hardware.display.allocator-service\
 #s vendor.qti.hardware.display.composer-service\
-#s camerahalserver
+#s camerahalserver qcrilNrd
 #xkillall android.hardware.sensors@1.0-service\
 #x android.hardware.sensors@2.0-service\
 #x android.hardware.sensors@2.0-service-mediatek\
