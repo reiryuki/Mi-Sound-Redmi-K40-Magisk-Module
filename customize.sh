@@ -899,6 +899,60 @@ if [ $DOLBY == true ]; then
 fi
 
 # function
+file_check_system() {
+for FILE in $FILES; do
+  DES=$SYSTEM$FILE
+  DES2=$SYSTEM_EXT$FILE
+  if [ -f $DES ] || [ -f $DES2 ]; then
+    ui_print "- Detected $FILE"
+    ui_print " "
+    rm -f $MODPATH/system$FILE
+  fi
+done
+}
+file_check_vendor() {
+for FILE in $FILES; do
+  DES=$VENDOR$FILE
+  DES2=$ODM$FILE
+  if [ -f $DES ] || [ -f $DES2 ]; then
+    ui_print "- Detected $FILE"
+    ui_print " "
+    rm -f $MODPATH/system/vendor$FILE
+  fi
+done
+}
+
+# check
+if [ "$IS64BIT" == true ]; then
+  FILES=/lib64/libmigui.so
+  file_check_system
+fi
+if [ "$LIST32BIT" ]; then
+  FILES=/lib/libmigui.so
+  file_check_system
+fi
+if [ $DOLBY == true ]; then
+  FILES=/etc/acdbdata/adsp_avs_config.acdb
+  file_check_vendor
+  if [ "$IS64BIT" == true ]; then
+    FILES="/lib64/libqtigef.so
+           /lib64/libdeccfg.so
+           /lib64/libstagefrightdolby.so
+           /lib64/libstagefright_soft_ddpdec.so
+           /lib64/libstagefright_soft_ac4dec.so"
+    file_check_vendor
+  fi
+  if [ "$LIST32BIT" ]; then
+    FILES="/lib/libqtigef.so
+           /lib/libdeccfg.so
+           /lib/libstagefrightdolby.so
+           /lib/libstagefright_soft_ddpdec.so
+           /lib/libstagefright_soft_ac4dec.so"
+    file_check_vendor
+  fi
+fi
+
+# function
 rename_file() {
 if [ -f $FILE ]; then
   ui_print "- Renaming"
@@ -919,18 +973,32 @@ if grep -q $NAME $FILE; then
 fi
 }
 
+patch_file() {
 # Change 9d4921da-8225-4f29-aefa-39537a04bcaa
 # to a0c30891-8246-4aef-b8ad-d53e26da0253
-if [ $DOLBY == true ]; then
-  NAME=$'\xda\x21\x49\x9d\x25\x82\x29\x4f\xfa\xae\x39\x53\x7a\x04\xbc\xaa'
-  NAME2=$'\x91\x08\xc3\xa0\x46\x82\xef\x4a\xad\xb8\xd5\x3e\x26\xda\x02\x53'
-  FILE=$MODPATH/system/vendor/lib*/soundfx/libhwdap.so
-  change_name
+NAME=$'\xda\x21\x49\x9d\x25\x82\x29\x4f\xfa\xae\x39\x53\x7a\x04\xbc\xaa'
+NAME2=$'\x91\x08\xc3\xa0\x46\x82\xef\x4a\xad\xb8\xd5\x3e\x26\xda\x02\x53'
+FILE=$MODPATH/system/vendor/lib*/soundfx/libhwdap.so
+change_name
+NAME=libstagefright_foundation.so
+NAME2=libstagefright_fdtn_dolby.so
+if [ "$IS64BIT" == true ]; then
+  FILE=$MODPATH/system/vendor/lib64/$NAME
+  MODFILE=$MODPATH/system/vendor/lib64/$NAME2
+  rename_file
 fi
-
-# mod
-if [ $DOLBY == true ]\
-&& [ "`grep_prop dolby.mod $OPTIONALS`" == 1 ]; then
+if [ "$LIST32BIT" ]; then
+  FILE=$MODPATH/system/vendor/lib/$NAME
+  MODFILE=$MODPATH/system/vendor/lib/$NAME2
+  rename_file
+fi
+FILE="$MODPATH/system/vendor/lib*/$NAME2
+$MODPATH/system/vendor/lib*/libdlbdsservice.so
+$MODPATH/system/vendor/lib*/libstagefrightdolby.so
+$MODPATH/system/vendor/lib*/libstagefright_soft_ddpdec.so
+$MODPATH/system/vendor/lib*/libstagefright_soft_ac4dec.so"
+change_name
+if [ "`grep_prop dolby.mod $OPTIONALS`" == 1 ]; then
   NAME=dax-default.xml
   NAME2=dap-default.xml
   FILE=$MODPATH/system/vendor/etc/dolby/$NAME
@@ -1005,59 +1073,11 @@ $MODPATH/system/vendor/bin/hw/vendor.dolby*.hardware.dms*@*-service"
   NAME=d53e26da0253
   change_name
 fi
-
-# function
-file_check_system() {
-for FILE in $FILES; do
-  DES=$SYSTEM$FILE
-  DES2=$SYSTEM_EXT$FILE
-  if [ -f $DES ] || [ -f $DES2 ]; then
-    ui_print "- Detected $FILE"
-    ui_print " "
-    rm -f $MODPATH/system$FILE
-  fi
-done
-}
-file_check_vendor() {
-for FILE in $FILES; do
-  DES=$VENDOR$FILE
-  DES2=$ODM$FILE
-  if [ -f $DES ] || [ -f $DES2 ]; then
-    ui_print "- Detected $FILE"
-    ui_print " "
-    rm -f $MODPATH/system/vendor$FILE
-  fi
-done
 }
 
-# check
-if [ "$IS64BIT" == true ]; then
-  FILES=/lib64/libmigui.so
-  file_check_system
-fi
-if [ "$LIST32BIT" ]; then
-  FILES=/lib/libmigui.so
-  file_check_system
-fi
+# mod
 if [ $DOLBY == true ]; then
-  FILES=/etc/acdbdata/adsp_avs_config.acdb
-  file_check_vendor
-  if [ "$IS64BIT" == true ]; then
-    FILES="/lib64/libqtigef.so
-           /lib64/libdeccfg.so
-           /lib64/libstagefrightdolby.so
-           /lib64/libstagefright_soft_ddpdec.so
-           /lib64/libstagefright_soft_ac4dec.so"
-    file_check_vendor
-  fi
-  if [ "$LIST32BIT" ]; then
-    FILES="/lib/libqtigef.so
-           /lib/libdeccfg.so
-           /lib/libstagefrightdolby.so
-           /lib/libstagefright_soft_ddpdec.so
-           /lib/libstagefright_soft_ac4dec.so"
-    file_check_vendor
-  fi
+  patch_file
 fi
 
 # harman kardon
