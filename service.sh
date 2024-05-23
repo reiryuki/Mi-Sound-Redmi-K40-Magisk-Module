@@ -62,9 +62,9 @@ resetprop -n ro.vendor.audio.sfx.spk.movie true
 resetprop -n ro.vendor.audio.surround.headphone.only false
 resetprop -n ro.vendor.audio.scenario.headphone.only false
 resetprop -n ro.vendor.audio.feature.spatial true
-resetprop -n ro.vendor.audio.multichannel.5point1.headset true
-resetprop -n ro.vendor.audio.multichannel.5point1.speak true
 resetprop -n ro.vendor.audio.videobox.switch true
+#resetprop -n ro.vendor.audio.multichannel.5point1.headset true
+#resetprop -n ro.vendor.audio.multichannel.5point1.speak true
 #hresetprop -n ro.vendor.audio.sfx.harmankardon false
 #resetprop -n ro.vendor.audio.sfx.audiovisual false
 #resetprop -n ro.audio.soundfx.dirac false
@@ -195,6 +195,23 @@ fi
 until [ "`getprop sys.boot_completed`" == 1 ]; do
   sleep 10
 done
+
+# list
+PKGS=`cat $MODPATH/package.txt`
+#dPKGS=`cat $MODPATH/package-dolby.txt`
+for PKG in $PKGS; do
+  magisk --denylist rm $PKG 2>/dev/null
+  magisk --sulist add $PKG 2>/dev/null
+done
+if magisk magiskhide sulist; then
+  for PKG in $PKGS; do
+    magisk magiskhide add $PKG
+  done
+else
+  for PKG in $PKGS; do
+    magisk magiskhide rm $PKG
+  done
+fi
 
 # function
 grant_permission() {

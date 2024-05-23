@@ -29,6 +29,13 @@ if [ "`grep_prop debug.log $OPTIONALS`" == 1 ]; then
   ui_print " "
 fi
 
+# recovery
+if [ "$BOOTMODE" != true ]; then
+  MODPATH_UPDATE=`echo $MODPATH | sed 's|modules/|modules_update/|g'`
+  rm -f $MODPATH/update
+  rm -rf $MODPATH_UPDATE
+fi
+
 # run
 . $MODPATH/function.sh
 
@@ -734,7 +741,7 @@ fi
 # hide
 if [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
   APPS="XiaomiParts ZenfoneParts ZenParts GalaxyParts
-       KharaMeParts DeviceParts PocoParts"
+       KharaMeParts DeviceParts PocoParts LineageParts"
   ui_print "- Hides Parts app"
   hide_app
   ui_print " "
@@ -824,6 +831,14 @@ if echo "$PROP" | grep -q g; then
   ui_print "- Activating rerouting stream..."
   sed -i 's|#g||g' $FILE
   ui_print " "
+fi
+if [ $DOLBY == true ]; then
+  if [ "`grep_prop dolby.game $OPTIONALS`" != 0 ]; then
+    sed -i 's|#x||g' $FILE
+  else
+    ui_print "- Does not use Dolby Game patch & rerouting stream"
+    ui_print " "
+  fi
 fi
 
 # function
@@ -1110,7 +1125,7 @@ fi
 # raw
 FILE=$MODPATH/.aml.sh
 if [ "`grep_prop disable.raw $OPTIONALS`" == 0 ]; then
-  ui_print "- Not disables Ultra Low Latency playback (RAW)"
+  ui_print "- Does not disable Ultra Low Latency playback (RAW)"
   ui_print " "
 else
   sed -i 's|#u||g' $FILE
