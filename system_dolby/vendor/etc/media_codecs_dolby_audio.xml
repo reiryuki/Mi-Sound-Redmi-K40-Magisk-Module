@@ -40,7 +40,7 @@
             <Limit name="sample-rate" ranges="32000,44100,48000" />
             <Limit name="bitrate" range="32000-6144000" />
         </MediaCodec>
-        <MediaCodec name="OMX.dolby.eac3_joc.decoder" type="audio/eac3-joc">
+        <MediaCodec name="OMX.dolby.eac3-joc.decoder" type="audio/eac3-joc">
             <Limit name="channel-count" max="8" />
             <Limit name="sample-rate" ranges="48000" />
             <Limit name="bitrate" range="32000-6144000" />
