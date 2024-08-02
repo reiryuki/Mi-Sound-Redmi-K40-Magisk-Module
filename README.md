@@ -63,12 +63,6 @@
 - https://t.me/androidryukimodsdiscussions/2618
 - If you don't do above, issues will be closed immediately
 
-## Tested on
-- Android 12 AncientOS ROM
-- Android 12.1 Nusantara ROM
-- Android 13 AOSP ROM, CrDroid ROM, & AlphaDroid ROM
-- Android 14 LineageOS ROM
-
 ## Credits and Contributors
 - https://t.me/viperatmos
 - https://t.me/androidryukimodsdiscussions
