@@ -90,10 +90,9 @@ allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untru
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } mqsas_data_file dir { search getattr }
 
 # file
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { vendor_display_prop vendor_misound_ro_prop } file { read open getattr map }
+allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } vendor_display_prop file { read open getattr map }
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { migt_file mcd_data_file } file { read open getattr }
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } vendor_displayfeature_prop file { open map }
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } qemu_hw_prop file map
 
 # sock_file
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } property_socket sock_file write

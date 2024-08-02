@@ -3,7 +3,6 @@ ui_print " "
 
 # var
 UID=`id -u`
-[ ! "$UID" ] && UID=0
 LIST32BIT=`grep_get_prop ro.product.cpu.abilist32`
 if [ ! "$LIST32BIT" ]; then
   LIST32BIT=`grep_get_prop ro.system.product.cpu.abilist32`
@@ -100,7 +99,8 @@ else
 fi
 
 # miuicore
-if [ ! -d /data/adb/modules/MiuiCore ]; then
+if [ ! -d /data/adb/modules_update/MiuiCore ]\
+&& [ ! -d /data/adb/modules/MiuiCore ]; then
   ui_print "! Miui Core Magisk Module is not installed."
   ui_print "  MiSound app will not be working without"
   ui_print "  Miui Core Magisk Module except you are in Miui ROM!"
