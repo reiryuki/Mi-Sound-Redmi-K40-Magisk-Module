@@ -29,11 +29,11 @@
 - Miui Core Magisk Module installed in non-Miui ROM
 - Mi Sound EQ
   - Miui ROM (In non-Miui ROM, the UI still showing even it doesn't work)
-  - Android 8 and up
-  - Android 10 and bellow requires 32 bit architecture or 64 bit architecture with 32 bit library support, otherwise not
+  - Android 8 (SDK 26) and up
+  - ARM64 or ARM architecture
 - Dolby Atmos EQ
-  - 64 bit architecture
-  - Android 11 and up
+  - ARM64 architecture
+  - Android 11 (SDK 30) and up
 
 ## WARNING!!!
 - Possibility of bootloop or even softbrick or a service failure on Read-Only ROM if you don't use Magisk Delta/Kitsune Mask.
@@ -64,12 +64,13 @@
 - If you don't do above, issues will be closed immediately
 
 ## Credits and Contributors
+- @HuskyDG
 - https://t.me/viperatmos
 - https://t.me/androidryukimodsdiscussions
 - @HELLBOY017
 - You can contribute ideas about this Magisk Module here: https://t.me/androidappsportdevelopment
 
 ## Sponsors
-- https://t.me/androidryukimodsdiscussions/2619
+- https://t.me/ryukinotes/25
 
 

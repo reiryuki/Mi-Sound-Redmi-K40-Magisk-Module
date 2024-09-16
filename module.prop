@@ -1,8 +1,8 @@
 id=MiSound
 name=Mi Sound Redmi K40
-version=v5.1
-versionCode=51
+version=v5.2
+versionCode=52
 author=Rei Ryuki the Fixer
-description=Equalizers global type sound effect by Xiaomi Inc. ported from Redmi K40 (alioth). Dolby Atmos EQ for any Android 11 and up, 64 bit architecture. Mi Sound EQ for Miui ROM Android 8 and up.
+description=Equalizers global type sound effect by Xiaomi Inc. ported from Redmi K40 (alioth). Dolby Atmos EQ for any Android 11 (SDK 30) and up, ARM64 architecture. Mi Sound EQ for Miui ROM Android 8 (SDK 26) and up, ARM64 or ARM architecture.
 
 
