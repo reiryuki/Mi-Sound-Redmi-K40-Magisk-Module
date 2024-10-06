@@ -19,7 +19,7 @@
 - daxService.apk: https://dumps.tadiphone.dev/dumps/motorola/rhode user-12-S1SR32.38-124-3-a8403-release-keys
 - libhidlbase.so: CrDroid ROM Android 13
 - android.hardware.audio.effect@*-impl.so: https://dumps.tadiphone.dev/dumps/oneplus/op594dl1 qssi-user-14-UKQ1.230924.001-1701915639192-release-keys--US
-- libmagiskpolicy.so: Kitsune Mask R65C33E4F
+- libmagiskpolicy.so: Kitsune Mask R6687BB53
 
 ## Screenshots
 - https://t.me/androidryukimods/488
@@ -30,9 +30,9 @@
 - Mi Sound EQ
   - Miui ROM (In non-Miui ROM, the UI still showing even it doesn't work)
   - Android 8 (SDK 26) and up
-  - ARM64 or ARM architecture
+  - Earphone/headphone plugged
 - Dolby Atmos EQ
-  - ARM64 architecture
+  - arm64-v8a architecture
   - Android 11 (SDK 30) and up
 
 ## WARNING!!!
