@@ -92,10 +92,12 @@ if ! echo "$ABILIST" | grep -Eq "$NAME|$NAME2"; then
   ui_print " "
 fi
 if ! echo "$ABILIST" | grep -q $NAME; then
-  rm -rf `find $MODPATH -type d -name *64*`
-  ui_print "  ! Unsupported Dolby Atmos."
+  rm -rf `find $MODPATH/system -type d -name *64*`
+  if [ $DOLBY == true ]; then
+    ui_print "! Unsupported Dolby Atmos"
+    ui_print " "
+  fi
   DOLBY=false
-  ui_print " "
   if [ "$BOOTMODE" != true ]; then
     ui_print "! This Recovery doesn't support $NAME architecture"
     ui_print "  Try to install via Magisk app instead"
@@ -121,7 +123,7 @@ if [ "$API" -lt $NUM ]; then
   abort
 else
   ui_print "- SDK $API"
-  if [ $DOLBY == true ] && [ "$API" -lt 28 ]; then
+  if [ $DOLBY == true ] && [ "$API" -lt 30 ]; then
     ui_print "  ! Unsupported Dolby Atmos."
     DOLBY=false
   fi
@@ -153,8 +155,49 @@ SYSTEM_EXT=`realpath $MIRROR/system_ext`
 ODM=`realpath $MIRROR/odm`
 MY_PRODUCT=`realpath $MIRROR/my_product`
 
-# .aml.sh
-mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
+# create
+if [ $DOLBY == true ]; then
+  mkdir -p $MODPATH/system_dolby/etc/vintf
+  NAMES="vendor.dolby.hardware.dms@1.0-service
+         vendor.dolby_sp.hardware.dmssp@2.0-service
+         vendor.dolby_v3_6.hardware.dms360@2.0-service"
+  for NAME in $NAMES; do
+    if [ -f $VENDOR/bin/hw/$NAME ]; then
+      touch $MODPATH/system_dolby/vendor/bin/hw/$NAME
+    fi
+  done
+  if [ -d $ODM/bin/hw ] || [ -d $VENDOR/odm/bin/hw ]; then
+    mkdir -p $MODPATH/system_dolby/vendor/odm/bin/hw
+  fi
+  NAMES="vendor.dolby.hardware.dms@1.0-service
+         vendor.dolby.hardware.dms@2.0-service
+         vendor.dolby_sp.hardware.dmssp@2.0-service
+         vendor.dolby_v3_6.hardware.dms360@2.0-service"
+  for NAME in $NAMES; do
+    if [ -f $ODM/bin/hw/$NAME ]\
+    || [ -f $VENDOR/odm/bin/hw/$NAME ]; then
+      touch $MODPATH/system_dolby/vendor/odm/bin/hw/$NAME
+    fi
+  done
+fi
+
+# check
+if [ $DOLBY == true ]\
+&& [ "`grep_prop dolby.mod $OPTIONALS`" != 1 ]; then
+  ui_print "- Checking in-built Dolby apps..."
+  FILE=`find /system/app /system/priv-app /product/app\
+        /product/priv-app /product/preinstall /system_ext/app\
+        /system_ext/priv-app /vendor/app /vendor/euclid/product/app\
+        -type f -name XiaomyDolby.apk -o -name DolbyManager.apk`
+  if [ "$FILE" ]; then
+    ui_print "  Detected"
+    ui_print "$FILE"
+    ui_print "  You need to use dolby.mod=1 to use the Dolby Atmos,"
+    ui_print "  otherwise the Dolby Atmos will not work. Please check"
+    ui_print "  Optionals at README."
+  fi
+  ui_print " "
+fi
 
 # check
 if [ $DOLBY == true ]; then
@@ -164,10 +207,13 @@ if [ $DOLBY == true ]; then
   || [ -f $PRODUCT$FILE ]; then
     ui_print "! Dolby Atmos maybe conflicting with your"
     ui_print "  $FILE"
-    ui_print "  causes your internal storage mount failed"
+    ui_print "  causes your internal storage mount failure"
     ui_print " "
   fi
 fi
+
+# .aml.sh
+mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
 
 # function
 check_function_2() {
@@ -317,12 +363,11 @@ extract_lib() {
 for APP in $APPS; do
   FILE=`find $MODPATH/system -type f -name $APP.apk`
   if [ -f `dirname $FILE`/extract ]; then
-    rm -f `dirname $FILE`/extract
     ui_print "- Extracting..."
-    DIR=`dirname $FILE`/lib/"$ARCH"
+    DIR=`dirname $FILE`/lib/"$ARCHLIB"
     mkdir -p $DIR
     rm -rf $TMPDIR/*
-    DES=lib/"$ABI"/*
+    DES=lib/"$ABILIB"/*
     unzip -d $TMPDIR -o $FILE $DES
     cp -f $TMPDIR/$DES $DIR
     ui_print " "
@@ -333,7 +378,27 @@ done
 # extract
 APPS="`ls $MODPATH/system/priv-app`
       `ls $MODPATH/system/app`"
+ARCHLIB=arm64
+ABILIB=arm64-v8a
 extract_lib
+ARCHLIB=arm
+if echo "$ABILIST" | grep -q armeabi-v7a; then
+  ABILIB=armeabi-v7a
+  extract_lib
+elif echo "$ABILIST" | grep -q armeabi; then
+  ABILIB=armeabi
+  extract_lib
+else
+  ABILIB=armeabi-v7a
+  extract_lib
+fi
+ARCHLIB=x64
+ABILIB=x86_64
+extract_lib
+ARCHLIB=x86
+ABILIB=x86
+extract_lib
+rm -f `find $MODPATH/system -type f -name extract`
 
 # cleaning
 ui_print "- Cleaning..."
@@ -761,7 +826,7 @@ APPS="$APPS MusicFX"
 hide_app
 if [ $DOLBY == true ]; then
   APPS="DaxUI MotoDolbyDax3 MotoDolbyV3 OPSoundTuner
-        DolbyAtmos AudioEffectCenter"
+        DolbyAtmos AudioEffectCenter DolbySound"
   hide_app
 fi
 
@@ -782,7 +847,7 @@ if echo "$PROP" | grep -q m; then
   sed -i 's|#m||g' $FILE
   sed -i 's|musicstream=|musicstream=true|g' $MODPATH/acdb.conf
   sed -i 's|music_stream false|music_stream true|g' $MODPATH/service.sh
-  ui_print "  Sound FX will always be enabled"
+  ui_print "  The sound effect will always be enabled"
   ui_print "  and cannot be disabled by on/off togglers"
   ui_print " "
 else
@@ -849,23 +914,13 @@ if echo "$PROP" | grep -q c; then
   sed -i 's|#c||g' $FILE
   ui_print " "
 fi
-if echo "$PROP" | grep -q p; then
-  ui_print "- Activating patch stream..."
+if [ "`grep_prop dolby.game $OPTIONALS`" != 0 ]; then
   sed -i 's|#p||g' $FILE
-  ui_print " "
-fi
-if echo "$PROP" | grep -q g; then
-  ui_print "- Activating rerouting stream..."
   sed -i 's|#g||g' $FILE
+  sed -i 's|#x||g' $FILE
+else
+  ui_print "- Does not use Dolby/Mi Sound Game patch & rerouting stream"
   ui_print " "
-fi
-if [ $DOLBY == true ]; then
-  if [ "`grep_prop dolby.game $OPTIONALS`" != 0 ]; then
-    sed -i 's|#x||g' $FILE
-  else
-    ui_print "- Does not use Dolby Game patch & rerouting stream"
-    ui_print " "
-  fi
 fi
 
 # function
@@ -1027,23 +1082,25 @@ NAME=$'\xda\x21\x49\x9d\x25\x82\x29\x4f\xfa\xae\x39\x53\x7a\x04\xbc\xaa'
 NAME2=$'\x91\x08\xc3\xa0\x46\x82\xef\x4a\xad\xb8\xd5\x3e\x26\xda\x02\x53'
 FILE=$MODPATH/system/vendor/lib*/soundfx/libhwdap.so
 change_name
-NAME=libhidlbase.so
-NAME2=libhidldlbs.so
-if [ "$IS64BIT" == true ]; then
-  FILE=$MODPATH/system/lib64/$NAME
-  MODFILE=$MODPATH/system/vendor/lib64/$NAME2
-  rename_file
-fi
-if [ "$ABILIST32" ]; then
-  FILE=$MODPATH/system/lib/$NAME
-  MODFILE=$MODPATH/system/vendor/lib/$NAME2
-  rename_file
-fi
-if [ -f $MODPATH/system/vendor/lib64/$NAME2 ]\
-|| [ -f $MODPATH/system/vendor/lib/$NAME2 ]; then
+if grep -q libvndksupport.so /system/etc/*.txt; then
+  NAME=libhidlbase.so
+  NAME2=libhidldlbs.so
+  if [ "$IS64BIT" == true ]; then
+    FILE=$MODPATH/system/lib64/$NAME
+    MODFILE=$MODPATH/system/vendor/lib64/$NAME2
+    rename_file
+  fi
+  if [ "$ABILIST32" ]; then
+    FILE=$MODPATH/system/lib/$NAME
+    MODFILE=$MODPATH/system/vendor/lib/$NAME2
+    rename_file
+  fi
+  if [ -f $MODPATH/system/vendor/lib64/$NAME2 ]\
+  || [ -f $MODPATH/system/vendor/lib/$NAME2 ]; then
   FILE="$MODPATH/system/vendor/lib*/$NAME2
 $MODPATH/system/vendor/lib*/vendor.dolby.hardware.dms@2.0.so"
-  change_name
+    change_name
+  fi
 fi
 NAME=libstagefright_foundation.so
 NAME2=libstagefright_fdtn_dolby.so

@@ -30,7 +30,7 @@
 - Mi Sound EQ
   - Miui ROM (In non-Miui ROM, the UI still showing even it doesn't work)
   - Android 8 (SDK 26) and up
-  - Earphone/headphone plugged
+  - Earphone/headphone connected
 - Dolby Atmos EQ
   - arm64-v8a architecture
   - Android 11 (SDK 30) and up
@@ -40,13 +40,12 @@
 
 ## Installation Guide & Download Link
 - Recommended to use Magisk Delta/Kitsune Mask https://t.me/androidryukimodsdiscussions/100091
-- Don't use ACDB Magisk Module!
-- Remove any other else Dolby Magisk module with different name (no need to remove if it's the same name)
+- Remove any other else Dolby MAGISK MODULE with different name (no need to remove if it's the same name)
 - Reboot
 - Install Miui Core Magisk Module first if you are in non-Miui ROM: https://github.com/reiryuki/Miui-Core-Magisk-Module
 - If you have Dolby in-built in your ROM, then you need to activate data.cleanup=1 at the first time install (READ Optionals bellow!)
 - Install this module https://www.pling.com/p/1769560/ via Magisk app or KernelSU app or Recovery if Magisk installed
-- Install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 only if using any other else audio mod module
+- Install AML Magisk Module https://t.me/ryukinotes/34 only if using any other else audio mod module
 - If you are using KernelSU, you need to disable Unmount Modules by Default in KernelSU app settings
 - Reboot
 - If you are using KernelSU, you need to allow superuser list manually all package name listed in package-dolby.txt (and your home launcher app also) (enable show system apps) and reboot afterwards
@@ -55,8 +54,8 @@
 
 ## Optionals & Troubleshootings
 - https://t.me/androidryukimodsdiscussions/75400
-- Global: https://t.me/androidryukimodsdiscussions/60861
-- Global: https://t.me/androidryukimodsdiscussions/29836
+- Global: https://t.me/ryukinotes/35
+- Global: https://t.me/ryukinotes/34
 - Stream: https://t.me/androidryukimodsdiscussions/26764
 
 ## Support & Bug Report
