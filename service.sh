@@ -16,7 +16,6 @@ resetprop -n ro.product.manufacturer Xiaomi
 resetprop -n ro.vendor.dolby.dax.version DAX3_3.6.1.6_r1
 resetprop -n vendor.audio.dolby.ds2.enabled false
 resetprop -n vendor.audio.dolby.ds2.hardbypass false
-resetprop -n ro.vendor.audio.dolby.dax.support true
 resetprop -n ro.vendor.audio.dolby.fade_switch true
 resetprop -n ro.vendor.audio.dolby.surround.enable true
 resetprop -n ro.vendor.audio.dolby.dialog_enchancement.parameter true
@@ -42,6 +41,7 @@ fi
 
 # property
 resetprop -n ro.audio.ignore_effects false
+resetprop -n ro.vendor.audio.dolby.dax.support false
 #ddolby_prop
 resetprop -n ro.misound.music_stream false
 resetprop -n ro.audio.hifi false
