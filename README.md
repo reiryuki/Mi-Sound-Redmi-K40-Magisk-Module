@@ -58,7 +58,7 @@
 - Global: https://t.me/ryukinotes/35
 - Stream: https://t.me/ryukinotes/52
 
-##Troubleshootings
+## Troubleshootings
 - https://t.me/ryukinotes/79
 - Global: https://t.me/ryukinotes/34
 
