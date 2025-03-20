@@ -53,11 +53,14 @@
 - If you are using SUList, you need to allow list manually your home launcher app (enable show system apps) and reboot afterwards
 - If you have sensors issue (fingerprint, proximity, gyroscope, etc), then READ Optionals bellow!
 
-## Optionals & Troubleshootings
-- https://t.me/androidryukimodsdiscussions/75400
+## Optionals
+- https://t.me/ryukinotes/79
 - Global: https://t.me/ryukinotes/35
-- Global: https://t.me/ryukinotes/34
 - Stream: https://t.me/ryukinotes/52
+
+##Troubleshootings
+- https://t.me/ryukinotes/79
+- Global: https://t.me/ryukinotes/34
 
 ## Support & Bug Report
 - https://t.me/ryukinotes/54
