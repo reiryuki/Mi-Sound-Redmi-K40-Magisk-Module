@@ -584,20 +584,17 @@ sed -i 's|#2||g' $MODPATH/post-fs-data.sh
 }
 permissive() {
 FILE=/sys/fs/selinux/enforce
-SELINUX=`cat $FILE`
-if [ "$SELINUX" == 1 ]; then
-  if ! setenforce 0; then
-    echo 0 > $FILE
-  fi
-  SELINUX=`cat $FILE`
-  if [ "$SELINUX" == 1 ]; then
+FILE2=/sys/fs/selinux/policy
+if [ "`toybox cat $FILE`" = 1 ]; then
+  chmod 640 $FILE
+  chmod 440 $FILE2
+  echo 0 > $FILE
+  if [ "`toybox cat $FILE`" = 1 ]; then
     ui_print "  Your device can't be turned to Permissive state."
     ui_print "  Using Magisk Permissive mode instead."
     permissive_2
   else
-    if ! setenforce 1; then
-      echo 1 > $FILE
-    fi
+    echo 1 > $FILE
     sed -i 's|#1||g' $MODPATH/post-fs-data.sh
   fi
 else
@@ -763,6 +760,12 @@ if [ $EIM == true ]; then
         <fqname>@2.0::IDms/default</fqname>\
     </hal>' $DES
       eim_cache_warning
+      ui_print " "
+    fi
+    if echo $MAGISK_VER | grep -q kitsune-; then
+      ui_print "! It seems you are using a fake Kitsune Mask version"
+      ui_print "  and that is known has a broken early/pre init mount."
+      ui_print "  Please use an original Kitsune Mask instead."
       ui_print " "
     fi
   else
