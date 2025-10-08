@@ -19,6 +19,7 @@
 - MiSound.apk: https://apkmirror.com com.miui.misound by Xiaomi Inc.
 - daxService.apk: https://dumps.tadiphone.dev/dumps/motorola/rhode user-12-S1SR32.38-124-3-a8403-release-keys
 - libhidlbase.so: CrDroid ROM Android 13
+- libutils.so: LineageOS 23 Android 16 BP2A.250605.031.A2 1758630651
 - android.hardware.audio.effect@*-impl.so: https://dumps.tadiphone.dev/dumps/oneplus/op594dl1 qssi-user-14-UKQ1.230924.001-1701915639192-release-keys--US
 - libmagiskpolicy.so: Kitsune Mask R6687BB53
 
