@@ -88,16 +88,15 @@ allow audio_socket labeledfs filesystem associate
 allow init audio_socket sock_file relabelfrom
 
 # dir
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } mcd_data_file dir search
+allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { mcd_data_file proc_perfmgr } dir search
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } mqsas_data_file dir { search getattr }
 
 # file
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { vendor_display_prop vendor_misound_ro_prop } file { read open getattr map }
+allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { vendor_display_prop vendor_misound_ro_prop vendor_frc_prop } file { read open getattr map }
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { migt_file mcd_data_file sysfs_migt } file { read open getattr }
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } vendor_displayfeature_prop file map
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } qemu_hw_prop file map
+allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { vendor_displayfeature_prop qemu_hw_prop } file map
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } proc_mi_log file write
-allow { hal_audio_default mtk_hal_audio audioserver } vendor_pd_locater_dbg_prop file { read open getattr map }
+allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } proc_perfmgr file { read open ioctl }
 
 # sock_file
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } property_socket sock_file write
@@ -111,5 +110,8 @@ allow crash_dump { hal_audio_default audioserver mtk_hal_audio } unix_stream_soc
 
 # property_service
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app hal_audio_default audioserver mtk_hal_audio } vendor_audio_prop property_service set
+
+# chr_file
+allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } migt_dev chr_file { read write open ioctl }
 
 

@@ -200,7 +200,7 @@ fi
 if [ ! -d /data/adb/modules/MiuiCore ]; then
   ui_print "! Miui Core Magisk Module is not installed."
   ui_print "  MiSound app will not be working without"
-  ui_print "  Miui Core Magisk Module except you are in Miui ROM!"
+  ui_print "  Miui Core Magisk Module except you are in Miui ROM."
   ui_print " "
 else
   rm -f /data/adb/modules/MiuiCore/remove
