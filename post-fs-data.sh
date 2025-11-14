@@ -101,6 +101,11 @@ if [ -L $MODPATH/system/vendor ]\
     chmod 0755 $FILE
     chown 0.2000 $FILE
   done
+  FILES=`find $MODPATH/vendor/lib* -type f`
+  for FILE in $FILES; do
+    chmod 0644 $FILE
+    chown 0.0 $FILE
+  done
   chcon -R u:object_r:vendor_file:s0 $MODPATH/vendor
   chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/vendor/etc
   chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/vendor/odm/etc
@@ -117,6 +122,11 @@ else
   for FILE in $FILES; do
     chmod 0755 $FILE
     chown 0.2000 $FILE
+  done
+  FILES=`find $MODPATH/system/vendor/lib* -type f`
+  for FILE in $FILES; do
+    chmod 0644 $FILE
+    chown 0.0 $FILE
   done
   chcon -R u:object_r:vendor_file:s0 $MODPATH/system/vendor
   chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/etc

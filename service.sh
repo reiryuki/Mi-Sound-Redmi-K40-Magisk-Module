@@ -76,7 +76,8 @@ else
   SERVER=mediaserver
 fi
 killall $SERVER\
- android.hardware.audio@4.0-service-mediatek
+ android.hardware.audio@4.0-service-mediatek\
+ android.hardware.audio.service
 
 # function
 dolby_service() {
