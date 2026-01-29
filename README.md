@@ -36,6 +36,7 @@
 - Dolby Atmos EQ
   - arm64-v8a architecture
   - Android 11 (SDK 30) and up
+- HIDL audio service
 
 ## WARNING!!!
 - Possibility of bootloop or even softbrick or a service failure on Read-Only ROM if you don't use Magisk Delta/Kitsune Mask.
