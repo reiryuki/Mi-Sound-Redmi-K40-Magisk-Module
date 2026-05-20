@@ -21,7 +21,53 @@
 - libhidlbase.so: CrDroid ROM Android 13
 - libutils.so: LineageOS 23 Android 16 BP2A.250605.031.A2 1758630651
 - android.hardware.audio.effect@*-impl.so: https://dumps.tadiphone.dev/dumps/oneplus/op594dl1 qssi-user-14-UKQ1.230924.001-1701915639192-release-keys--US
-- libmagiskpolicy.so: Kitsune Mask R6687BB53
+- libmagiskpolicy.so: Magisk (stable) 30.7 (30700)
+
+## Changelog
+
+v6.5
+- Update libmagiskpolicy.so from Magisk (stable) 30.7 (30700) (fixes selinux denials in KernelSU)
+- Does not disable raw playback (You can use Audio Compatibility Patch Reborn Magisk Module instead)
+
+v6.4
+- Fix wrong target in latest KernelSU
+- Improve detections
+
+v6.3
+- Fix wrong manifest.xml location patch target in latest Magisk version
+- Tidy up aml.sh
+- Exclude \*audio\*effects\*haptic\*.xml
+- Fix wrong file permissions in some ROMs
+
+v6.2
+- Fix selinux denials
+
+v6.1
+- Fix ZN7android8String16aSEOS0 function not found in some ROMs
+- Add libutils.so as system_support
+- Abort if failed to mount mirror system at installation
+
+v6.0
+- Fake Kitsune Mask detection
+- Improve /odm and /my_product support detection
+
+v5.9
+- Fix script bug at installation for libsqlite.so detections
+
+v5.8
+- Fix SystemUI visibility while changing between dark and light theme immediately
+- Fix selinux denials
+
+v5.7
+- Modifies all Dolby blobs (if dolby.mod=1) to fix conflict with in-built Dolby
+
+v5.6
+- Fix permission
+- Add Action button to clear apps caches
+- Fix crash in Miui ROM by forcing ro.vendor.audio.dolby.dax.support=false if miui.dolby=0 in optionals.prop
+- Fix architecture detection in some weird ROMs
+- Fix selinux denials
+- Fix bug in uninstall.sh
 
 ## Screenshots
 - https://t.me/androidryukimods/488
@@ -45,10 +91,10 @@
 - Recommended to use Magisk Delta/Kitsune Mask https://t.me/ryukinotes/49
 - Remove any other else Dolby MAGISK MODULE with different name (no need to remove if it's the same name)
 - Reboot
-- If you are using KernelSU, you need to disable Unmount Modules by Default in KernelSU app settings and install https://github.com/KernelSU-Modules-Repo/meta-overlayfs first
+- If you are using KernelSU, you need to disable Unmount Modules by Default in KernelSU app settings and install https://github.com/KernelSU-Modules-Repo/meta-overlayfs or https://github.com/KernelSU-Modules-Repo/magic_mount_rs or https://github.com/KernelSU-Modules-Repo/hybrid_mount first depending on ROM compatibility
 - Install Miui Core Magisk Module first if you are in non-Miui ROM: https://github.com/reiryuki/Miui-Core-Magisk-Module
 - If you have Dolby in-built in your ROM, then you need to activate data.cleanup=1 at the first time install (READ Optionals bellow!)
-- Install this module https://www.pling.com/p/1769560/ via Magisk app or Kitsune Mask app or KernelSU app or Apatch app or Recovery if Magisk or Kitsune Mask installed
+- Install this module via Magisk app or Kitsune Mask app or KernelSU app or Apatch app or Recovery if Magisk or Kitsune Mask installed
 - Install AML Magisk Module https://t.me/ryukinotes/34 only if using any other else audio mod module
 - Reboot
 - If you are using KernelSU, you need to allow superuser list manually all package name listed in package-dolby.txt (and your home launcher app also) (enable show system apps) and reboot afterwards

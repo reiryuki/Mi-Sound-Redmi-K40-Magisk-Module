@@ -576,15 +576,10 @@ misoundfx
 #dgamedap
 
 # patch audio policy
-#ufor MODAP in $MODAPS; do
-#u  sed -i 's|RAW|NONE|g' $MODAP
-#u  sed -i 's|,raw||g' $MODAP
-#udone
-
-# patch audio policy
 #dfor MODAP in $MODAPS; do
 #d  sed -i 's|COMPRESS_OFFLOAD|NONE|g' $MODAP
 #d  sed -i 's|,compressed_offload||g' $MODAP
+#d  sed -i 's|compressed_offload,||g' $MODAP
 #ddone
 
 
