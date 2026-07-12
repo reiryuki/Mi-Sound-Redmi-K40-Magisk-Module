@@ -213,8 +213,8 @@ fi
 # recovery
 mount_partitions_in_recovery
 
-# magisk
-magisk_setup
+# mirror
+mirror_setup
 
 # path
 SYSTEM=`realpath $MIRROR/system`
@@ -223,6 +223,7 @@ PRODUCT=`realpath $MIRROR/product`
 SYSTEM_EXT=`realpath $MIRROR/system_ext`
 ODM=`realpath $MIRROR/odm`
 MY_PRODUCT=`realpath $MIRROR/my_product`
+APEX=`realpath $MIRROR/apex`
 
 # create
 if [ $DOLBY == true ]; then
@@ -283,7 +284,15 @@ fi
 mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
 
 # function
-check_function_2() {
+check_function() {
+FILE=`for LIST in $LISTS; do
+        APEX_FILE=$(find $APEX/*$DIR -maxdepth 1 -name $LIST)
+        if [ "$APEX_FILE" ]; then
+          echo $APEX/*$DIR/$LIST
+        else
+          echo $SYSTEM$DIR/$LIST
+        fi
+      done`
 if [ -f $MODPATH/system_support$DIR/$LIB ]; then
   ui_print "- Checking"
   ui_print "$NAME"
@@ -299,7 +308,8 @@ if [ -f $MODPATH/system_support$DIR/$LIB ]; then
   ui_print " "
 fi
 }
-check_function() {
+check_function_vendor() {
+FILE=$VENDOR$DIR/hw/*audio*.so
 if [ -d $MODPATH/system_support/vendor$DIR/hw ]; then
   ui_print "- Checking"
   ui_print "$NAME"
@@ -323,28 +333,24 @@ if [ $DOLBY == true ]; then
   NAME=_ZN7android23sp_report_stack_pointerEv
   if [ "$IS64BIT" == true ]; then
     DIR=/lib64
-    FILE=$VENDOR$DIR/hw/*audio*.so
-    check_function
+    check_function_vendor
   fi
   if [ "$ABILIST32" ]; then
     DIR=/lib
-    FILE=$VENDOR$DIR/hw/*audio*.so
-    check_function
+    check_function_vendor
   fi
   NAME=_ZN7android8hardware23getOrCreateCachedBinderEPNS_4hidl4base4V1_05IBaseE
   DES=vendor.dolby.hardware.dms@2.0.so
   LIB=libhidlbase.so
   if [ "$IS64BIT" == true ]; then
     DIR=/lib64
-    LISTS=`strings $MODPATH/system_dolby/vendor$DIR/$DES | grep ^lib | grep .so`
-    FILE=`for LIST in $LISTS; do echo $SYSTEM$DIR/$LIST; done`
-    check_function_2
+    LISTS=`strings $MODPATH/system_dolby/vendor$DIR/$DES | grep ^lib | grep \.so$`
+    check_function
   fi
   if [ "$ABILIST32" ]; then
     DIR=/lib
-    LISTS=`strings $MODPATH/system_dolby/vendor$DIR/$DES | grep ^lib | grep .so`
-    FILE=`for LIST in $LISTS; do echo $SYSTEM$DIR/$LIST; done`
-    check_function_2
+    LISTS=`strings $MODPATH/system_dolby/vendor$DIR/$DES | grep ^lib | grep \.so$`
+    check_function
   fi
   NAME=_ZN7android8String16aSEOS0_
   DES=libhidlbase.so
@@ -352,19 +358,17 @@ if [ $DOLBY == true ]; then
   if [ "$IS64BIT" == true ]; then
     DIR=/lib64
     if [ -f $MODPATH/system$DIR/$DES ]; then
-      LISTS=`strings $MODPATH/system$DIR/$DES | grep ^lib | grep .so\
+      LISTS=`strings $MODPATH/system$DIR/$DES | grep ^lib | grep \.so$\
              | sed "s|$DES||g"`
-      FILE=`for LIST in $LISTS; do echo $SYSTEM$DIR/$LIST; done`
-      check_function_2
+      check_function
     fi
   fi
   if [ "$ABILIST32" ]; then
     DIR=/lib
     if [ -f $MODPATH/system$DIR/$DES ]; then
-      LISTS=`strings $MODPATH/system$DIR/$DES | grep ^lib | grep .so\
+      LISTS=`strings $MODPATH/system$DIR/$DES | grep ^lib | grep \.so$\
              | sed "s|$DES||g"`
-      FILE=`for LIST in $LISTS; do echo $SYSTEM$DIR/$LIST; done`
-      check_function_2
+      check_function
     fi
   fi
   MODNAME2='Mi Sound and Dolby Atmos Redmi K40'
@@ -409,13 +413,11 @@ else
   NAME=_ZN7android23sp_report_stack_pointerEv
   if [ "$IS64BIT" == true ]; then
     DIR=/lib64
-    FILE=$VENDOR$DIR/hw/*audio*.so
-    check_function
+    check_function_vendor
   fi
   if [ "$ABILIST32" ]; then
     DIR=/lib
-    FILE=$VENDOR$DIR/hw/*audio*.so
-    check_function
+    check_function_vendor
   fi
 fi
 
@@ -1434,15 +1436,6 @@ FILE=$MODPATH/service.sh
 if [ "`grep_prop misound.harmankardon $OPTIONALS`" == 0 ]; then
   ui_print "- Disables Harman Kardon"
   sed -i 's|#h||g' $FILE
-  ui_print " "
-fi
-
-# fix sensor
-if [ $DOLBY == true ]\
-&& [ "`grep_prop dolby.fix.sensor $OPTIONALS`" == 1 ]; then
-  ui_print "- Fixing sensors issue"
-  ui_print "  This causes bootloop in some ROMs"
-  sed -i 's|#x||g' $MODPATH/service.sh
   ui_print " "
 fi
 
