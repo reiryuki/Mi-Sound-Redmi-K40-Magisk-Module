@@ -39,7 +39,7 @@ https://t.me/androidryukimods/488
 
 ## Download Links and Changelog
 
-v6.9 https://github.com/reiryuki/Mi-Sound-Redmi-K40-Magisk-Module
+v6.9 https://move2link.co/9d20648
 - Update libmagiskpolicy.so from Magisk (debug) 31.0 (31000)
 - Prepare /storage/emulated/"$UID"/Android/data/$PKG/ directories
 - Add a new optional dolby.mod_xml to let users to use any modified/custom dax-default.xml. Please read Optionals below.
