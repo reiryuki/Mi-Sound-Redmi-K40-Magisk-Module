@@ -3,12 +3,11 @@
 ## DISCLAIMER
 - Dolby apps and blobs are owned by Dolby™.
 - The MIT license specified here is for the Magisk Module only, not for Dolby apps and blobs.
-- MiSound app and blobs are owned by Xiaomi™.
-- The MIT license specified here is for the Magisk Module only, not for MiSound app and blobs.
+- Mi Sound app and blobs are owned by Xiaomi™.
+- The MIT license specified here is for the Magisk Module only, not for Mi Sound app and blobs.
 
-## Descriptions
-- Equalizers sound effect ported from Xiaomi Redmi K40 (alioth) and integrated as a Magisk Module for all supported and rooted devices with Magisk
-- Global type sound effect
+## Description
+- Equalizers global type sound effects ported from Xiaomi Redmi K40 (alioth) and integrated as a Magisk Module for all supported and rooted devices with Magisk
 - Mi Sound, Dolby Atmos, & Bluetooth microphone enhancer
 - Dolby Atmos changes/spoofs ro.product.brand to Redmi, ro.product.device to alioth, & ro.product.manufacturer to Xiaomi which may break some system apps and features functionality
 - Dolby Atmos conflicted with `vendor.dolby_v3_6.hardware.dms360@2.0-service`, `vendor.dolby_sp.hardware.dmssp@2.0-service`, & `vendor.dolby.hardware.dms@1.0-service`
@@ -21,61 +20,7 @@
 - libhidlbase.so: CrDroid ROM Android 13
 - libutils.so: LineageOS 23 Android 16 BP2A.250605.031.A2 1758630651
 - android.hardware.audio.effect@*-impl.so: https://dumps.tadiphone.dev/dumps/oneplus/op594dl1 qssi-user-14-UKQ1.230924.001-1701915639192-release-keys--US
-- libmagiskpolicy.so: Magisk (stable) 30.7 (30700)
-
-## Changelog
-
-v6.8
-- Dolby Atmos:
-  - Fix manifest.xml detection bug in some ROMs
-  - Fix sepolicy denial
-
-v6.7
-- Dolby Atmos:
-  - Check functions in mirror /apex files instead of mirror /system if exist
-  - Remove hardware services conflict restart (Use this instead: https://github.com/reiryuki/Hardware-Services-Restarter-Magisk-Module)
-  - Fix sepolicy denial
-
-v6.6
-- Support NoMount metamodule
-- Resets module folders/files permissions at post-fs-data
-- Move _uninstall.log to /data/adb/logs/
-- Dolby Atmos:
-  - Hides in-built LunarisDolby.apk
-- Removes conflicted weird modules
-
-v6.5
-- Update libmagiskpolicy.so from Magisk (stable) 30.7 (30700) (fixes selinux denials in KernelSU)
-- Does not disable raw playback (You can use Audio Compatibility Patch Reborn Magisk Module instead)
-
-v6.4
-- Fix wrong target in latest KernelSU
-- Improve detections
-
-v6.3
-- Dolby Atmos:
-  - Fix wrong manifest.xml location patch target in latest Magisk version
-- Tidy up aml.sh
-- Exclude \*audio\*effects\*haptic\*.xml
-- Fix wrong file permissions in some ROMs
-
-v6.2
-- Fix selinux denials
-
-v6.1
-- Dolby Atmos:
-  - Fix ZN7android8String16aSEOS0 function not found in some ROMs
-  - Add libutils.so as system_support
-- Abort if failed to mount mirror system at installation
-
-v6.0
-- Dolby Atmos:
-  - Fake Kitsune Mask detection
-- Improve /odm and /my_product support detection
-
-v5.9
-- Dolby Atmos:
-  - Fix script bug at installation for libsqlite.so detections
+- libmagiskpolicy.so: Magisk (debug) 31.0 (31000)
 
 ## Screenshots
 https://t.me/androidryukimods/488
@@ -92,25 +37,77 @@ https://t.me/androidryukimods/488
   - Android 11 (SDK 30) and up
 - HIDL audio service
 
+## Download Links and Changelog
+
+v6.9 https://github.com/reiryuki/Mi-Sound-Redmi-K40-Magisk-Module
+- Update libmagiskpolicy.so from Magisk (debug) 31.0 (31000)
+- Prepare /storage/emulated/"$UID"/Android/data/$PKG/ directories
+- Add a new optional dolby.mod_xml to let users to use any modified/custom dax-default.xml. Please read Optionals below.
+
+v6.8 https://move2link.co/3d11453
+- Dolby Atmos:
+  - Fix manifest.xml detection bug in some ROMs
+  - Fix sepolicy denial
+
+v6.7
+- Dolby Atmos:
+  - Check functions in mirror /apex files instead of mirror /system if exist
+  - Remove hardware services conflict restart (Use this instead: https://github.com/reiryuki/Hardware-Services-Restarter-Magisk-Module)
+  - Fix sepolicy denial
+
+v6.6
+- Support NoMount metamodule
+- Resets module folders/files permissions at post-fs-data
+- Move _uninstall.log to /data/adb/logs/
+- Dolby Atmos: Hides in-built LunarisDolby.apk
+- Removes conflicted weird modules
+
+v6.5
+- Update libmagiskpolicy.so from Magisk (stable) 30.7 (30700) (fixes sepolicy denials in KernelSU)
+- Does not disable raw playback (You can use Audio Compatibility Patch Reborn Magisk Module instead)
+
+v6.4
+- Fix wrong target in latest KernelSU
+- Improve detections
+
+v6.3
+- Dolby Atmos: Fix wrong manifest.xml location patch target in latest Magisk version
+- Tidy up aml.sh
+- Exclude \*audio\*effects\*haptic\*.xml
+- Fix wrong file permissions in some ROMs
+
+v6.2
+- Fix sepolicy denials
+
+v6.1
+- Dolby Atmos:
+  - Fix ZN7android8String16aSEOS0 function not found in some ROMs
+  - Add libutils.so as system_support
+- Abort if failed to mount mirror system at installation
+
+v6.0
+- Dolby Atmos: Fake Kitsune Mask detection
+- Improve /odm and /my_product support detection
+
+## Download Tutorial
+https://t.me/ryukinotes/97
+
 ## WARNING!!!
 Possibility of bootloop or even softbrick or a service failure on Read-Only ROM if you don't use Magisk Delta/Kitsune Mask.
 
-## Installation Guide & Download Link
+## Installation Guide
 - Recommended to use Magisk Delta/Kitsune Mask https://t.me/ryukinotes/49
 - Remove any other else Dolby MAGISK MODULE with different name (no need to remove if it's the same name)
 - Reboot
 - If you are using KernelSU, you need to disable Unmount Modules by Default in KernelSU app settings and install https://github.com/KernelSU-Modules-Repo/meta-overlayfs or https://github.com/KernelSU-Modules-Repo/magic_mount_rs or https://github.com/KernelSU-Modules-Repo/hybrid_mount or https://github.com/maxsteeel/nomount first depending on ROM compatibility
 - Install Miui Core Magisk Module first if you are in non-Miui ROM: https://github.com/reiryuki/Miui-Core-Magisk-Module
-- If you have Dolby in-built in your ROM, then you need to activate data.cleanup=1 at the first time install (READ Optionals bellow!)
-- Install this module https://move2link.co/3d11453 via Magisk app or Kitsune Mask app or KernelSU app or Apatch app or Recovery if Magisk or Kitsune Mask installed
+- If you have Dolby in-built in your ROM, then you need to activate data.cleanup=1 at the first time install (READ Optionals below!)
+- Install this module via Magisk app or Kitsune Mask app or KernelSU app or Apatch app or Recovery if Magisk or Kitsune Mask installed
 - Install AML Magisk Module https://t.me/ryukinotes/34 only if using any other else audio mod module
 - Reboot
 - If you are using KernelSU, you need to allow superuser list manually all package name listed in package-dolby.txt (and your home launcher app also) (enable show system apps) and reboot afterwards
 - If you are using SUList, you need to allow list manually your home launcher app (enable show system apps) and reboot afterwards
 - If you have vibrator, camera, charging/USB, SIM card/RIL, display, brightness, WiFi, thermal, and sensors issues (fingerprint, proximity, gyroscope, etc.), then install https://github.com/reiryuki/Hardware-Services-Restarter-Magisk-Module also
-
-## Download Tutorial
-https://t.me/ryukinotes/97
 
 ## Optionals
 - https://t.me/ryukinotes/79
@@ -121,18 +118,18 @@ https://t.me/ryukinotes/97
 - https://t.me/ryukinotes/79
 - Global: https://t.me/ryukinotes/34
 
-## Support & Bug Report
+## Support and Bug Report
 - https://t.me/ryukinotes/54
 - If you don't do above, issues will be closed immediately
 
 ## Credits and Contributors
 - @HuskyDG
+- @HELLBOY017
 - https://t.me/viperatmos
 - https://t.me/androidryukimodsdiscussions
-- @HELLBOY017
 - https://t.me/androidappsportdevelopment
 
-## Sponsors
+## Sponsors and Donation
 https://t.me/ryukinotes/25
 
 
